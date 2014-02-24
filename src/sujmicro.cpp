@@ -102,67 +102,6 @@ string micromegas_driver::calc_observables(const model &m)
 		<< ProtonSD << "\t"
 		<< NeutronSI << "\t"
 		<< NeutronSD;
-#if 0
-  double Emin=1,SMmev=320;/*Energy cut in GeV and solar potential in MV*/
-  double  sigmaV;
-  double vcs_gz,vcs_gg;
-  char txt[100];
-  double SpA[NZ],SpE[NZ],SpP[NZ];
-  double FluxA[NZ],FluxE[NZ],FluxP[NZ];
-  double SpNe[NZ],SpNm[NZ],SpNl[NZ];  
-  double Etest=Mcdm/2;
- 
-printf("\n==== Indirect detection =======\n");  
-
-  sigmaV=calcSpectrum( 1+2+4,SpA,SpE,SpP,SpNe,SpNm,SpNl ,&err);
-    /* Returns sigma*v in cm^3/sec.     SpX - calculated spectra of annihilation.
-       Use SpectdNdE(E, SpX) to calculate energy distribution in  1/GeV units.
-       
-       First parameter 1-includes W/Z polarization
-                       2-includes gammas for 2->2+gamma
-                       4-print cross sections             
-    */
-  printf("sigmav=%.2E[cm^3/s]\n",sigmaV); 
-
-  if(SpA)
-  { 
-     double fi=0.,dfi=M_PI/180.; /* angle of sight and 1/2 of cone angle in [rad] */ 
-                                                   /* dfi corresponds to solid angle 1.E-3sr */                                             
-     printf("Photon flux  for angle of sight f=%.2f[rad]\n"
-     "and spherical region described by cone with angle %.4f[rad]\n",fi,2*dfi);
-     gammaFluxTab(fi,dfi, sigmaV, SpA, FluxA);
-
-     sprintf(txt,"Photon flux for angle of sight %.2f[rad] and cone angle %.2f[rad]",fi,2*dfi);
-     printf("Photon flux = %.2E[cm^2 s GeV]^{-1} for E=%.1f[GeV]\n",SpectdNdE(Etest, FluxA), Etest);       
-     if(loopGamma(&vcs_gz,&vcs_gg)==0)
-     {
-         printf("Gamma  ray lines:\n");
-         printf("E=%.2E[GeV]  vcs(Z,A)= %.2E[cm^3/s], flux=%.2E[cm^2 s]^{-1}\n",Mcdm-91.19*91.19/4/Mcdm,vcs_gz,
-                               gammaFlux(fi,dfi,vcs_gz));  
-         printf("E=%.2E[GeV]  vcs(A,A)= %.2E[cm^3/s], flux=%.2E[cm^2 s]^{-1}\n",Mcdm,vcs_gg, 
-                             2*gammaFlux(fi,dfi,vcs_gg));
-     }
-  }
-
-  if(SpE)
-  { 
-    posiFluxTab(Emin, sigmaV, SpE, FluxE);
-    if(SMmev>0)  solarModulation(SMmev,0.0005,FluxE,FluxE);    
-    printf("Positron flux  =  %.2E[cm^2 sr s GeV]^{-1} for E=%.1f[GeV] \n",
-    SpectdNdE(Etest, FluxE),  Etest); 
-  }
-  
-  if(SpP)
-  {
-    pbarFluxTab(Emin, sigmaV, SpP,  FluxP); 
-    
-    if(SMmev>0)  solarModulation(SMmev,1,FluxP,FluxP);     
-    printf("Antiproton flux  =  %.2E[cm^2 sr s GeV]^{-1} for E=%.1f[GeV] \n",
-    SpectdNdE(Etest, FluxP),  Etest);     
-  }
-#endif 
-
-
 	
 	return oss.str();
 }

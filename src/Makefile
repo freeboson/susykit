@@ -1,13 +1,17 @@
 
+#BASE=$(HOME)/susytik
 BASE=$(HOME)/school/research
 
 CONSTRAIN=$(BASE)/constrain/current
 SOFTSUSY=$(BASE)/softsusy/current
 MICROMEGAS=$(BASE)/micromegas/current
 CALCHELP=$(MICROMEGAS)/CalcHEP_src
+FEYNHIGGS=$(BASE)/feynhiggs/current
 
-CXX=g++-4.7.2
-CXXFLAGS=-std=c++0x -O3 -march=native
+BOOST=$(BOOST_DIR)/include
+
+CXX=g++
+CXXFLAGS=-std=c++0x -O3 -ffast-math -funroll-loops
 LDFLAGS=-lgfortran
 
 LMICRO=$(MICROMEGAS)/sources/micromegas.a $(CALCHELP)/lib/dynamic_me.a \
@@ -21,24 +25,26 @@ LCONSTRAIN=-L$(CONSTRAIN) -lconstrain
 #LSOFTSUSY=-L$(SOFTSUSY)/.libs -lsoft
 LSOFTSUSY=$(SOFTSUSY)/.libs/libsoft.a
 
-CXXINCL=-I$(CONSTRAIN) -I$(MICROMEGAS) -I$(SOFTSUSY) 
+LFEYNHIGGS=$(FEYNHIGGS)/feynbuild/lib64/libFH.a
 
-LDFLAGS+=$(LMICRO) $(LCONSTRAIN) $(LSOFTSUSY)
+CXXINCL=-I$(CONSTRAIN) -I$(MICROMEGAS) -I$(SOFTSUSY) -I$(BOOST) -I$(FEYNHIGGS) -I$(FEYNHIGGS)/src/include
+
+LDFLAGS+=$(LMICRO) $(LCONSTRAIN) $(LSOFTSUSY) $(LFEYNHIGGS)
 
 
 OUTPATH=$(CURDIR)/..
 SUSYTIK_INIT=init_susytik 	# bin filename
 SUSYTIK=susytik 		# bin filename
 GEN_SEEDS=gen_seeds		# bin filename
-QPOINT=qpoint
+FEYNTEST=feyntest
 
-TARGETS=$(SUSYTIK) $(SUSYTIK_INIT) $(GEN_SEEDS) $(QPOINT)
+TARGETS=$(SUSYTIK) $(SUSYTIK_INIT) $(GEN_SEEDS) $(FEYNTEST)
 
 OBJS=sujmicro.o suj_slha_out.o
 SCANOBJS=susytik_scan.o
 INITOBJS=init_susytik.o
 SEEDOBJS=gen_seeds.o
-QPOINTOBJS=qpoint.o
+FEYNOBJS=sujfeyn.o feyntest.o
 
 all: $(TARGETS)
 
@@ -47,16 +53,16 @@ clean:
 	pushd $(OUTPATH) && rm -rf $(TARGETS) && popd
 
 $(SUSYTIK_INIT): $(OBJS) $(INITOBJS)
-	$(CXX) $(CXXFLAGS) -o $(OUTPATH)/$(SUSYTIK_INIT) $(OBJS) $(INITOBJS) $(LDFLAGS)
-
-$(QPOINT): $(OBJS) $(QPOINTOBJS)
-	$(CXX) $(CXXFLAGS) -o $(OUTPATH)/$(QPOINT) $(OBJS) $(QPOINTOBJS) $(LDFLAGS)
+	$(CXX) -dynamic $(CXXFLAGS) -o $(OUTPATH)/$(SUSYTIK_INIT) $(OBJS) $(INITOBJS) $(LDFLAGS)
 
 $(SUSYTIK): $(OBJS) $(SCANOBJS)
-	$(CXX) $(CXXFLAGS) -o $(OUTPATH)/$(SUSYTIK) $(OBJS) $(SCANOBJS) $(LDFLAGS)
+	$(CXX) -dynamic $(CXXFLAGS) -o $(OUTPATH)/$(SUSYTIK) $(OBJS) $(SCANOBJS) $(LDFLAGS)
 
 $(GEN_SEEDS): $(SEEDOBJS)
 	$(CXX) $(CXXFLAGS) -o $(OUTPATH)/$(GEN_SEEDS) $(SEEDOBJS)
+
+$(FEYNTEST): $(FEYNOBJS) suj_slha_out.o
+	$(CXX) $(CXXFLAGS) -o $(OUTPATH)/$(FEYNTEST) $(FEYNOBJS) suj_slha_out.o $(LDFLAGS)
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(CXXINCL) -c $< -o $@

@@ -27,7 +27,7 @@ string suj_slha_out(double mGUT, const DoubleVector &pars, double tb, double sgn
 		return "";
       }
 
-      bool nusugra = (pars.displayEnd()==49); // for now assume NUSUGRA-G
+      bool nusugra = (pars.displayEnd()==49);
 
       oss.setf(ios::scientific, ios::floatfield);
       oss.precision(8);
@@ -66,7 +66,7 @@ string suj_slha_out(double mGUT, const DoubleVector &pars, double tb, double sgn
 	if (!nusugra)
 		oss << "mSUGRA" << "\t"; // (mSUGRA)
 	else
-		oss << "NUSUGRA-G" << "\t"; // (non-universal gaugino SUGRA)
+		oss << "NUSUGRA" << "\t"; // (non-universal SUGRA)
 
       oss
       		<< mGUT << "\t" // not in SLHA, except as a comment

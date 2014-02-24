@@ -1,6 +1,11 @@
 
 #include <iostream>
 #include <fstream>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <cerrno>
+#include <cstring>
 
 #include "libconstrain.h"
 #include "sujmicro.h"
@@ -20,6 +25,12 @@
 #include "nestface.h"
 #include "hepstats.hpp"
 
+#include <boost/math/special_functions/pow.hpp>
+
+#define NUM_REQ_ARGS 4
+
+#define NUSUGRA
+
 const double m0_min = 1.7;
 const double m0_max = 3.904;
 const double mhf_min = 1.7;
@@ -29,6 +40,13 @@ const double a0_max = 30e3;
 const double tb_min = 3;
 const double tb_max = 60;
 const int sgnmu = 1;
+
+#ifdef NUSUGRA
+// non-universal
+const int extra_params = 0; // for SU(5) or SO(10) IR's no extras needed
+#else
+const int extra_params = 0;
+#endif
 
 const double mtop_min = 173.5 - 2*1.0;
 const double mtop_max = 173.5 + 2*1.0;
@@ -40,6 +58,28 @@ const double mb_min = 4.18 - 2*3e-2;
 const double mb_max = 4.18 + 2*3e-2;
 
 const double logZero = -1e90;
+
+static std::string lockfile;
+
+void exit_without_unlocking()
+{
+	std::cerr << "Exiting too early to unlock!" << std::endl;
+	return;
+}
+
+void exit_with_unlocking()
+{
+	if (lockfile.size() > 0)
+	{
+		std::cerr << "Deleting LOCK file: " << lockfile << "..." << std::endl;
+		unlink(lockfile.c_str());
+	}
+	else
+	{
+		std::cerr << "LOCK file variable not set!" << std::endl;
+	}
+	return;
+}
 
 namespace nestface_common
 {
@@ -57,7 +97,40 @@ void dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **po
 
 int main(int argc, char**argv)
 {
-	std::string filename = "higgs_125_nogmu.conf";
+	atexit(exit_without_unlocking);
+	if (NUM_REQ_ARGS != argc)
+	{
+		std::cerr << "Usage: " << argv[0] << "<output directory> <output filename root> <likelihood config file>" << std::endl
+			  << std::endl;
+		return 1;
+	}
+
+	std::string out_dir, out_root, filename;
+
+	out_dir = std::string(argv[1]);
+	out_root = std::string(argv[2]);
+	filename = std::string(argv[3]);
+
+	if (0 != mkdir(out_dir.c_str(),S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH))
+	{
+		if (EEXIST == errno)
+		{
+			std::cerr << out_dir << " exists... continuing..." << std::endl;
+		}
+		else
+		{
+			std::cerr << "Error creating " << out_dir << ": " << strerror(errno) << std::endl;
+			return 2;
+		}
+	}
+
+	std::stringstream ss;
+	ss << out_dir << "/" << out_root;
+	if (ss.str().size() > 100)
+	{
+		std::cerr << "Error: director+root larger than arbitrary cap. Feel free to change this." << std::endl;
+		return 3;
+	}
 
 	std::cerr << "Reading likelihood function configuration from " << filename << "..." << endl;
 	std::ifstream reader;
@@ -78,15 +151,18 @@ int main(int argc, char**argv)
 
 	int mmodal = 1;					// do mode separation?
 	int ceff = 0;					// run in constant efficiency mode?
-	int nlive = 10000;				// number of live points
+	int nlive = 5000;				// number of live points
 	
 	double efr = 0.8;				// set the required efficiency
 	
-	double tol = 0.05;				// tol, defines the stopping criteria
+	double tol = 0.01;				// tol, defines the stopping criteria
 	
-	int ndims = 8;					// dimensionality (no. of free parameters)
-	
+	int ndims = 8+extra_params;					// dimensionality (no. of free parameters)
+#ifdef NUSUGRA	
+	int nPar = ndims + (susy_dict::NUSUGRA_row.size()-1) + susy_dict::observable::observe_row.size();	// total no. of parameters including free & derived parameters
+#else
 	int nPar = ndims + (susy_dict::mSUGRA_row.size()-1) + susy_dict::observable::observe_row.size();	// total no. of parameters including free & derived parameters
+#endif
 	
 	int nClsPar = 4;				// no. of parameters to do mode separation on
 	
@@ -100,7 +176,8 @@ int main(int argc, char**argv)
 	int pWrap[ndims];				// which parameters to have periodic boundary conditions?
 	for(int i = 0; i < ndims; i++) pWrap[i] = 0;
 	
-	char root[100] = "realtest/realtest";			// root for output files
+	char root[100];					// root for output files
+	strcpy(root, ss.str().c_str());
 	
 	int seed = -1;					// random no. generator seed, if < 0 then take the seed from system clock
 	
@@ -120,8 +197,21 @@ int main(int argc, char**argv)
 	
 	void *context = 0;				// not required by MultiNest, any additional information user wants to pass
 
-	
-	
+#if 0
+	struct stat stat_p;
+	lockfile = std::string(ss.str()+".LOCK");
+	if (!stat(lockfile.c_str(),&stat_p) && S_ISREG(stat_p.st_mode))
+	{
+		do
+		{
+			std::cerr << "LOCK file exists: " << lockfile << ". Sleeping..." << std::endl;
+			sleep(30);
+		} while (!stat(lockfile.c_str(),&stat_p) && S_ISREG(stat_p.st_mode));
+	}
+	std::fstream f(lockfile.c_str(), std::fstream::out | std::fstream::trunc);
+	f << "LOCKED!" << std::endl;
+	atexit(exit_with_unlocking);
+#endif	
 	// calling MultiNest
 
 	nested::run(mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, root, seed, pWrap, fb, resume, outfile, initMPI,
@@ -140,7 +230,7 @@ double get_mapped(double normed, double min, double max, bool log)
 
 void get_pars(double *Cube, const int &npars)
 {
-	if (npars < 8)
+	if (npars < 8+extra_params)
 		return;
 	
 	double m0 = get_mapped(Cube[0], m0_min, m0_max, true);
@@ -163,6 +253,12 @@ void get_pars(double *Cube, const int &npars)
 	Cube[5] = alpha_s;
 	Cube[6] = alpha_eminv;
 	Cube[7] = mb;
+
+#ifdef NUSUGRA
+	// non-universal
+
+	// nothing to do this time...
+#endif
 
 	return;
 }
@@ -214,28 +310,78 @@ void log_like_request(double *Cube, int &ndim, int &npars, double &lnew, void *c
 {
 	get_pars(Cube, npars);
 
-	DoubleVector pars(3);
 
-	std::cerr << "Now trying " << Cube[0] << " " << Cube[1] << " " << Cube[2] << " " << Cube[3] << " 2e16 1 " << Cube[7] << " " << Cube[4] << " " << Cube[5] << " " << Cube[6] << " ..." << std::flush;
+	double m0 = Cube[0], mhf = Cube[1], a0 = Cube[2], tb = Cube[3], m_top = Cube[4], alpha_s = Cube[5], alpha_em_inv = Cube[6], mb = Cube[7];
+#ifdef NUSUGRA
+	double delta_h1 = Cube[8], delta_h2 = Cube[9];
+#endif
+
+#ifndef NUSUGRA
+	std::cerr << "Now trying " << m0 << " " << mhf << " " << a0 << " " << tb << " 2e16 1 " << mb << " " << m_top << " " << alpha_s << " " << alpha_em_inv << " ..."; // don't flush!
+#else
+	std::cerr << "Now trying " << m0 << " " << mhf << " " << a0 << " " << tb << " 2e16 1 " << mb << " " << m_top << " " << alpha_s << " " << alpha_em_inv << " ..."; // don't flush!
+#endif
+
+	DoubleVector pars(3);
+#ifndef NUSUGRA
 
 	pars(1) = Cube[0]; // m0
 	pars(2) = Cube[1]; // mhf
 	pars(3) = Cube[2]; // a0
 
+#else
+
+	pars.setEnd(49); // NUSUGRA pars: not actually 49, but that's the index of the last one
+
+	// gaugino masses
+	pars(1) = -mhf/2.0; //m1
+	pars(2) = -mhf*3.0/2.0; //m2
+	pars(3) = mhf; //m3
+
+	// At, Ab, Atau
+	pars(11) = a0; //at
+	pars(12) = a0; //ab
+	pars(13) = a0; //atau
+
+	// Higgs field squared-masses
+	pars(21) = boost::math::pow<2>(m0); //mh1^2
+	pars(22) = boost::math::pow<2>(m0); //mh2^2
+
+	pars(31) = m0; //meL
+	pars(32) = m0; //mmuL
+	pars(33) = m0; //mtauL
+	pars(34) = m0; //meR
+	pars(35) = m0; //mmuR
+	pars(36) = m0; //mtauR
+
+	pars(41) = m0; //mqL1
+	pars(42) = m0; //mqL2
+	pars(43) = m0; //mqL3
+	pars(44) = m0; //muR
+	pars(45) = m0; //mcR
+	pars(46) = m0; //mtR
+	pars(47) = m0; //mdR
+	pars(48) = m0; //msR
+	pars(49) = m0; //mbR
+#endif
+
 	QedQcd oneset;
-	oneset.setAlpha(ALPHAS, Cube[5]); // alpha_s(MZ)
-	oneset.setAlpha(ALPHA, 1.0/Cube[6]); // 1/alpha_em(MZ)
+	oneset.setAlpha(ALPHAS, alpha_s); // alpha_s(MZ)
+	oneset.setAlpha(ALPHA, 1.0/alpha_em_inv); // 1/alpha_em(MZ)
 
-	oneset.setPoleMt(Cube[4]);
-	oneset.setMass(mBottom, Cube[7]);
-
+	oneset.setPoleMt(m_top);
+	oneset.setMass(mBottom, mb); 
 	oneset.toMz();
 
 	micromegas_driver micro;
 	MssmSoftsusy r;
 	model_parser mp;
 
-	double mGUT = r.lowOrg(sugraBcs, 2.0e16, pars, sgnmu, Cube[3], oneset, true);
+#ifndef NUSUGRA
+	double mGUT = r.lowOrg(sugraBcs, 2.0e16, pars, sgnmu, tb, oneset, true);
+#else
+	double mGUT = r.lowOrg(extendedSugraBcs, 2.0e16, pars, sgnmu, tb, oneset, true);
+#endif
 
 	if (r.displayProblem().testSeriousProblem())
 	{
@@ -244,7 +390,7 @@ void log_like_request(double *Cube, int &ndim, int &npars, double &lnew, void *c
 		return;
 	}
 
-	model sdb = mp.parse(suj_slha_out(mGUT, pars, Cube[3], sgnmu, r), false); //false because it's not merged yet
+	model sdb = mp.parse(suj_slha_out(mGUT, pars, tb, sgnmu, r), false); //false because it's not merged yet
 
 	if (model::invalid == sdb.get_model_type())
 	{
@@ -271,34 +417,49 @@ void log_like_request(double *Cube, int &ndim, int &npars, double &lnew, void *c
 
 	lnew = nestface_common::llhood.get_log_like(mdb);
 
-	if (npars != ndim + (susy_dict::mSUGRA_row.size()-1) + susy_dict::observable::observe_row.size())
+
+#ifndef NUSUGRA
+	auto row_begin = susy_dict::mSUGRA_row.begin();
+	auto row_end= susy_dict::mSUGRA_row.end();
+	unsigned int sugra_length = susy_dict::mSUGRA_row.size()-1; // skipping model name
+#else
+	auto row_begin = susy_dict::NUSUGRA_row.begin();
+	auto row_end= susy_dict::NUSUGRA_row.end();
+	unsigned int sugra_length = susy_dict::NUSUGRA_row.size()-1; // skipping model name
+#endif
+
+	if (npars != ndim + sugra_length + susy_dict::observable::observe_row.size())
 	{
+		lnew = logZero;
 		std::cerr << "Cube[npars] has the wrong length!!" << endl;
 		return;
 	}
 
-	auto row_begin = susy_dict::mSUGRA_row.begin();
-
 	std::transform(
 		++row_begin, // skip the model name
-		susy_dict::mSUGRA_row.end(),
+		row_end,
 		Cube+ndim, 			 // these start after free params
 		[&mdb] (const std::string &key) -> double {
 			return mdb.get_datum(key);
 		}
 	);
 
+	Cube[ndim+sugra_length] = 1.0; // valid bit from observables
+
+	row_begin = susy_dict::observable::observe_row.begin();
+	row_end = susy_dict::observable::observe_row.end();
+
 	std::transform(
-		susy_dict::observable::observe_row.begin(),
-		susy_dict::observable::observe_row.end(),
-		Cube+ndim+(susy_dict::mSUGRA_row.size()-1), // these start after mSUGRA SLHA data
+		++row_begin,
+		row_end,
+		Cube+ndim+sugra_length+1, // these start after SLHA data -- +1 is for valid_bit
 		[&mdb] (const std::string &key) -> double {
 			return mdb.get_observable(key);
 		}
 	);
 
 
-	std::cerr << "m_h = " << mdb.get_datum(susy_dict::m_h0) << ", ln(like) = " << lnew << std::endl;
+	std::cerr << " :: m_h = " << mdb.get_datum(susy_dict::m_h0) << ", ln(like) = " << lnew << std::endl;
 }
 
 

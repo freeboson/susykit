@@ -22,20 +22,23 @@ LSOFTSUSY=$(SOFTSUSY)/.libs/libsoft.a
 LCONSTRAIN=-L$(CONSTRAIN) -lconstrain
 LMULTINEST=-L$(MULTINEST) -lnest3 -lgfortran
 
-CXXINCL=-I$(CONSTRAIN) -I../ -I../hepstats -I$(MICROMEGAS) -I$(SOFTSUSY) 
+CXXINCL=-I$(CONSTRAIN) -I../ -I../hepstats -I$(MICROMEGAS) -I$(SOFTSUSY)  -I$(BOOST_DIR)/include
 LDFLAGS+=$(LCONSTRAIN) $(LMULTINEST) $(LMICRO) $(LSOFTSUSY)
 
 
+MAINOBJ=nestface.o
+OBJS=../sujmicro.o ../suj_slha_out.o ../hepstats/likeconfig.o ../hepstats/likedatum.o ../hepstats/loglike.o
 
-OBJS=nestface.o ../sujmicro.o ../suj_slha_out.o ../hepstats/likeconfig.o ../hepstats/likedatum.o ../hepstats/loglike.o
+main ?= susytikNS.cpp
 
-all: nestface
+all: $(main) $(OBJS)
+	$(CXX) $(CXXFLAGS) $(CXXINCL) -o $(main:.cpp=.x) $(main) $(OBJS) $(LDFLAGS)
 
 clean:
-	rm -rf *.o
+	rm -rf *.o *.x
 
-nestface: $(OBJS)
-	$(CXX) $(CXXFLAGS) -o susytikNS $(OBJS) $(LDFLAGS)
+nestface: $(MAINOBJ) $(OBJS)
+	$(CXX) $(CXXFLAGS) -o susytikNS $(MAINOBJ) $(OBJS) $(LDFLAGS)
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(CXXINCL) -c $< -o $@
