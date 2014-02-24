@@ -64,6 +64,7 @@ all: $(TARGETS)
 clean:
 	rm -rf *.o
 	pushd $(OUTPATH) && rm -rf $(TARGETS) && popd
+	make -C nested clean
 
 $(SUSYTIK_INIT): $(OBJS) $(INITOBJS)
 	$(CXX) -dynamic $(CXXFLAGS) -o $(OUTPATH)/$(SUSYTIK_INIT) $(OBJS) $(INITOBJS) $(LDFLAGS)
