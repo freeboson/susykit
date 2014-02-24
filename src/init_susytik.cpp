@@ -76,7 +76,7 @@ int main(int argc, char** argv)
 
 	m0 = 4000;
 	mhf = 200;
-	a0 = 4000;
+	a0 = -4000;
 	tb = 45;
 
 	DoubleVector pars(3);
@@ -85,12 +85,14 @@ int main(int argc, char** argv)
 	pars(3) = a0;
 
 	MssmSoftsusy r;
+	r.lowOrg(sugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
 
-	double mGUT = r.lowOrg(sugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
+	double mGUT = r.displayMxBC();
 
 	if (r.displayProblem().test())
 	{
 		cerr << "Problem with test point! Please change it!" << endl;
+		cerr << r.displayProblem() << endl;
 		return 1;
 	}
 	

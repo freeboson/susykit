@@ -22,10 +22,9 @@
 
 #include "libconstrain.h"
 #include "sujmicro.h"
-#include "qpoint_softsusy_opts.hpp"
 #include "sujsoft.hpp"
 #include "sujfeyn.hpp"
-//#include "sujiso.hpp"
+#include "sujfeyn.hpp"
 
 #include <string>
 #include <sstream>
@@ -39,9 +38,9 @@ int main(int argc, char** argv)
 	/// Sets up exception handling
 	signal(SIGFPE, FPE_ExceptionHandler);
 
-	softsusy_opts *sugra;
+	point_opts *sugra;
 	try {
-		sugra = new qpoint_opts(argc,argv);
+		sugra = new point_opts(argc,argv);
 	} catch (exception &e) {
 		if (sugra != nullptr)
 			delete sugra;
@@ -53,15 +52,14 @@ int main(int argc, char** argv)
 	softsusy_driver softsusy(sugra);
 	micromegas_driver micro;
 	feynhiggs_driver feynhiggs;
-//	superiso_driver superiso;
 
 	try { 
 		m = softsusy(); // need to check for displayProblem().test() and neutralino LSP 
 	} catch (const string &s) { cerr << "SOFTSUSY exception: " << s << endl; return 1;}
 
 
-	feynhiggs(&m);
 	micro(&m);
+	feynhiggs(&m);
 
 	cout << m << endl;
 

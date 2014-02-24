@@ -244,9 +244,11 @@ int main(int argc, char** argv)
 		MssmSoftsusy r;
 
 		if (!nusugra)
-			mGUT = r.lowOrg(sugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
+			r.lowOrg(sugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
 		else
-			mGUT = r.lowOrg(extendedSugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
+			r.lowOrg(extendedSugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
+
+		mGUT = r.displayMxBC();
 
 		if (r.displayProblem().test())
 		{

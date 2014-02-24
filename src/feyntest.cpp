@@ -133,7 +133,9 @@ int main(int argc, char** argv)
 	MssmSoftsusy r;
 
 	if (!nusugra)
-		mGUT = r.lowOrg(sugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
+		r.lowOrg(sugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
+
+	r.displayMxBC();
 
 	if (r.displayProblem().test())
 	{
@@ -158,7 +160,7 @@ int main(int argc, char** argv)
 	}
 
 	cout << slha(sdb) << endl;
-	feynhiggs(sdb);
+	feynhiggs(&sdb);
 
 	return 0;
 }

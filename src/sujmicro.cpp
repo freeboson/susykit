@@ -3,15 +3,17 @@
 
 #include <iostream>
 #include <iomanip>
+#include <string>
 #include <sstream>
 #include <cmath>
+
+#include <stdexcept>
 
 #include "sources/micromegas.h"
 #include "MSSM/lib/pmodel.h"
 
 using namespace std;
 
-static const std::string error_str = "0\t\t0\t\t0\t\t0\t\t0\t\t0\t\t0\t\t0\t\t0\t\t0\t\t0";
 
 model micromegas_driver::operator() (model m)
 {
@@ -20,19 +22,31 @@ model micromegas_driver::operator() (model m)
 		return m;
 	}
 	pass_micromegas_slha_data(m);
-	m.set_observables(calc_observables(m));
+	calc_observables(&m);
 	return m;
 }
 
+int micromegas_driver::operator() (model *m)
+{
+	if (model::invalid == m->get_model_type())
+	{
+		return 1;
+	}
 
-string micromegas_driver::calc_observables(const model &m)
+	pass_micromegas_slha_data(*m);
+	calc_observables(m);
+
+	return 0;
+}
+
+void micromegas_driver::calc_observables(model *m)
 {
 	int err=1;
 	
 	char wimpName[10];
 	err=sortOddParticles(wimpName);
 	if(err) { 
-		return error_str;
+		return ;
 	}
 	
 	double vdrho, vgmuon, vbsgnlo, vbsmumu, vbtaunu;
@@ -73,7 +87,8 @@ string micromegas_driver::calc_observables(const model &m)
 
 	if (0 != nucleonAmplitudes(FeScLoop, pA0,pA5,nA0,nA5))
 	{
-		return error_str;
+		// return error_str;
+		throw(runtime_error("MicrOMEGAs Error: Could not compute nucleonAmplitudes()"));
 	}
 	SCcoeff=4/M_PI*3.8937966E8*pow(Nmass*Mcdm/(Nmass+ Mcdm),2.);
 	
@@ -85,7 +100,7 @@ string micromegas_driver::calc_observables(const model &m)
 	NeutronSD = 3*SCcoeff*nA5[0]*nA5[0];
 	
 	////////////////// Output //////////////////
-
+#if 0
 	ostringstream oss;
 
 	oss.setf(ios::scientific);
@@ -104,119 +119,146 @@ string micromegas_driver::calc_observables(const model &m)
 		<< NeutronSD;
 	
 	return oss.str();
+#else
+	m->set_observable(susy_dict::observable::micro_valid_bit, 1.0);
+
+
+// i hate everything.
+#undef gmuon
+#undef bsgnlo 
+#undef bsmumu
+#undef btaunu
+
+	m->set_observable(susy_dict::observable::delta_rho, vdrho);
+	m->set_observable(susy_dict::observable::gmuon, vgmuon);
+	m->set_observable(susy_dict::observable::bsgnlo, vbsgnlo);
+	m->set_observable(susy_dict::observable::bsmumu, vbsmumu);
+	m->set_observable(susy_dict::observable::btaunu, vbtaunu);
+	m->set_observable(susy_dict::observable::omega, Omega);
+	m->set_observable(susy_dict::observable::proton_SI, ProtonSI);
+	m->set_observable(susy_dict::observable::proton_SD, ProtonSD);
+	m->set_observable(susy_dict::observable::neutron_SI, NeutronSI);
+	m->set_observable(susy_dict::observable::neutron_SD, NeutronSD);
+
+#define gmuon gmuon_
+#define bsgnlo bsgnlo_
+#define bsmumu bsmumu_ 
+#define btaunu btaunu_
+
+#endif
 }
 
 void micromegas_driver::pass_micromegas_slha_data(const model &m)
 {
-  assignValW("MH3",m.get_datum(susy_dict::m_A0));
-  assignValW("Mh",m.get_datum(susy_dict::m_h0));
-  assignValW("MHH",m.get_datum(susy_dict::m_H0));
-  assignValW("MHc",m.get_datum(susy_dict::m_Hpm));
-  assignValW("MNE1",m.get_datum(susy_dict::m_o1));
-  assignValW("MNE2",m.get_datum(susy_dict::m_o2));
-  assignValW("MNE3",m.get_datum(susy_dict::m_o3));
-  assignValW("MNE4",m.get_datum(susy_dict::m_o4));
-  assignValW("MC1",m.get_datum(susy_dict::m_1pm));
-  assignValW("MC2",m.get_datum(susy_dict::m_2pm));
-  assignValW("MSG",m.get_datum(susy_dict::m_g));
-  assignValW("MSne",m.get_datum(susy_dict::m_nue_l));
-  assignValW("MSnm",m.get_datum(susy_dict::m_numu_l));
-  assignValW("MSnl",m.get_datum(susy_dict::m_nu_tau_l));
-  assignValW("MSeL",m.get_datum(susy_dict::m_e_l));
-  assignValW("MSeR",m.get_datum(susy_dict::m_e_r));
-  assignValW("MSmL",m.get_datum(susy_dict::m_mu_l));
-  assignValW("MSmR",m.get_datum(susy_dict::m_mu_r));
-  assignValW("MSl1",m.get_datum(susy_dict::m_stau_1));
-  assignValW("MSl2",m.get_datum(susy_dict::m_stau_2));
-  assignValW("MSdL",m.get_datum(susy_dict::m_d_l));
-  assignValW("MSdR",m.get_datum(susy_dict::m_d_r));
-  assignValW("MSuL",m.get_datum(susy_dict::m_u_l));
-  assignValW("MSuR",m.get_datum(susy_dict::m_u_r));
-  assignValW("MSsL",m.get_datum(susy_dict::m_s_l));
-  assignValW("MSsR",m.get_datum(susy_dict::m_s_r));
-  assignValW("MScL",m.get_datum(susy_dict::m_c_l));
-  assignValW("MScR",m.get_datum(susy_dict::m_c_r));
-  assignValW("MSb1",m.get_datum(susy_dict::m_b_1));
-  assignValW("MSb2",m.get_datum(susy_dict::m_b_2));
-  assignValW("MSt1",m.get_datum(susy_dict::m_t_1));
-  assignValW("MSt2",m.get_datum(susy_dict::m_t_2));
+  assignValW( const_cast<char *>("MH3"), m.get_datum(susy_dict::m_A0));
+  assignValW( const_cast<char *>("Mh"), m.get_datum(susy_dict::m_h0));
+  assignValW( const_cast<char *>("MHH"), m.get_datum(susy_dict::m_H0));
+  assignValW( const_cast<char *>("MHc"), m.get_datum(susy_dict::m_Hpm));
+  assignValW( const_cast<char *>("MNE1"), m.get_datum(susy_dict::m_o1));
+  assignValW( const_cast<char *>("MNE2"), m.get_datum(susy_dict::m_o2));
+  assignValW( const_cast<char *>("MNE3"), m.get_datum(susy_dict::m_o3));
+  assignValW( const_cast<char *>("MNE4"), m.get_datum(susy_dict::m_o4));
+  assignValW( const_cast<char *>("MC1"), m.get_datum(susy_dict::m_1pm));
+  assignValW( const_cast<char *>("MC2"), m.get_datum(susy_dict::m_2pm));
+  assignValW( const_cast<char *>("MSG"), m.get_datum(susy_dict::m_g));
+  assignValW( const_cast<char *>("MSne"), m.get_datum(susy_dict::m_nue_l));
+  assignValW( const_cast<char *>("MSnm"), m.get_datum(susy_dict::m_numu_l));
+  assignValW( const_cast<char *>("MSnl"), m.get_datum(susy_dict::m_nu_tau_l));
+  assignValW( const_cast<char *>("MSeL"), m.get_datum(susy_dict::m_e_l));
+  assignValW( const_cast<char *>("MSeR"), m.get_datum(susy_dict::m_e_r));
+  assignValW( const_cast<char *>("MSmL"), m.get_datum(susy_dict::m_mu_l));
+  assignValW( const_cast<char *>("MSmR"), m.get_datum(susy_dict::m_mu_r));
+  assignValW( const_cast<char *>("MSl1"), m.get_datum(susy_dict::m_stau_1));
+  assignValW( const_cast<char *>("MSl2"), m.get_datum(susy_dict::m_stau_2));
+  assignValW( const_cast<char *>("MSdL"), m.get_datum(susy_dict::m_d_l));
+  assignValW( const_cast<char *>("MSdR"), m.get_datum(susy_dict::m_d_r));
+  assignValW( const_cast<char *>("MSuL"), m.get_datum(susy_dict::m_u_l));
+  assignValW( const_cast<char *>("MSuR"), m.get_datum(susy_dict::m_u_r));
+  assignValW( const_cast<char *>("MSsL"), m.get_datum(susy_dict::m_s_l));
+  assignValW( const_cast<char *>("MSsR"), m.get_datum(susy_dict::m_s_r));
+  assignValW( const_cast<char *>("MScL"), m.get_datum(susy_dict::m_c_l));
+  assignValW( const_cast<char *>("MScR"), m.get_datum(susy_dict::m_c_r));
+  assignValW( const_cast<char *>("MSb1"), m.get_datum(susy_dict::m_b_1));
+  assignValW( const_cast<char *>("MSb2"), m.get_datum(susy_dict::m_b_2));
+  assignValW( const_cast<char *>("MSt1"), m.get_datum(susy_dict::m_t_1));
+  assignValW( const_cast<char *>("MSt2"), m.get_datum(susy_dict::m_t_2));
 
 //  Q=sqrt(fabs(findValW("MSt1")*findValW("MSt2")));
 
-  assignValW("Zn11",m.get_datum(susy_dict::nmix_11));
-  assignValW("Zn12",m.get_datum(susy_dict::nmix_12));
-  assignValW("Zn13",m.get_datum(susy_dict::nmix_13));
-  assignValW("Zn14",m.get_datum(susy_dict::nmix_14));
-  assignValW("Zn21",m.get_datum(susy_dict::nmix_21));
-  assignValW("Zn22",m.get_datum(susy_dict::nmix_22));
-  assignValW("Zn23",m.get_datum(susy_dict::nmix_23));
-  assignValW("Zn24",m.get_datum(susy_dict::nmix_24));
-  assignValW("Zn31",m.get_datum(susy_dict::nmix_31));
-  assignValW("Zn32",m.get_datum(susy_dict::nmix_32));
-  assignValW("Zn33",m.get_datum(susy_dict::nmix_33));
-  assignValW("Zn34",m.get_datum(susy_dict::nmix_34));
-  assignValW("Zn41",m.get_datum(susy_dict::nmix_41));
-  assignValW("Zn42",m.get_datum(susy_dict::nmix_42));
-  assignValW("Zn43",m.get_datum(susy_dict::nmix_43));
-  assignValW("Zn44",m.get_datum(susy_dict::nmix_44));
+  assignValW( const_cast<char *>("Zn11"), m.get_datum(susy_dict::nmix_11));
+  assignValW( const_cast<char *>("Zn12"), m.get_datum(susy_dict::nmix_12));
+  assignValW( const_cast<char *>("Zn13"), m.get_datum(susy_dict::nmix_13));
+  assignValW( const_cast<char *>("Zn14"), m.get_datum(susy_dict::nmix_14));
+  assignValW( const_cast<char *>("Zn21"), m.get_datum(susy_dict::nmix_21));
+  assignValW( const_cast<char *>("Zn22"), m.get_datum(susy_dict::nmix_22));
+  assignValW( const_cast<char *>("Zn23"), m.get_datum(susy_dict::nmix_23));
+  assignValW( const_cast<char *>("Zn24"), m.get_datum(susy_dict::nmix_24));
+  assignValW( const_cast<char *>("Zn31"), m.get_datum(susy_dict::nmix_31));
+  assignValW( const_cast<char *>("Zn32"), m.get_datum(susy_dict::nmix_32));
+  assignValW( const_cast<char *>("Zn33"), m.get_datum(susy_dict::nmix_33));
+  assignValW( const_cast<char *>("Zn34"), m.get_datum(susy_dict::nmix_34));
+  assignValW( const_cast<char *>("Zn41"), m.get_datum(susy_dict::nmix_41));
+  assignValW( const_cast<char *>("Zn42"), m.get_datum(susy_dict::nmix_42));
+  assignValW( const_cast<char *>("Zn43"), m.get_datum(susy_dict::nmix_43));
+  assignValW( const_cast<char *>("Zn44"), m.get_datum(susy_dict::nmix_44));
 
-  assignValW("Zu11",m.get_datum(susy_dict::umix_11));
-  assignValW("Zu12",m.get_datum(susy_dict::umix_12));
-  assignValW("Zu21",m.get_datum(susy_dict::umix_21));
-  assignValW("Zu22",m.get_datum(susy_dict::umix_22));
+  assignValW( const_cast<char *>("Zu11"), m.get_datum(susy_dict::umix_11));
+  assignValW( const_cast<char *>("Zu12"), m.get_datum(susy_dict::umix_12));
+  assignValW( const_cast<char *>("Zu21"), m.get_datum(susy_dict::umix_21));
+  assignValW( const_cast<char *>("Zu22"), m.get_datum(susy_dict::umix_22));
 
-  assignValW("Zv11",m.get_datum(susy_dict::vmix_11));
-  assignValW("Zv12",m.get_datum(susy_dict::vmix_12));
-  assignValW("Zv21",m.get_datum(susy_dict::vmix_21));
-  assignValW("Zv22",m.get_datum(susy_dict::vmix_22));
+  assignValW( const_cast<char *>("Zv11"), m.get_datum(susy_dict::vmix_11));
+  assignValW( const_cast<char *>("Zv12"), m.get_datum(susy_dict::vmix_12));
+  assignValW( const_cast<char *>("Zv21"), m.get_datum(susy_dict::vmix_21));
+  assignValW( const_cast<char *>("Zv22"), m.get_datum(susy_dict::vmix_22));
 
-  assignValW("Zb11", m.get_datum(susy_dict::sbotmix_11));
-  assignValW("Zb12", m.get_datum(susy_dict::sbotmix_12));
+  assignValW( const_cast<char *>("Zb11"),  m.get_datum(susy_dict::sbotmix_11));
+  assignValW( const_cast<char *>("Zb12"),  m.get_datum(susy_dict::sbotmix_12));
   #if 0
-    assignValW("Zb21", m.get_datum(susy_dict::sbotmix_21));
-    assignValW("Zb22", m.get_datum(susy_dict::sbotmix_22));
+    assignValW( const_cast<char *>("Zb21"),  m.get_datum(susy_dict::sbotmix_21));
+    assignValW( const_cast<char *>("Zb22"),  m.get_datum(susy_dict::sbotmix_22));
   #else
-    assignValW("Zb21", -m.get_datum(susy_dict::sbotmix_12));
-    assignValW("Zb22", m.get_datum(susy_dict::sbotmix_11));
+    assignValW( const_cast<char *>("Zb21"),  -m.get_datum(susy_dict::sbotmix_12));
+    assignValW( const_cast<char *>("Zb22"),  m.get_datum(susy_dict::sbotmix_11));
   #endif
 
-  assignValW("Zt11", m.get_datum(susy_dict::stopmix_11));
-  assignValW("Zt12", m.get_datum(susy_dict::stopmix_12));
+  assignValW( const_cast<char *>("Zt11"),  m.get_datum(susy_dict::stopmix_11));
+  assignValW( const_cast<char *>("Zt12"),  m.get_datum(susy_dict::stopmix_12));
   #if 0
-    assignValW("Zt21", m.get_datum(susy_dict::stopmix_21));
-    assignValW("Zt22", m.get_datum(susy_dict::stopmix_22));
+    assignValW( const_cast<char *>("Zt21"),  m.get_datum(susy_dict::stopmix_21));
+    assignValW( const_cast<char *>("Zt22"),  m.get_datum(susy_dict::stopmix_22));
   #else
-    assignValW("Zt21", -m.get_datum(susy_dict::stopmix_12));
-    assignValW("Zt22", m.get_datum(susy_dict::stopmix_11));
+    assignValW( const_cast<char *>("Zt21"),  -m.get_datum(susy_dict::stopmix_12));
+    assignValW( const_cast<char *>("Zt22"),  m.get_datum(susy_dict::stopmix_11));
   #endif
 
-  assignValW("Zl11", m.get_datum(susy_dict::staumix_11));
-  assignValW("Zl12", m.get_datum(susy_dict::staumix_12));
+  assignValW( const_cast<char *>("Zl11"),  m.get_datum(susy_dict::staumix_11));
+  assignValW( const_cast<char *>("Zl12"),  m.get_datum(susy_dict::staumix_12));
   #if 0
-    assignValW("Zl21", m.get_datum(susy_dict::staumix_21));
-    assignValW("Zl22", m.get_datum(susy_dict::staumix_22));
+    assignValW( const_cast<char *>("Zl21"),  m.get_datum(susy_dict::staumix_21));
+    assignValW( const_cast<char *>("Zl22"),  m.get_datum(susy_dict::staumix_22));
   #else
-    assignValW("Zl21", -m.get_datum(susy_dict::staumix_12));
-    assignValW("Zl22", m.get_datum(susy_dict::staumix_11));
+    assignValW( const_cast<char *>("Zl21"),  -m.get_datum(susy_dict::staumix_12));
+    assignValW( const_cast<char *>("Zl22"),  m.get_datum(susy_dict::staumix_11));
   #endif
 
-  assignValW("alpha", m.get_datum(susy_dict::higgs_alpha));
+  assignValW( const_cast<char *>("alpha"),  m.get_datum(susy_dict::higgs_alpha));
 
-  assignValW("tb", m.get_datum(susy_dict::tb));
+  assignValW( const_cast<char *>("tb"),  m.get_datum(susy_dict::tb));
 
-  assignValW("mu", m.get_datum(susy_dict::hmix_mu));
+  assignValW( const_cast<char *>("mu"),  m.get_datum(susy_dict::hmix_mu));
 
-  assignValW("Am", m.get_datum(susy_dict::amu_q));
-  assignValW("Al", m.get_datum(susy_dict::atau_q));
-  assignValW("Ab", m.get_datum(susy_dict::ab_q));
-  assignValW("Ad", m.get_datum(susy_dict::as_q));
-  assignValW("At", m.get_datum(susy_dict::at_q));
-  assignValW("Au", m.get_datum(susy_dict::au_q));
+  assignValW( const_cast<char *>("Am"),  m.get_datum(susy_dict::amu_q));
+  assignValW( const_cast<char *>("Al"),  m.get_datum(susy_dict::atau_q));
+  assignValW( const_cast<char *>("Ab"),  m.get_datum(susy_dict::ab_q));
+  assignValW( const_cast<char *>("Ad"),  m.get_datum(susy_dict::as_q));
+  assignValW( const_cast<char *>("At"),  m.get_datum(susy_dict::at_q));
+  assignValW( const_cast<char *>("Au"),  m.get_datum(susy_dict::au_q));
 
   if ( (m.get_datum(susy_dict::m1_q) > 0) && (m.get_datum(susy_dict::m2_q) > 0))
   {
-    assignValW("MG1", m.get_datum(susy_dict::m1_q));
-    assignValW("MG2", m.get_datum(susy_dict::m2_q));
+    assignValW( const_cast<char *>("MG1"),  m.get_datum(susy_dict::m1_q));
+    assignValW( const_cast<char *>("MG2"),  m.get_datum(susy_dict::m2_q));
   }
   else  // this is an adaptation of CheckNCSector() in rdLesH.o in aLib.a
   {
@@ -231,18 +273,19 @@ void micromegas_driver::pass_micromegas_slha_data(const model &m)
       + m.get_datum(susy_dict::nmix_23)*m.get_datum(susy_dict::m_o3)*m.get_datum(susy_dict::nmix_23)
       + m.get_datum(susy_dict::nmix_24)*m.get_datum(susy_dict::m_o4)*m.get_datum(susy_dict::nmix_24);
 
-    assignValW("MG1",mg1);
-    assignValW("MG2",mg2);
+    assignValW( const_cast<char *>("MG1"), mg1);
+    assignValW( const_cast<char *>("MG2"), mg2);
   }
 
-  assignValW("alfSMZ", m.get_datum(susy_dict::alpha_s));
-  assignValW("MbMb", m.get_datum(susy_dict::m_b));
-  assignValW("Mtp", m.get_datum(susy_dict::m_top));
-  assignValW("Ml", m.get_datum(susy_dict::m_tau));
+  assignValW( const_cast<char *>("alfSMZ"),  m.get_datum(susy_dict::alpha_s));
+  assignValW( const_cast<char *>("MbMb"),  m.get_datum(susy_dict::m_b));
+  assignValW( const_cast<char *>("Mtp"),  m.get_datum(susy_dict::m_top));
+  assignValW( const_cast<char *>("Ml"),  m.get_datum(susy_dict::m_tau));
 
-  assignValW("dMb",deltaMb());
-  assignValW("dMs",deltaMs());
-  assignValW("dMd",deltaMd());    
+  assignValW( const_cast<char *>("dMb"), deltaMb());
+  assignValW( const_cast<char *>("dMs"), deltaMs());
+  assignValW( const_cast<char *>("dMd"), deltaMd());    
+
 }
 
 

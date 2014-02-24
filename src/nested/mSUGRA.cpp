@@ -18,9 +18,9 @@ namespace multinest_options
 	int nlive = 20000;				// number of live points
 	double efr = 0.8;				// set the required efficiency
 	double tol = 1e-4;				// tol, defines the stopping criteria
-	const int ndims = 10;				// dimensionality (no. of free parameters)
-	int nPar = ndims + (susy_dict::NUSUGRA_row.size()-1) + susy_dict::observable::observe_row.size();	// total no. of parameters including free & derived parameters
-	int nClsPar = 6;				// no. of parameters to do mode separation on
+	const int ndims = 8;				// dimensionality (no. of free parameters)
+	int nPar = ndims + (susy_dict::mSUGRA_row.size()-1) + susy_dict::observable::observe_row.size();	// total no. of parameters including free & derived parameters
+	int nClsPar = 4;				// no. of parameters to do mode separation on
 	int updInt = 2000;				// after how many iterations feedback is required & the output files should be updated
 							// note: posterior files are updated & dumper routine is called after every updInt*10 iterations
 	double Ztol = logZero;				// all the modes with logZ < Ztol are ignored
@@ -75,7 +75,7 @@ int main(int argc, char**argv)
 	for(int i = 0; i < multinest_options::ndims; i++) multinest_options::pWrap[i] = 0;
 	strcpy(multinest_options::root, full_root.c_str());
 
-	std::forward_list<int> inputs = {31, 1, 2, 3, 11}; // m0, m1, m2, m3, a0
+	std::forward_list<int> inputs = {1, 2, 3}; // m0, mhf, a0
 
 	multinest_options::context = static_cast<void*>(&inputs);
 
@@ -117,11 +117,9 @@ void dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **po
 void init_priors()
 {
 	prior_list = {
-		make_shared<priors::log> (1.0, 3.0), // m0  // these will be < 1 TeV
-		make_shared<priors::log> (1.0, 3.0), // m1
-		make_shared<priors::log> (1.0, 3.0), // m2
-		make_shared<priors::log> (2.7, 4.7), // m3 // start gluino mass > 500 GeV
-		make_shared<priors::linear> (-50e3, 50e3), // a0
+		make_shared<priors::log> (1.0, 3.7), // m0 
+		make_shared<priors::log> (2.7, 3.5), // mhf
+		make_shared<priors::linear> (-10.0, 10.0), // a0/m0
 		make_shared<priors::linear> (2.0, 62.0), // tb
 
 		make_shared<priors::linear> (173.07 - 2*0.789, 173.07 + 2*0.789), // mtop(pole)
@@ -160,10 +158,8 @@ std::unique_ptr<softsusy_opts> map_cube_to_opts(double *cube)
 
 	// main params
 	const double * const m0 = &cube[cube_index++];
-	const double * const m1 = &cube[cube_index++];
-	const double * const m2 = &cube[cube_index++];
-	const double * const m3 = &cube[cube_index++];
-	const double * const a0 = &cube[cube_index++];
+	const double * const mhf = &cube[cube_index++];
+	const double * const a0_by_m0 = &cube[cube_index++];
 	const double * const tb = &cube[cube_index++];
 
 	// nuisance params
@@ -172,29 +168,12 @@ std::unique_ptr<softsusy_opts> map_cube_to_opts(double *cube)
 	const double * const alpha_s = &cube[cube_index++];
 	const double * const alpha_em_inv= &cube[cube_index++];
 
-	// build pars
-	DoubleVector pars(49);
+	// mSUGRA
+	DoubleVector pars(3);
 
-	// gauginos
-	pars(1) = *m1;
-	pars(2) = *m2;
-	pars(3) = *m3;
-
-	// trilinear couplings
-	pars(11) = *a0;
-	pars(12) = *a0;
-	pars(13) = *a0;
-
-	// Higgs field mass^2
-	pars(21) = (*m0) * abs(*m0);
-	pars(22) = (*m0) * abs(*m0);
-
-	// sfermions
-	for (int slepton = 31; slepton <= 36; slepton++)
-		pars(slepton) = *m0;
-
-	for (int squark = 41; squark <= 49; squark++)
-		pars(squark) = *m0;
+	pars(1) = *m0;
+	pars(2) = *mhf;
+	pars(3) = (*a0_by_m0) * (*m0);
 
 	point->set_pars(pars);
 	point->set_tb(*tb);

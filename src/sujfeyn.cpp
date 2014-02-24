@@ -6,11 +6,21 @@
 #include <sstream>
 #include <cmath>
 
-#include "src/include/ftypes.h"
+#include <stdexcept>
+
+//#include "src/include/ftypes.h"
 #include "src/include/RecordIndices.h"
 #include "src/include/CFeynHiggs.h.in"
 #include "src/include/FHCouplings.h"
 #include "src/include/SLHADefs.h"
+
+#if defined(nslhadata)
+  #if nslhadata != FH_SLHAData_len
+    #error FeynHiggs has changed nslhadata macro
+  #endif
+#else
+  #error FeynHiggs does not have nslhadata macro
+#endif
 
 #if 0
 #include "src/include/CSLHA.h.in"
@@ -40,7 +50,7 @@ static inline void SLHAWrite(int *error,
 // that have matrix elements listed. just pass it 
 // the literal root of the matrix variables, and 
 // then two literal integers for the row/col
-#define matblock(name,i,j) m.get_datum( name ## _ ## i ## j )
+#define matblock(name,i,j) m->get_datum( name ## _ ## i ## j )
 
 using namespace std;
 using namespace susy_dict;
@@ -55,10 +65,10 @@ feynhiggs_driver::feynhiggs_driver()
 	run_mt(1),			// run mt
 	bottom_resum(1),		// resum corrections O(tb^n)
 	two_loop_complex_approx(0),	// all corrections
-	debug_level(10),		// 10 = all; 0 = none
+	debug_level(0),		// 10 = all; 0 = none
 	fh_error_state(0)
 {
-	cerr << "Sujeet, initializing FeynHiggs..." << flush;
+//	cerr << "Sujeet, initializing FeynHiggs..." << flush;
 	FORTRAN(fhsetflags)(&fh_error_state,
 				&mssm_scope,
 				&field_renorm,
@@ -69,42 +79,9 @@ feynhiggs_driver::feynhiggs_driver()
 				&run_mt,
 				&bottom_resum,
 				&two_loop_complex_approx	);
-	cerr << " Done!" << endl;
+//	cerr << " Done!" << endl;
 
 	FORTRAN(fhsetdebug)(&debug_level);
-
-	if (fh_error_state != 0)
-	{
-		cerr << "Error initializing FeynHiggs: fh_error_state=" << fh_error_state << endl;
-	}
-}
-
-void feynhiggs_driver::operator() (const model &m)
-{
-#undef invalid // holy crap, FeynHiggs, prefix your macros!
-	if (m.get_model_type() == model::invalid)
-	{
-		return;
-	}
-#define invalid (-999)
-	pass_feynhiggs_slha_data(m);
-//	calc_observables(m);
-	return;
-}
-
-void feynhiggs_driver::calc_observables(const model &m)
-{
-	REAL bsgMSSM, bsgSM, deltaMsMSSM, deltaMSSM, bsmumuMSSM, bsmumuSM;
-	FORTRAN(fhflavour)(&fh_error_state, &bsgMSSM, &bsgSM, &deltaMsMSSM, &deltaMSSM, &bsmumuMSSM, &bsmumuSM);
-//	FORTRAN(fhoutput)(&fh_error_state, "test.fh", &key, &sqrts, fnlen);
-
-	return;
-}
-
-void feynhiggs_driver::pass_feynhiggs_slha_data(const model &m)
-{
-	COMPLEX slha[nslhadata]; 	// COMPLEX is defined in ftypes.h
-					// nslhadata is defined in SLHADefs.h
 
 	// the slha array will be populated using macros defined in SLHADefs.h
 	// these macros map to Slhadata(i) which i have defined as a macro above
@@ -112,97 +89,223 @@ void feynhiggs_driver::pass_feynhiggs_slha_data(const model &m)
 
 	FORTRAN(slhaclear)(slha);
 
+	if (fh_error_state != 0)
+	{
+		cerr << "Error initializing FeynHiggs: fh_error_state=" << fh_error_state << endl;
+	}
+}
+
+void feynhiggs_driver::operator() (model *m)
+{
+#undef invalid // holy crap, FeynHiggs, prefix your macros!
+	if (m->get_model_type() == model::invalid)
+	{
+		return;
+	}
+#define invalid (-999)
+	pass_feynhiggs_slha_data(m);
+	calc_observables(m);
+	return;
+}
+
+void feynhiggs_driver::calc_observables(model *m)
+{
+	REAL bsgMSSM, bsgSM, deltaMsMSSM, deltaMSSM, bsmumuMSSM, bsmumuSM;
+	REAL gm2, Deltarho, MWMSSM, MWSM, SW2MSSM, SW2SM, edmeTh, edmn, edmHg;
+	INTEGER ccb;
+
+	REAL MHiggs[4];
+	COMPLEX SAeff;
+	COMPLEX UHiggs[3*3], ZHiggs[3*3];
+
+	// these names have to match the stupid macros in CFeynHiggs.h.in and FHCouplings.h
+	COMPLEX couplings[ncouplings], couplingsms[ncouplingsms];
+	REAL gammas[ngammas], gammasms[ngammasms];
+	INTEGER fast = 1;
+
+	if (nullptr == m)
+	{
+		cerr << "Null pointer to model! (bad) " << endl;
+		return;
+	}
+
+	m->set_observable(susy_dict::observable::fh_valid_bit, 0.0);
+
+	FORTRAN(fhflavour)(&fh_error_state, &bsgMSSM, &bsgSM, &deltaMsMSSM, &deltaMSSM, &bsmumuMSSM, &bsmumuSM);
+	if (fh_error_state) throw(runtime_error("FeynHiggs Error: Could not compute fhflavour()"));
+
+	FORTRAN(fhconstraints)(&fh_error_state, &gm2, &Deltarho, &MWMSSM, &MWSM, &SW2MSSM, &SW2SM, &edmeTh, &edmn, &edmHg, &ccb);
+	if (fh_error_state) throw(runtime_error("FeynHiggs Error: Could not compute fhconstraints()"));
+
+	FORTRAN(fhhiggscorr)(&fh_error_state, MHiggs, &SAeff, UHiggs, ZHiggs);
+	if (fh_error_state) throw(runtime_error("FeynHiggs Error: Could not compute fhhiggscorr()"));
+
+	FORTRAN(fhcouplings)(&fh_error_state, couplings, couplingsms, gammas, gammasms, &fast);
+	if (fh_error_state) throw(runtime_error("FeynHiggs Error: Could not compute fhcouplings()"));
+
+
+#if 0
+	cout 	<< endl << endl
+		<< "Flavour" << endl
+		<< "b->sg:\t"		<< bsgMSSM << endl
+		<< "delta Ms:\t"	<< deltaMsMSSM << endl
+		<< "bs->mu+mu-:\t"	<< bsmumuMSSM << endl
+		<< endl
+		<< "Constraints" << endl
+		<< "g-2:\t" 		<< gm2 << endl
+		<< "Delta rho:\t"	<< Deltarho << endl
+		<< "MW:\t"		<< MWMSSM << endl
+		<< "sin^2(thetaw):\t"	<< SW2MSSM << endl
+		<< "edmeTh:\t"		<< edmeTh << endl
+		<< "edmn:\t"		<< edmn << endl
+		<< "edmHg:\t"		<< edmHg << endl
+		<< "ccb:\t"		<< ccb << endl
+		<< endl
+		<< "FeynHiggs Higgs" << endl
+		<< "sin(alpha):\t"	<< SAeff.re << endl
+		<< "mh:\t"		<< MHiggs[0] << endl
+		<< "mH:\t"		<< MHiggs[1] << endl
+		<< "mA:\t"		<< MHiggs[2] << endl
+		<< "mHpm:\t"		<< MHiggs[3] << endl
+		<< endl
+		<< "SOFTSUSY Higgs" << endl
+		<< "sin(alpha):\t"	<< m->get_datum(higgs_alpha) << endl
+		<< "mh:\t"		<< m->get_datum(m_h0) << endl
+		<< "mH:\t"		<< m->get_datum(m_H0) << endl
+		<< "mA:\t"		<< m->get_datum(m_A0) << endl
+		<< "mHpm:\t"		<< m->get_datum(m_Hpm) << endl
+		<< endl;
+#endif
+	
+	m->set_observable(susy_dict::observable::fh_valid_bit, 1.0);
+	
+	m->set_observable(susy_dict::observable::mw_mssm, MWMSSM);
+	m->set_observable(susy_dict::observable::sw2_mssm, SW2MSSM);
+	m->set_observable(susy_dict::observable::edmeTh, edmeTh);
+	m->set_observable(susy_dict::observable::edmn, edmn);
+	m->set_observable(susy_dict::observable::edmHg, edmHg);
+	m->set_observable(susy_dict::observable::deltaMs_mssm, deltaMsMSSM);
+
+	m->set_observable(susy_dict::observable::width_h0, GammaTot(1));
+	m->set_observable(susy_dict::observable::width_H0, GammaTot(2));
+	m->set_observable(susy_dict::observable::width_A0, GammaTot(3));
+	m->set_observable(susy_dict::observable::width_Hpm, GammaTot(4));
+
+	m->set_datum(susy_dict::higgs_alpha, SAeff.re);
+	m->set_datum(susy_dict::m_h0, MHiggs[0]);
+	m->set_datum(susy_dict::m_H0, MHiggs[1]);
+	m->set_datum(susy_dict::m_A0, MHiggs[2]);
+	m->set_datum(susy_dict::m_Hpm, MHiggs[3]);
+
+	return;
+}
+
+void feynhiggs_driver::pass_feynhiggs_slha_data(const model *m)
+{
+#if 0
+	// this is now done in the constructor
+	COMPLEX slha[nslhadata]; 	// COMPLEX is defined in ftypes.h
+					// nslhadata is defined in SLHADefs.h
+
+	// the slha array will be populated using macros defined in SLHADefs.h
+	// these macros map to Slhadata(i) which i have defined as a macro above
+	// the -1 in the macro definition is to get the C array indexing
+
+#endif
+
+	FORTRAN(slhaclear)(slha);
+
 	// sminputs
 
-	SMInputs_invAlfaMZ.re = m.get_datum(alpha_em_inv);
-	SMInputs_GF.re = m.get_datum(g_fermi);
-	SMInputs_AlfasMZ.re = m.get_datum(alpha_s);
-	SMInputs_MZ.re = m.get_datum(m_z);
-	SMInputs_Mb.re = m.get_datum(m_b);
-	SMInputs_Mt.re = m.get_datum(m_top);
-	SMInputs_Mtau.re = m.get_datum(m_tau);
+	SMInputs_invAlfaMZ.re = m->get_datum(alpha_em_inv);
+	SMInputs_GF.re = m->get_datum(g_fermi);
+	SMInputs_AlfasMZ.re = m->get_datum(alpha_s);
+	SMInputs_MZ.re = m->get_datum(m_z);
+	SMInputs_Mb.re = m->get_datum(m_b);
+	SMInputs_Mt.re = m->get_datum(m_top);
+	SMInputs_Mtau.re = m->get_datum(m_tau);
 
 	// minpar
 
-	if (m.get_model_type() == model::mSUGRA)
+	if (m->get_model_type() == model::mSUGRA)
 	{
-		MinPar_M0.re = m.get_datum(m0);
-		MinPar_M12.re = m.get_datum(mhf);
-		MinPar_A.re = m.get_datum(a0);
+		MinPar_M0.re = m->get_datum(m0);
+		MinPar_M12.re = m->get_datum(mhf);
+		MinPar_A.re = m->get_datum(a0);
 	}
-	MinPar_TB.re = m.get_datum(tb);
-	MinPar_signMUE.re = m.get_datum(sgnmu);
+	MinPar_TB.re = m->get_datum(tb);
+	MinPar_signMUE.re = m->get_datum(sgnmu);
 
 	// extpar
-	ExtPar_Q.re = m.get_datum(mGUT); // looks like we always need this
+	ExtPar_Q.re = m->get_datum(mGUT); // looks like we always need this
 
-	if (m.get_model_type() != model::mSUGRA)
+	if (m->get_model_type() != model::mSUGRA)
 	{
-//		ExtPar_Q.re = m.get_datum(hmix_q); // this is the first Q that comes to mind
-		ExtPar_M1.re = m.get_datum(m1_X);
-		ExtPar_M2.re = m.get_datum(m2_X);
-		ExtPar_M3.re = m.get_datum(m3_X);
-		ExtPar_At.re = m.get_datum(at_X);
-		ExtPar_Ab.re = m.get_datum(ab_X);
-		ExtPar_Atau.re = m.get_datum(atau_X);
-		ExtPar_MHd2.re = m.get_datum(m_h1sq_X);
-		ExtPar_MHu2.re = m.get_datum(m_h2sq_X);
-		ExtPar_MSL(1).re = m.get_datum(m_e_l_X); // MSL(i) is L-slepton, gen i
-		ExtPar_MSL(2).re = m.get_datum(m_mu_l_X);
-		ExtPar_MSL(3).re = m.get_datum(m_tau_l_X);
-		ExtPar_MSE(1).re = m.get_datum(m_e_r_X); // MSE(i) is R-slepton, gen i
-		ExtPar_MSE(2).re = m.get_datum(m_mu_r_X);
-		ExtPar_MSE(3).re = m.get_datum(m_tau_r_X);
-		ExtPar_MSQ(1).re = m.get_datum(m_ql1_X); // MSQ(i) is L-squark, gen i
-		ExtPar_MSQ(2).re = m.get_datum(m_ql2_X);
-		ExtPar_MSQ(3).re = m.get_datum(m_ql3_X);
-		ExtPar_MSU(1).re = m.get_datum(m_u_r_X); // MSU(i) is R-up-type squark, gen i
-		ExtPar_MSU(2).re = m.get_datum(m_c_r_X);
-		ExtPar_MSU(3).re = m.get_datum(m_t_r_X);
-		ExtPar_MSD(1).re = m.get_datum(m_d_r_X); // MSU(i) is R-down-type squark, gen i
-		ExtPar_MSD(2).re = m.get_datum(m_s_r_X);
-		ExtPar_MSD(3).re = m.get_datum(m_b_r_X);
+		ExtPar_Q.re = m->get_datum(hmix_q); // this is the first Q that comes to mind
+		ExtPar_M1.re = m->get_datum(m1_X);
+		ExtPar_M2.re = m->get_datum(m2_X);
+		ExtPar_M3.re = m->get_datum(m3_X);
+		ExtPar_At.re = m->get_datum(at_X);
+		ExtPar_Ab.re = m->get_datum(ab_X);
+		ExtPar_Atau.re = m->get_datum(atau_X);
+		ExtPar_MHd2.re = m->get_datum(m_h1sq_X);
+		ExtPar_MHu2.re = m->get_datum(m_h2sq_X);
+		ExtPar_MSL(1).re = m->get_datum(m_e_l_X); // MSL(i) is L-slepton, gen i
+		ExtPar_MSL(2).re = m->get_datum(m_mu_l_X);
+		ExtPar_MSL(3).re = m->get_datum(m_tau_l_X);
+		ExtPar_MSE(1).re = m->get_datum(m_e_r_X); // MSE(i) is R-slepton, gen i
+		ExtPar_MSE(2).re = m->get_datum(m_mu_r_X);
+		ExtPar_MSE(3).re = m->get_datum(m_tau_r_X);
+		ExtPar_MSQ(1).re = m->get_datum(m_ql1_X); // MSQ(i) is L-squark, gen i
+		ExtPar_MSQ(2).re = m->get_datum(m_ql2_X);
+		ExtPar_MSQ(3).re = m->get_datum(m_ql3_X);
+		ExtPar_MSU(1).re = m->get_datum(m_u_r_X); // MSU(i) is R-up-type squark, gen i
+		ExtPar_MSU(2).re = m->get_datum(m_c_r_X);
+		ExtPar_MSU(3).re = m->get_datum(m_t_r_X);
+		ExtPar_MSD(1).re = m->get_datum(m_d_r_X); // MSU(i) is R-down-type squark, gen i
+		ExtPar_MSD(2).re = m->get_datum(m_s_r_X);
+		ExtPar_MSD(3).re = m->get_datum(m_b_r_X);
 	}
 
 	// mass
 
-	Mass_MW.re = m.get_datum(m_w);
-	Mass_Mh0.re = m.get_datum(m_h0);
-	Mass_MHH.re = m.get_datum(m_H0);
-	Mass_MA0.re = m.get_datum(m_A0);
-	Mass_MHp.re = m.get_datum(m_Hpm);
-	Mass_MGl.re = m.get_datum(m_g);
-	Mass_MNeu(1).re = m.get_datum(m_o1); // MNeu(i) is ith neutralino mass state
-	Mass_MNeu(2).re = m.get_datum(m_o2);
-	Mass_MCha(1).re = m.get_datum(m_1pm); // MCha(i) is ith chargino mass state
-	Mass_MNeu(3).re = m.get_datum(m_o3);
-	Mass_MNeu(4).re = m.get_datum(m_o4);
-	Mass_MCha(2).re = m.get_datum(m_2pm);
-	Mass_MSf(1,4,1).re = m.get_datum(m_d_l); // Mass_MSf(i,j,k) is the sfermion 
-	Mass_MSf(1,3,1).re = m.get_datum(m_u_l); // mass matrix. i=1,2 corresponds to 
-	Mass_MSf(1,4,2).re = m.get_datum(m_s_l); // mass state 1,2 or L,R w/o mixing
-	Mass_MSf(1,3,2).re = m.get_datum(m_c_l); // j is for family: j=1 is sneutrinos
-	Mass_MSf(1,4,3).re = m.get_datum(m_b_1); // j=2 is sleptons, j=3 is up-squarks
-	Mass_MSf(1,3,3).re = m.get_datum(m_t_1); // j=4 is down-squarks. k is for generation
-	Mass_MSf(1,2,1).re = m.get_datum(m_e_l); // thus m_d_l has i=1, j=4, k=1.
-	Mass_MSf(1,1,1).re = m.get_datum(m_nue_l);
-	Mass_MSf(1,2,2).re = m.get_datum(m_mu_l);
-	Mass_MSf(1,1,2).re = m.get_datum(m_numu_l);	// some results:
-	Mass_MSf(1,2,3).re = m.get_datum(m_stau_1);	// L-u's are (1,3,k)
-	Mass_MSf(1,1,3).re = m.get_datum(m_nu_tau_l);   // L-d's are (1,4,k)
-	Mass_MSf(2,4,1).re = m.get_datum(m_d_r);	// L-l's are (1,2,k)
-	Mass_MSf(2,3,1).re = m.get_datum(m_u_r);	// nu's are (1,1,k)
-	Mass_MSf(2,4,2).re = m.get_datum(m_s_r);
-	Mass_MSf(2,3,2).re = m.get_datum(m_c_r);	// R-u's are (2,3,k)
-	Mass_MSf(2,4,3).re = m.get_datum(m_b_2);	// R-d's are (2,4,k)
-	Mass_MSf(2,3,3).re = m.get_datum(m_t_2);	// R-l's are (2,2,k)
-	Mass_MSf(2,2,1).re = m.get_datum(m_e_r);
-	Mass_MSf(2,2,2).re = m.get_datum(m_mu_r);
-	Mass_MSf(2,2,3).re = m.get_datum(m_stau_2);
+	Mass_MW.re = m->get_datum(m_w);
+	Mass_Mh0.re = m->get_datum(m_h0);
+	Mass_MHH.re = m->get_datum(m_H0);
+	Mass_MA0.re = m->get_datum(m_A0);
+	Mass_MHp.re = m->get_datum(m_Hpm);
+	Mass_MGl.re = m->get_datum(m_g);
+	Mass_MNeu(1).re = m->get_datum(m_o1); // MNeu(i) is ith neutralino mass state
+	Mass_MNeu(2).re = m->get_datum(m_o2);
+	Mass_MCha(1).re = m->get_datum(m_1pm); // MCha(i) is ith chargino mass state
+	Mass_MNeu(3).re = m->get_datum(m_o3);
+	Mass_MNeu(4).re = m->get_datum(m_o4);
+	Mass_MCha(2).re = m->get_datum(m_2pm);
+	Mass_MSf(1,4,1).re = m->get_datum(m_d_l); // Mass_MSf(i,j,k) is the sfermion 
+	Mass_MSf(1,3,1).re = m->get_datum(m_u_l); // mass matrix. i=1,2 corresponds to 
+	Mass_MSf(1,4,2).re = m->get_datum(m_s_l); // mass state 1,2 or L,R w/o mixing
+	Mass_MSf(1,3,2).re = m->get_datum(m_c_l); // j is for family: j=1 is sneutrinos
+	Mass_MSf(1,4,3).re = m->get_datum(m_b_1); // j=2 is sleptons, j=3 is up-squarks
+	Mass_MSf(1,3,3).re = m->get_datum(m_t_1); // j=4 is down-squarks. k is for generation
+	Mass_MSf(1,2,1).re = m->get_datum(m_e_l); // thus m_d_l has i=1, j=4, k=1.
+	Mass_MSf(1,1,1).re = m->get_datum(m_nue_l);
+	Mass_MSf(1,2,2).re = m->get_datum(m_mu_l);
+	Mass_MSf(1,1,2).re = m->get_datum(m_numu_l);	// some results:
+	Mass_MSf(1,2,3).re = m->get_datum(m_stau_1);	// L-u's are (1,3,k)
+	Mass_MSf(1,1,3).re = m->get_datum(m_nu_tau_l);   // L-d's are (1,4,k)
+	Mass_MSf(2,4,1).re = m->get_datum(m_d_r);	// L-l's are (1,2,k)
+	Mass_MSf(2,3,1).re = m->get_datum(m_u_r);	// nu's are (1,1,k)
+	Mass_MSf(2,4,2).re = m->get_datum(m_s_r);
+	Mass_MSf(2,3,2).re = m->get_datum(m_c_r);	// R-u's are (2,3,k)
+	Mass_MSf(2,4,3).re = m->get_datum(m_b_2);	// R-d's are (2,4,k)
+	Mass_MSf(2,3,3).re = m->get_datum(m_t_2);	// R-l's are (2,2,k)
+	Mass_MSf(2,2,1).re = m->get_datum(m_e_r);
+	Mass_MSf(2,2,2).re = m->get_datum(m_mu_r);
+	Mass_MSf(2,2,3).re = m->get_datum(m_stau_2);
 
 	// alpha
 
-	Alpha_Alpha.re = m.get_datum(higgs_alpha);
+	Alpha_Alpha.re = m->get_datum(higgs_alpha);
 
 	// nmix
 
@@ -301,74 +404,74 @@ void feynhiggs_driver::pass_feynhiggs_slha_data(const model &m)
 
 	// gauge
 
-	Gauge_Q.re = m.get_datum(gauge_q);
-	Gauge_g1.re = m.get_datum(gauge_gp); // this is the order that SOFTSUSY does
-	Gauge_g2.re = m.get_datum(gauge_g);
-	Gauge_g3.re = m.get_datum(gauge_g3);
+	Gauge_Q.re = m->get_datum(gauge_q);
+	Gauge_g1.re = m->get_datum(gauge_gp); // this is the order that SOFTSUSY does
+	Gauge_g2.re = m->get_datum(gauge_g);
+	Gauge_g3.re = m->get_datum(gauge_g3);
 
 	// yukawa blocks
 
-	Yu_Q.re = m.get_datum(yu_q);
-	Yu_Yt.re = m.get_datum(yt);
-	Yd_Q.re = m.get_datum(yu_q);
-	Yd_Yb.re = m.get_datum(yb);
-	Ye_Q.re = m.get_datum(yu_q);
-	Ye_Ytau.re = m.get_datum(ytau);
+	Yu_Q.re = m->get_datum(yu_q);
+	Yu_Yt.re = m->get_datum(yt);
+	Yd_Q.re = m->get_datum(yu_q);
+	Yd_Yb.re = m->get_datum(yb);
+	Ye_Q.re = m->get_datum(yu_q);
+	Ye_Ytau.re = m->get_datum(ytau);
 
 	// hmix
 
-	HMix_Q.re = m.get_datum(hmix_q);
-	HMix_MUE.re = m.get_datum(hmix_mu);
-	HMix_TB.re = m.get_datum(hmix_tb);
-	HMix_VEV.re = m.get_datum(hmix_vev);
-	HMix_MA02.re = m.get_datum(hmix_ma2);
+	HMix_Q.re = m->get_datum(hmix_q);
+	HMix_MUE.re = m->get_datum(hmix_mu);
+	HMix_TB.re = m->get_datum(hmix_tb);
+	HMix_VEV.re = m->get_datum(hmix_vev);
+	HMix_MA02.re = m->get_datum(hmix_ma2);
 
 	// msoft
 	
-	MSoft_Q.re = m.get_datum(msoft_q);
-	MSoft_M1.re = m.get_datum(m1_q);
-	MSoft_M2.re = m.get_datum(m2_q);
-	MSoft_M3.re = m.get_datum(m3_q);
-	MSoft_MHd2.re = m.get_datum(m_h1sq_q);
-	MSoft_MHu2.re = m.get_datum(m_h2sq_q);
-	MSoft_MSL(1).re = m.get_datum(m_e_l_q);
-	MSoft_MSL(2).re = m.get_datum(m_mu_l_q);
-	MSoft_MSL(3).re = m.get_datum(m_tau_l_q);
-	MSoft_MSE(1).re = m.get_datum(m_e_r_q);
-	MSoft_MSE(2).re = m.get_datum(m_mu_r_q);
-	MSoft_MSE(3).re = m.get_datum(m_tau_r_q);
-	MSoft_MSQ(1).re = m.get_datum(m_ql1_q);
-	MSoft_MSQ(2).re = m.get_datum(m_ql2_q);
-	MSoft_MSQ(3).re = m.get_datum(m_ql3_q);
-	MSoft_MSU(1).re = m.get_datum(m_u_r_q);
-	MSoft_MSU(2).re = m.get_datum(m_c_r_q);
-	MSoft_MSU(3).re = m.get_datum(m_t_r_q);
-	MSoft_MSD(1).re = m.get_datum(m_d_r_q);
-	MSoft_MSD(2).re = m.get_datum(m_s_r_q);
-	MSoft_MSD(3).re = m.get_datum(m_b_r_q);
+	MSoft_Q.re = m->get_datum(msoft_q);
+	MSoft_M1.re = m->get_datum(m1_q);
+	MSoft_M2.re = m->get_datum(m2_q);
+	MSoft_M3.re = m->get_datum(m3_q);
+	MSoft_MHd2.re = m->get_datum(m_h1sq_q);
+	MSoft_MHu2.re = m->get_datum(m_h2sq_q);
+	MSoft_MSL(1).re = m->get_datum(m_e_l_q);
+	MSoft_MSL(2).re = m->get_datum(m_mu_l_q);
+	MSoft_MSL(3).re = m->get_datum(m_tau_l_q);
+	MSoft_MSE(1).re = m->get_datum(m_e_r_q);
+	MSoft_MSE(2).re = m->get_datum(m_mu_r_q);
+	MSoft_MSE(3).re = m->get_datum(m_tau_r_q);
+	MSoft_MSQ(1).re = m->get_datum(m_ql1_q);
+	MSoft_MSQ(2).re = m->get_datum(m_ql2_q);
+	MSoft_MSQ(3).re = m->get_datum(m_ql3_q);
+	MSoft_MSU(1).re = m->get_datum(m_u_r_q);
+	MSoft_MSU(2).re = m->get_datum(m_c_r_q);
+	MSoft_MSU(3).re = m->get_datum(m_t_r_q);
+	MSoft_MSD(1).re = m->get_datum(m_d_r_q);
+	MSoft_MSD(2).re = m->get_datum(m_s_r_q);
+	MSoft_MSD(3).re = m->get_datum(m_b_r_q);
 
 	// au
 
-	Au_Q.re = m.get_datum(q_au);
-	Au_Af(1,1).re = m.get_datum(au_q);
-	Au_Af(2,2).re = m.get_datum(ac_q);
-	Au_Af(3,3).re = m.get_datum(at_q);
+	Au_Q.re = m->get_datum(q_au);
+	Au_Af(1,1).re = m->get_datum(au_q);
+	Au_Af(2,2).re = m->get_datum(ac_q);
+	Au_Af(3,3).re = m->get_datum(at_q);
 
 	// ad
 
-	Ad_Q.re = m.get_datum(q_ad);
-	Ad_Af(1,1).re = m.get_datum(ad_q);
-	Ad_Af(2,2).re = m.get_datum(as_q);
-	Ad_Af(3,3).re = m.get_datum(ab_q);
+	Ad_Q.re = m->get_datum(q_ad);
+	Ad_Af(1,1).re = m->get_datum(ad_q);
+	Ad_Af(2,2).re = m->get_datum(as_q);
+	Ad_Af(3,3).re = m->get_datum(ab_q);
 
 	// ae
 
-	Ae_Q.re = m.get_datum(q_ae);
-	Ae_Af(1,1).re = m.get_datum(ae_q);
-	Ae_Af(2,2).re = m.get_datum(amu_q);
-	Ae_Af(3,3).re = m.get_datum(atau_q);
+	Ae_Q.re = m->get_datum(q_ae);
+	Ae_Af(1,1).re = m->get_datum(ae_q);
+	Ae_Af(2,2).re = m->get_datum(amu_q);
+	Ae_Af(3,3).re = m->get_datum(atau_q);
 
-#if 1
+#if 0
 
 	CREAL sqrts = 14.0;
 	CINTEGER key = 0xff;
@@ -379,6 +482,8 @@ void feynhiggs_driver::pass_feynhiggs_slha_data(const model &m)
 //	FORTRAN(slhawrite)(&fh_error_state, slha, file, 12);
 	FORTRAN(fhoutput)(&fh_error_state, file.c_str(), &key, &sqrts, file.length());
 
+#else
+	FORTRAN(fhsetslha)(&fh_error_state, slha);
 #endif
 	if (fh_error_state != 0)
 	{

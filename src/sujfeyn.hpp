@@ -1,17 +1,27 @@
 
+#pragma once
+#ifndef SUJFEYN_HPP
+#define SUJFEYN_HPP
+
 #include "libconstrain.h"
+#include "src/include/ftypes.h"
 
 // this class will implement thread-local
 // storage to allow parallel calls to FeynHiggs
 // ... in the future
+
+#define FH_SLHAData_len 5558
 
 class feynhiggs_driver
 {
 public:
 	feynhiggs_driver();
 
-	void operator() (const model &m);
+	void operator() (model *m);
 
+//	~feynhiggs_driver();
+
+	static const unsigned int slhadata_len = FH_SLHAData_len;
 private:
 	int mssm_scope; 
 	int field_renorm; 
@@ -26,10 +36,14 @@ private:
 
 	int fh_error_state;
 
-	void calc_observables(const model &m);
+	COMPLEX slha[slhadata_len]; 	// COMPLEX is defined in ftypes.h
 
-	void pass_feynhiggs_slha_data(const model &m);
+	void calc_observables(model *m);
+
+	void pass_feynhiggs_slha_data(const model *m);
 
 };
+
+#endif
 
 

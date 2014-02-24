@@ -1,5 +1,4 @@
 
-#include <string>
 #include "libconstrain.h"
 
 // this class will implement thread-local
@@ -19,10 +18,11 @@ public:
 		:relic_mode_setting(_rm) {}
 
 	model operator() (model m);
+	int operator() (model *m);
 
 private:
 
-	std::string calc_observables(const model &m);
+	void calc_observables(model *m);
 	void pass_micromegas_slha_data(const model &m);
 
 	relic_mode relic_mode_setting;
