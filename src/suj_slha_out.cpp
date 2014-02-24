@@ -129,9 +129,9 @@ string suj_slha_out(double mGUT, const DoubleVector &pars, double tb, double sgn
 	oss
 		// MASS
 		<< r.displayMw() << "\t"	// W mass
-		<< s.mh0 << "\t"		// h0 mass
-		<< s.mH0 << "\t"		// H0 mass
-		<< s.mA0 << "\t"		// A0 mass
+		<< s.mh0(1) << "\t"		// h0 mass
+		<< s.mh0(2) << "\t"		// H0 mass
+		<< s.mA0(1) << "\t"		// A0 mass
 		<< s.mHpm << "\t"		// H+ mass
 		<< s.mGluino << "\t"		// ~g mass
 		<< s.mneut(1) << "\t"		// ~o1 mass

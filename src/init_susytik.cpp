@@ -21,103 +21,53 @@
 #include <iostream>
 
 #include "libconstrain.h"
-#include "sujmicro.h"
 
-#include "mycomplex.h"
-#include "def.h"
-#include "linalg.h"
-#include "lowe.h"
-#include "rge.h"
-#include "softsusy.h"
-#include "softpars.h"
-#include "susy.h"
-#include "utils.h"
-#include "numerics.h"
+#include "sujsoft.hpp"
+#include "sujmicro.h"
+#include "sujfeyn.hpp"
 
 #include <string>
-#include <sstream>
-#include <fstream>
-#include <ctime>
 
 using namespace std;
 
-extern string suj_slha_out(double mGUT, const DoubleVector &pars, double tb, double sgnMu, MssmSoftsusy r);
 
 int main(int argc, char** argv)
 {
-	/// Sets up exception handling
-	signal(SIGFPE, FPE_ExceptionHandler);
 
-	cerr << "Setting SOFTSUSY params and running SM fermion masses..." << endl;
-	/***** SOFTSUSY Preamble *****/
+	softsusy_opts point;
 
-	/// Parameters used: mSUGRA parameters
-	double mGutGuess = 2.0e16;
-	int sgnMu = 1;      ///< sign of mu parameter 
-
-	QedQcd oneset;      ///< See "lowe.h" for default definitions parameters
-
-	/// most important Standard Model inputs: you may change these and recompile
-	double alphasMZ = 0.1184, mtop = 173.1, mbmb = 4.19;
-	oneset.setAlpha(ALPHAS, alphasMZ);
-	oneset.setPoleMt(mtop);
-	oneset.setMass(mBottom, mbmb);
-
-	oneset.toMz();      ///< Runs SM fermion masses to MZ
-
-	/***** SOFTSUSY Preamble *****/
-
-	double m0, mhf, a0, tb;
-
-	int npoints = 0;
-
-	model_parser mp;
-	micromegas_driver micro(micromegas_driver::init);
-
-	m0 = 4000;
-	mhf = 200;
-	a0 = -4000;
-	tb = 45;
+	const double m0 = 6000.0, mhf = 200.0, a0 = -12000.0, tb = 25.0;
 
 	DoubleVector pars(3);
+
 	pars(1) = m0;
 	pars(2) = mhf;
 	pars(3) = a0;
 
-	MssmSoftsusy r;
-	r.lowOrg(sugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
+	point.set_pars(pars);
+	point.set_tb(tb);
 
-	double mGUT = r.displayMxBC();
 
-	if (r.displayProblem().test())
-	{
-		cerr << "Problem with test point! Please change it!" << endl;
-		cerr << r.displayProblem() << endl;
-		return 1;
-	}
-	
-	model sdb = mp.parse(suj_slha_out(mGUT, pars, tb, sgnMu, r), false); // false because we did not run micro yet
-	if (model::invalid == sdb.get_model_type())
-	{
-		cerr << "Problem parsing point data! Please use a different point!" << endl;
-		return 2;
-	}
+	model m;
 
-	if (susy_dict::m_o1 != sdb.get_hierarchy(0))
-	{
-		cerr << "Neutralino-1 is not the LSP! Please use a different point!" << endl;
-		return 3;
-	}
+	softsusy_driver softsusy(&point);
+	micromegas_driver micro;
+	feynhiggs_driver feynhiggs;
 
-	model mdb = micro(sdb);
+	try { 
+		m = softsusy(); // need to check for displayProblem().test() and neutralino LSP 
+	} catch (const string &s) { cerr << "SOFTSUSY exception: " << s << endl; return 1;}
 
-	if (model::invalid == mdb.get_model_type() || model::obs_invalid == mdb.get_observable_data_type())
+	feynhiggs(&m);
+	micro(&m);
+
+	if (model::invalid == m.get_model_type() || model::obs_invalid == m.get_observable_data_type())
 	{
 		cerr << "Problem with obervables for test point! Please change it!" << endl;
-		return 4;
+//		return 4;
 	}
 
-	cout << "\\Omega_\\chi h^2 = " << mdb.get_observable(susy_dict::observable::omega) << endl;
+	cout << "\\Omega_\\chi h^2 = " << m.get_observable(susy_dict::observable::omega) << endl;
 
 	return 0;
 }

@@ -3,7 +3,8 @@ BASE=$(HOME)/susykit
 #BASE=$(HOME)/school/research
 
 CONSTRAIN=$(BASE)/constrain/current
-SOFTSUSY=$(BASE)/softsusy/current
+#SOFTSUSY=$(BASE)/softsusy/current
+SOFTSUSY=$(BASE)/softsusy/current/src
 MICROMEGAS=$(BASE)/micromegas/current
 CALCHELP=$(MICROMEGAS)/CalcHEP_src
 FEYNHIGGS=$(BASE)/feynhiggs/current
@@ -12,13 +13,13 @@ SUPERISO=$(BASE)/superiso_relic/current
 BOOST=$(BOOST_DIR)/include
 
 CXX=g++
-CXXFLAGS=-std=c++0x -O3 -ffast-math -funroll-loops
+CXXFLAGS=-std=c++0x -O3 -ffast-math -funroll-loops 
 LDFLAGS=-lgfortran #-lifcore
-LDFLAGS+=-lifcore -limf -lsvml -lc
+LDFLAGS+=-lifcore -limf -lsvml -lc -lintlc -lifport
 
 LMICRO2=$(MICROMEGAS)/sources/micromegas.a $(CALCHELP)/lib/dynamic_me.a \
 	$(MICROMEGAS)/MSSM/work/work_aux.a $(MICROMEGAS)/MSSM/lib/aLib.a \
-	$(CALCHELP)/lib/sqme_aux.a $(CALCHELP)/lib/libSLHAplus.a \
+	$(CALCHELP)/lib/sqme_aux.so $(CALCHELP)/lib/libSLHAplus.a \
 	$(CALCHELP)/lib/num_c.a  $(CALCHELP)/lib/serv.a \
 	-lX11 -lm -rdynamic -ldl
 
@@ -35,6 +36,7 @@ LCONSTRAIN=-L$(CONSTRAIN) -lconstrain
 
 #LSOFTSUSY=-L$(SOFTSUSY)/.libs -lsoft
 LSOFTSUSY=$(SOFTSUSY)/.libs/libsoft.a
+CXXFLAGS+=-DSOFTSUSY_POST34
 
 LFEYNHIGGS=-L$(FEYNHIGGS)/x86_64-Linux/lib64/ -lFH
 

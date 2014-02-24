@@ -22,17 +22,8 @@
 
 #include "libconstrain.h"
 #include "sujmicro.h"
-
-#include "mycomplex.h"
-#include "def.h"
-#include "linalg.h"
-#include "lowe.h"
-#include "rge.h"
-#include "softsusy.h"
-#include "softpars.h"
-#include "susy.h"
-#include "utils.h"
-#include "numerics.h"
+#include "sujfeyn.hpp"
+#include "sujsoft.hpp"
 
 #include <string>
 #include <sstream>
@@ -159,28 +150,11 @@ int main(int argc, char** argv)
 	cerr << "Setting seed to " << seed << " ..." << endl;
 	gen.seed(seed);
 
-	cerr << "Setting SOFTSUSY params and running SM fermion masses..." << endl;
-	/***** SOFTSUSY Preamble *****/
-
-	/// Parameters used: mSUGRA parameters
-	double mGutGuess = 2.0e16;
-	int sgnMu = 1;      ///< sign of mu parameter 
-
-	QedQcd oneset;      ///< See "lowe.h" for default definitions parameters
-
-	/// most important Standard Model inputs: you may change these and recompile
-	double alphasMZ = 0.1184, mtop = 173.1, mbmb = 4.19;
-	oneset.setAlpha(ALPHAS, alphasMZ);
-	oneset.setPoleMt(mtop);
-	oneset.setMass(mBottom, mbmb);
-
-	oneset.toMz();      ///< Runs SM fermion masses to MZ
 
 	/***** SOFTSUSY Preamble *****/
 
 	double m0, mhf, a0, tb; 
 	double m1, m2, m3; // NU-G only
-	double mGUT;
 
 	cerr << "Searching for mSUGRA parameter points..." << endl;
 	int npoints = 0;
@@ -240,46 +214,28 @@ int main(int argc, char** argv)
 
 		tb = tb_dist(gen)/1e3;
 
+		softsusy_opts point; // default choices for SM nuisance params
+		point.set_pars(pars);
+		point.set_tb(tb);
+		// keep default mGUT guess and sgn(mu)
 
-		MssmSoftsusy r;
+		model m;
 
-		if (!nusugra)
-			r.lowOrg(sugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
-		else
-			r.lowOrg(extendedSugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
+		softsusy_driver softsusy(&point); // only does QED/QCD running of Q/l masses
+		feynhiggs_driver feynhiggs;
+		micromegas_driver micro;
 
-		mGUT = r.displayMxBC();
+		try { 
+			m = softsusy(); // need to check for displayProblem().test() and neutralino LSP 
+		} catch (const string &s) { cerr << "SOFTSUSY exception: " << s << endl; continue;}
 
-		if (r.displayProblem().test())
-		{
-			continue; //problem with RGE
-		}
-
-		model sdb = mp.parse(suj_slha_out(mGUT, pars, tb, sgnMu, r), false); //false because it's not merged yet
-
-		if (model::invalid == sdb.get_model_type())
-		{
-			continue; //problem with parsing (unusual)
-		}
-
-		if (susy_dict::m_o1 != sdb.get_hierarchy(0))
-		{
-			continue; // neutralino1 is not the LSP...
-				  // may use a tolerance in the 
-				  // mass gap in the future
-		}
-
-		model mdb = micro(sdb);
-
-		if (model::invalid == mdb.get_model_type() || model::obs_invalid == mdb.get_observable_data_type())
-		{
-			continue; //problem with observables (micromegas)
-		}
+		feynhiggs(&m);
+		micro(&m);
 
 		// everything should be good here...
 		npoints++;
 
-		writer << mdb << endl;
+		writer << m << endl;
 	}
 
 	if (writer.is_open()) writer.close();

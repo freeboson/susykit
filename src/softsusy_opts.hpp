@@ -47,10 +47,13 @@ public:
 
 	bool is_nusugra() const { return nusugra; }
 
+	constexpr static double default_tb = 15;
+	constexpr static int default_sgnmu = 1;
+
 	constexpr static double default_mgut = 2e16;
 	constexpr static double default_alpha_s = 0.1184;
 	constexpr static double default_alpha_em_inv = 127.933;
-	constexpr static double default_mtop = 173.5;
+	constexpr static double default_mtop = 173.07;
 	constexpr static double default_mbmb = 4.18;
 
 protected:

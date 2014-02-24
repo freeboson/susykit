@@ -33,6 +33,16 @@ void softsusy_driver::init_qedqcd()
 
 }
 
+#if 0
+void softsusy_driver::replace_soft_terms(const softsusy_opts * const _sugra)
+{
+	sugra->set_mgut_guess(_sugra->get_mgut_guess());
+	sugra->set_pars(_sugra->get_pars()); //note this also affects get_bcs()
+	sugra->set_sgnmu(_sugra->get_sgnmu()); //note this also affects get_bcs()
+	sugra->set_tb(_sugra->get_tb()); //note this also affects get_bcs()
+}
+#endif
+
 model softsusy_driver::operator() (bool gauge_unification)
 {
 #ifdef OLD_SOFTSUSY // less than 3.3.10 at least
@@ -176,13 +186,29 @@ model softsusy_driver::slha_to_model(const double &mGUT)
 			<< pars.display(49) << "\t";	//mbR(MX)   
 	}
 
+	/* 
+	 * There is a version dependence here with SOFTSUSY. Basically, the way
+	 * masses were stored in sPhysical objects has changed, particularly in 
+	 * the Higgs sector. I belive the change is only in >3.4.x but I may be
+	 * wrong here. So, we need to check the version of SOFTSUSY and then 
+	 * obtain the appropriate data for the the Higgs masses.
+	 */
+
+
 	oss
 		// MASS
 		<< rge.displayMw() << "\t"	// W mass
+#if defined(SOFTSUSY_POST34)
+		<< s.mh0(1) << "\t"		// h0 mass
+		<< s.mh0(2) << "\t"		// H0 mass
+		<< s.mA0(1) << "\t"		// A0 mass
+		<< s.mHpm << "\t"		// H+ mass
+#else
 		<< s.mh0 << "\t"		// h0 mass
 		<< s.mH0 << "\t"		// H0 mass
 		<< s.mA0 << "\t"		// A0 mass
 		<< s.mHpm << "\t"		// H+ mass
+#endif
 		<< s.mGluino << "\t"		// ~g mass
 		<< s.mneut(1) << "\t"		// ~o1 mass
 		<< s.mneut(2) << "\t"		// ~o2 mass
