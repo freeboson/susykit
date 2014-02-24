@@ -44,11 +44,15 @@
 
 #if (BOOST_VERSION >= 104700)
   #include <boost/random/uniform_int_distribution.hpp>
+  #include <boost/random/uniform_real_distribution.hpp>
   typedef boost::random::uniform_int_distribution<> uniform_int_dist;
+  typedef boost::random::uniform_real_distribution<> uniform_real_dist;
   typedef boost::random::mt19937 boost_mt19937;
 #else
   #include <boost/random/uniform_int.hpp>
+  #include <boost/random/uniform_real.hpp> // did not check this, just a guess
   typedef boost::uniform_int<> uniform_int_dist;
+  typedef boost::uniform_real<> uniform_real_dist;
   typedef boost::mt19937 boost_mt19937;
 #endif
 
@@ -146,6 +150,7 @@ int main(int argc, char** argv)
 
 	const unsigned int tev = 1000;
 	boost_mt19937 gen;
+#if 0
 	uniform_int_dist m0_dist(10*10, 4*tev*10); // divide m0 by 1e1
 	uniform_int_dist mhf_dist(10*10, 5*tev*10); // divide mhf by 1e1
 	uniform_int_dist a0_dist(-8*1000,8*1000); // divide a0 by 1e3
@@ -155,7 +160,20 @@ int main(int argc, char** argv)
 	uniform_int_dist m1_dist(10*10, 5*tev*10); // divide m1 by 1e1
 	uniform_int_dist m2_dist(10*10, 5*tev*10); // divide m2 by 1e1
 	uniform_int_dist m3_dist(10*10, 5*tev*10); // divide m3 by 1e1
+#else
+//	uniform_int_dist m0_dist(9900*10, 11000*10); // divide m0 by 1e1
+	uniform_real_dist m0_dist(3.9,4.1); // m0 log prior
+	uniform_int_dist mhf_dist(10*10, 5*tev*10); // divide mhf by 1e1
+	uniform_int_dist a0_dist(-2*1000,0); // divide a0 by 1e3 //a0/m0
+	uniform_int_dist tb_dist(5*1000,15*1000); //divide tb by 1e3
 
+
+	uniform_int_dist m1_dist(250*10, 350*10); // divide m1 by 1e1
+	uniform_int_dist m2_dist(100*10, 200*10); // divide m2 by 1e1
+	uniform_int_dist m3_dist(200*10, 300*10); // divide m3 by 1e1
+
+	uniform_int_dist mtop_dist(1725, 1745); // divide mtop by 1e1
+#endif
 	cerr << "Setting seed to " << seed << " ..." << endl;
 	gen.seed(seed);
 
@@ -166,15 +184,18 @@ int main(int argc, char** argv)
 	double mGutGuess = 2.0e16;
 	int sgnMu = 1;      ///< sign of mu parameter 
 
+#if 0
 	QedQcd oneset;      ///< See "lowe.h" for default definitions parameters
 
 	/// most important Standard Model inputs: you may change these and recompile
-	double alphasMZ = 0.1184, mtop = 173.1, mbmb = 4.19;
+	double alphasMZ = 0.1187, mtop = 173.5, mbmb = 4.18, alphaemMZ = 1/127.933;
+	oneset.setAlpha(ALPHA, alphaemMZ);
 	oneset.setAlpha(ALPHAS, alphasMZ);
 	oneset.setPoleMt(mtop);
 	oneset.setMass(mBottom, mbmb);
 
 	oneset.toMz();      ///< Runs SM fermion masses to MZ
+#endif
 
 	/***** SOFTSUSY Preamble *****/
 
@@ -189,6 +210,17 @@ int main(int argc, char** argv)
 	micromegas_driver micro;
 	while( npoints < 1000000 ) // arbitrary stopping condition
 	{
+		QedQcd oneset;      ///< See "lowe.h" for default definitions parameters
+
+		/// most important Standard Model inputs: you may change these and recompile
+		double alphasMZ = 0.1187, mtop, mbmb = 4.18, alphaemMZ = 1/127.933;
+		oneset.setAlpha(ALPHA, alphaemMZ);
+		oneset.setAlpha(ALPHAS, alphasMZ);
+		oneset.setMass(mBottom, mbmb);
+
+		mtop = mtop_dist(gen)/1e1;
+		oneset.setPoleMt(mtop);
+		oneset.toMz();      ///< Runs SM fermion masses to MZ
 
 		DoubleVector pars(3);
 
@@ -209,7 +241,7 @@ int main(int argc, char** argv)
 		{
 			pars.setEnd(49); // NUSUGRA pars: not actually 49, but that's the index of the last one
 
-			m0 = m0_dist(gen)/1e1;
+			m0 = pow(10.0,m0_dist(gen));
 			m1 = m1_dist(gen)/1e1;
 			m2 = m2_dist(gen)/1e1;
 			m3 = m3_dist(gen)/1e1;

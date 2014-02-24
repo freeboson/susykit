@@ -6,7 +6,7 @@ SOFTSUSY=$(BASE)/softsusy/current
 MICROMEGAS=$(BASE)/micromegas/current
 CALCHELP=$(MICROMEGAS)/CalcHEP_src
 
-CXX=g++
+CXX=g++-4.7.2
 CXXFLAGS=-std=c++0x -O3 -march=native
 LDFLAGS=-lgfortran
 
@@ -30,13 +30,15 @@ OUTPATH=$(CURDIR)/..
 SUSYTIK_INIT=init_susytik 	# bin filename
 SUSYTIK=susytik 		# bin filename
 GEN_SEEDS=gen_seeds		# bin filename
+QPOINT=qpoint
 
-TARGETS=$(SUSYTIK) $(SUSYTIK_INIT) $(GEN_SEEDS)
+TARGETS=$(SUSYTIK) $(SUSYTIK_INIT) $(GEN_SEEDS) $(QPOINT)
 
 OBJS=sujmicro.o suj_slha_out.o
 SCANOBJS=susytik_scan.o
 INITOBJS=init_susytik.o
 SEEDOBJS=gen_seeds.o
+QPOINTOBJS=qpoint.o
 
 all: $(TARGETS)
 
@@ -46,6 +48,9 @@ clean:
 
 $(SUSYTIK_INIT): $(OBJS) $(INITOBJS)
 	$(CXX) $(CXXFLAGS) -o $(OUTPATH)/$(SUSYTIK_INIT) $(OBJS) $(INITOBJS) $(LDFLAGS)
+
+$(QPOINT): $(OBJS) $(QPOINTOBJS)
+	$(CXX) $(CXXFLAGS) -o $(OUTPATH)/$(QPOINT) $(OBJS) $(QPOINTOBJS) $(LDFLAGS)
 
 $(SUSYTIK): $(OBJS) $(SCANOBJS)
 	$(CXX) $(CXXFLAGS) -o $(OUTPATH)/$(SUSYTIK) $(OBJS) $(SCANOBJS) $(LDFLAGS)

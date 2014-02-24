@@ -1,0 +1,15 @@
+#PBS -q regular
+#PBS -l mppwidth=96
+#PBS -l walltime=20:00:00
+#PBS -N SUSYTIKtest
+#PBS -V
+
+#PBS -m abe
+#PBS -M sujeet.akula@gmail.com
+
+cd $PBS_O_WORKDIR
+
+module unload xt-shmem
+export CRAY_ROOTFS=DSL
+
+aprun -n 96 ./susytikNS
