@@ -39,15 +39,26 @@
 #include <fstream>
 #include <ctime>
 
+#include <boost/version.hpp>
 #include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
+
+#if (BOOST_VERSION >= 104700)
+  #include <boost/random/uniform_int_distribution.hpp>
+  typedef boost::random::uniform_int_distribution<> uniform_int_dist;
+  typedef boost::random::mt19937 boost_mt19937;
+#else
+  #include <boost/random/uniform_int.hpp>
+  typedef boost::uniform_int<> uniform_int_dist;
+  typedef boost::mt19937 boost_mt19937;
+#endif
 
 #define NUM_REQ_ARGS 2
 #define NUM_REQ_ARGS_ALT 4
 
 using namespace std;
 
-extern string suj_slha_out(double m0, double mhf, double a0, double tb, double sgnMu, MssmSoftsusy r);
+//extern string suj_slha_out(double m0, double mhf, double a0, double tb, double sgnMu, MssmSoftsusy r);
+extern string suj_slha_out(double mGUT, const DoubleVector &pars, double tb, double sgnMu, MssmSoftsusy r);
 
 void usage(const string &s)
 {
@@ -129,14 +140,21 @@ int main(int argc, char** argv)
 		seed = time(NULL);
 	}
 
+	bool nusugra = true;
+
 
 
 	const unsigned int tev = 1000;
-	boost::random::mt19937 gen;
-	boost::random::uniform_int_distribution<> m0_dist(10*10, 4*tev*10); // divide m0 by 1e1
-	boost::random::uniform_int_distribution<> mhf_dist(10*10, 5*tev*10); // divide mhf by 1e1
-	boost::random::uniform_int_distribution<> a0_dist(-8*1000,8*1000); // divide a0 by 1e3
-	boost::random::uniform_int_distribution<> tb_dist(1*1000,60*1000); //divide tb by 1e3
+	boost_mt19937 gen;
+	uniform_int_dist m0_dist(10*10, 4*tev*10); // divide m0 by 1e1
+	uniform_int_dist mhf_dist(10*10, 5*tev*10); // divide mhf by 1e1
+	uniform_int_dist a0_dist(-8*1000,8*1000); // divide a0 by 1e3
+	uniform_int_dist tb_dist(1*1000,60*1000); //divide tb by 1e3
+
+
+	uniform_int_dist m1_dist(10*10, 5*tev*10); // divide m1 by 1e1
+	uniform_int_dist m2_dist(10*10, 5*tev*10); // divide m2 by 1e1
+	uniform_int_dist m3_dist(10*10, 5*tev*10); // divide m3 by 1e1
 
 	cerr << "Setting seed to " << seed << " ..." << endl;
 	gen.seed(seed);
@@ -160,7 +178,9 @@ int main(int argc, char** argv)
 
 	/***** SOFTSUSY Preamble *****/
 
-	double m0, mhf, a0, tb;
+	double m0, mhf, a0, tb; 
+	double m1, m2, m3; // NU-G only
+	double mGUT;
 
 	cerr << "Searching for mSUGRA parameter points..." << endl;
 	int npoints = 0;
@@ -169,26 +189,71 @@ int main(int argc, char** argv)
 	micromegas_driver micro;
 	while( npoints < 1000000 ) // arbitrary stopping condition
 	{
-		m0 = m0_dist(gen)/1e1;
-		mhf = mhf_dist(gen)/1e1;
-		a0 = m0*a0_dist(gen)/1e3;
-		tb = tb_dist(gen)/1e3;
 
 		DoubleVector pars(3);
-		pars(1) = m0;
-		pars(2) = mhf;
-		pars(3) = a0;
+
+		if (!nusugra)
+		{
+			pars.setEnd(3); // mSUGRA pars: m0, mhf, a0
+
+			m0 = m0_dist(gen)/1e1;
+			mhf = mhf_dist(gen)/1e1;
+			a0 = m0*a0_dist(gen)/1e3;
+
+			pars(1) = m0;
+			pars(2) = mhf;
+			pars(3) = a0;
+
+		}
+		else  // just do NU-G right now
+		{
+			pars.setEnd(49); // NUSUGRA pars: not actually 49, but that's the index of the last one
+
+			m0 = m0_dist(gen)/1e1;
+			m1 = m1_dist(gen)/1e1;
+			m2 = m2_dist(gen)/1e1;
+			m3 = m3_dist(gen)/1e1;
+			a0 = m0*a0_dist(gen)/1e3;
+			
+			// gaugino masses
+			pars(1) = m1;
+			pars(2) = m2;
+			pars(3) = m3;
+
+			// At, Ab, Atau
+			pars(11) = a0;
+			pars(12) = a0;
+			pars(13) = a0;
+
+			// Higgs field squared-masses
+			pars(21) = m0*m0;
+			pars(22) = m0*m0;
+
+			// scalar leptons
+			for (int slepton = 31; slepton <= 36; slepton++)
+				pars(slepton) = m0;
+
+			// scalar quarks
+			for (int squark = 41; squark <= 49; squark++)
+				pars(squark) = m0;
+		}
+
+		tb = tb_dist(gen)/1e3;
+
 
 		MssmSoftsusy r;
 
-		r.lowOrg(sugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
+		if (!nusugra)
+			mGUT = r.lowOrg(sugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
+		else
+			mGUT = r.lowOrg(extendedSugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
 
 		if (r.displayProblem().test())
 		{
 			continue; //problem with RGE
 		}
 
-		model sdb = mp.parse(suj_slha_out(m0, mhf, a0, tb, sgnMu, r));
+		model sdb = mp.parse(suj_slha_out(mGUT, pars, tb, sgnMu, r), false); //false because it's not merged yet
 
 		if (model::invalid == sdb.get_model_type())
 		{

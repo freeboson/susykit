@@ -213,8 +213,27 @@ void micromegas_driver::pass_micromegas_slha_data(const model &m)
   assignValW("At", m.get_datum(susy_dict::at_q));
   assignValW("Au", m.get_datum(susy_dict::au_q));
 
-  assignValW("MG1", m.get_datum(susy_dict::m1_q));
-  assignValW("MG2", m.get_datum(susy_dict::m2_q));
+  if ( (m.get_datum(susy_dict::m1_q) > 0) && (m.get_datum(susy_dict::m2_q) > 0))
+  {
+    assignValW("MG1", m.get_datum(susy_dict::m1_q));
+    assignValW("MG2", m.get_datum(susy_dict::m2_q));
+  }
+  else  // this is an adaptation of CheckNCSector() in rdLesH.o in aLib.a
+  {
+    double mg1,mg2;
+    mg1 = m.get_datum(susy_dict::nmix_11)*m.get_datum(susy_dict::m_o1)*m.get_datum(susy_dict::nmix_11)
+      + m.get_datum(susy_dict::nmix_12)*m.get_datum(susy_dict::m_o2)*m.get_datum(susy_dict::nmix_12)
+      + m.get_datum(susy_dict::nmix_13)*m.get_datum(susy_dict::m_o3)*m.get_datum(susy_dict::nmix_13)
+      + m.get_datum(susy_dict::nmix_14)*m.get_datum(susy_dict::m_o4)*m.get_datum(susy_dict::nmix_14);
+
+    mg2 = m.get_datum(susy_dict::nmix_21)*m.get_datum(susy_dict::m_o1)*m.get_datum(susy_dict::nmix_21)
+      + m.get_datum(susy_dict::nmix_22)*m.get_datum(susy_dict::m_o2)*m.get_datum(susy_dict::nmix_22)
+      + m.get_datum(susy_dict::nmix_23)*m.get_datum(susy_dict::m_o3)*m.get_datum(susy_dict::nmix_23)
+      + m.get_datum(susy_dict::nmix_24)*m.get_datum(susy_dict::m_o4)*m.get_datum(susy_dict::nmix_24);
+
+    assignValW("MG1",mg1);
+    assignValW("MG2",mg2);
+  }
 
   assignValW("alfSMZ", m.get_datum(susy_dict::alpha_s));
   assignValW("MbMb", m.get_datum(susy_dict::m_b));

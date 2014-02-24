@@ -41,7 +41,7 @@
 
 using namespace std;
 
-extern string suj_slha_out(double m0, double mhf, double a0, double tb, double sgnMu, MssmSoftsusy r);
+extern string suj_slha_out(double mGUT, const DoubleVector &pars, double tb, double sgnMu, MssmSoftsusy r);
 
 int main(int argc, char** argv)
 {
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
 
 	MssmSoftsusy r;
 
-	r.lowOrg(sugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
+	double mGUT = r.lowOrg(sugraBcs, mGutGuess, pars, sgnMu, tb, oneset, true);
 
 	if (r.displayProblem().test())
 	{
@@ -94,7 +94,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 	
-	model sdb = mp.parse(suj_slha_out(m0, mhf, a0, tb, sgnMu, r));
+	model sdb = mp.parse(suj_slha_out(mGUT, pars, tb, sgnMu, r), false); // false because we did not run micro yet
 	if (model::invalid == sdb.get_model_type())
 	{
 		cerr << "Problem parsing point data! Please use a different point!" << endl;

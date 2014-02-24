@@ -33,8 +33,18 @@
 #include <sstream>
 #include <algorithm>
 
+#include <boost/version.hpp>
 #include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
+
+#if (BOOST_VERSION >= 104700)
+  #include <boost/random/uniform_int_distribution.hpp>
+  typedef boost::random::uniform_int_distribution<> uniform_int_dist;
+  typedef boost::random::mt19937 boost_mt19937;
+#else
+  #include <boost/random/uniform_int.hpp>
+  typedef boost::uniform_int<> uniform_int_dist;
+  typedef boost::mt19937 boost_mt19937;
+#endif
 
 #define NUM_REQ_ARGS 2
 #define NUM_MAX_SEEDS 100000
@@ -55,8 +65,8 @@ public:
 		return dist(gen);
 	}
 private:
-	boost::random::mt19937 gen;
-	boost::random::uniform_int_distribution<> dist;
+	boost_mt19937 gen;
+	uniform_int_dist dist;
 };
 
 class seed_printer

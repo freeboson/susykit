@@ -17,14 +17,18 @@
 using namespace std;
 
 
-string suj_slha_out(double m0, double mhf, double a0, double tb, double sgnMu, MssmSoftsusy r)
+string suj_slha_out(double mGUT, const DoubleVector &pars, double tb, double sgnMu, MssmSoftsusy r)
 {
-    DoubleVector pars(3);
-    pars(1) = m0;
-    pars(2) = mhf;
-    pars(3) = a0;
-
       ostringstream oss;
+
+      if (pars.displayEnd() != 3 && pars.displayEnd() != 49)
+      {
+		cerr << "pars.displayEnd() should be 3 or 49!" << endl;
+		return "";
+      }
+
+      bool nusugra = (pars.displayEnd()==49); // for now assume NUSUGRA-G
+
       oss.setf(ios::scientific, ios::floatfield);
       oss.precision(8);
 
@@ -58,9 +62,14 @@ string suj_slha_out(double m0, double mhf, double a0, double tb, double sgnMu, M
 	vmix(2, 2) = -vmix(2, 2);
       }
 
+		// MODSEL, but not SOFTSUSY STYLE
+	if (!nusugra)
+		oss << "mSUGRA" << "\t"; // (mSUGRA)
+	else
+		oss << "NUSUGRA-G" << "\t"; // (non-universal gaugino SUGRA)
+
       oss
-		// MODSEL
-		<< "sugra" << "\t" // (mSUGRA)
+      		<< mGUT << "\t" // not in SLHA, except as a comment
 
 		// SMINPUTS
       		<< 1.0 / d.displayAlpha(ALPHA) << "\t"	// alpha_EM(MZ)
@@ -69,17 +78,55 @@ string suj_slha_out(double m0, double mhf, double a0, double tb, double sgnMu, M
       		<< r.displayMz() << "\t"		// MZ
       		<< d.displayMbMb()  << "\t"		// Mb(Mb)
       		<< d.displayPoleMt() << "\t"		// Mt(pole)
-      		<< d.displayPoleMtau() << "\t"		// Mtau(pole)
+      		<< d.displayPoleMtau() << "\t";		// Mtau(pole)
 
-		// MINPAR
-      		<< pars.display(1) << "\t" // m0
-      		<< pars.display(2) << "\t" // m12
-      		<< tb << "\t"
-      		<< sgnMu << "\t"
-      		<< pars.display(3) << "\t" // a0
+	if (!nusugra)  // mSUGRA MINPAR
+	{
+		oss 
+			// MINPAR
+      			<< pars.display(1) << "\t" // m0
+      			<< pars.display(2) << "\t" // m12
+      			<< tb << "\t"
+      			<< sgnMu << "\t"
+      			<< pars.display(3) << "\t"; // a0
+	}
+	else	// general nusugra MINPAR (only tb, sgnMu)
+	{
+		oss 
+			// MINPAR
+      			<< tb << "\t"
+      			<< sgnMu << "\t";
+	}
 
-		// EXTPAR (not for mSUGRA)
+	if (nusugra)	// EXTPAR (not for nusugra only)
+	{
+		oss
+			<< pars.display(1) << "\t"	// M_1(MX)
+			<< pars.display(2) << "\t"	// M_2(MX)
+			<< pars.display(3) << "\t"	// M_3(MX)
+			<< pars.display(11) << "\t"	// At(MX)
+			<< pars.display(12) << "\t"	// Ab(MX)
+			<< pars.display(13) << "\t"	// Atau(MX)
+			<< pars.display(21) << "\t"	// MH1^2(MX)
+			<< pars.display(22) << "\t"	// MH2^2(MX)
+			<< pars.display(31) << "\t"	// meL(MX)
+		        << pars.display(32) << "\t"	//mmuL(MX)            
+		        << pars.display(33) << "\t"	//mtauL(MX)           
+			<< pars.display(34) << "\t"	//meR(MX)             
+			<< pars.display(35) << "\t"	//mmuR(MX)            
+			<< pars.display(36) << "\t"	//mtauR(MX)           
+			<< pars.display(41) << "\t"	//mqL1(MX)            
+			<< pars.display(42) << "\t"	//mqL2(MX)            
+			<< pars.display(43) << "\t"	//mqL3(MX)            
+			<< pars.display(44) << "\t"	//muR(MX)             
+			<< pars.display(45) << "\t"	//mcR(MX)             
+			<< pars.display(46) << "\t"	//mtR(MX)             
+			<< pars.display(47) << "\t"	//mdR(MX)             
+			<< pars.display(48) << "\t"	//msR(MX)             
+			<< pars.display(49) << "\t";	//mbR(MX)   
+	}
 
+	oss
 		// MASS
 		<< r.displayMw() << "\t"	// W mass
 		<< s.mh0 << "\t"		// h0 mass
