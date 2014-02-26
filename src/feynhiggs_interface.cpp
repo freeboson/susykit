@@ -1,5 +1,5 @@
 
-#include "sujfeyn.hpp"
+#include "feynhiggs_interface.hpp"
 
 #include <iostream>
 #include <iomanip>

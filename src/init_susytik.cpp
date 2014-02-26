@@ -20,11 +20,11 @@
 
 #include <iostream>
 
-#include "libconstrain.h"
+#include "libconstrain.hpp"
 
-#include "sujsoft.hpp"
-#include "sujmicro.h"
-#include "sujfeyn.hpp"
+#include "softsusy_interface.hpp"
+#include "micromegas_interface.hpp"
+#include "feynhiggs_interface.hpp"
 
 #include <string>
 

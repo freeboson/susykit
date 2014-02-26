@@ -3,7 +3,7 @@
 #ifndef SUJFEYN_HPP
 #define SUJFEYN_HPP
 
-#include "libconstrain.h"
+#include "libconstrain.hpp"
 #include "src/include/ftypes.h"
 
 // this class will implement thread-local
@@ -21,7 +21,7 @@ public:
 
 //	~feynhiggs_driver();
 
-	static const unsigned int slhadata_len = FH_SLHAData_len;
+	static constexpr unsigned int slhadata_len = FH_SLHAData_len;
 private:
 	int mssm_scope; 
 	int field_renorm; 

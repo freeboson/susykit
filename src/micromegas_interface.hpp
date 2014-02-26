@@ -1,5 +1,5 @@
 
-#include "libconstrain.h"
+#include "libconstrain.hpp"
 
 // this class will implement thread-local
 // storage to allow parallel calls to micrOMEGAs

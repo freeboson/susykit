@@ -1,5 +1,5 @@
 
-#include "sujmicro.h"
+#include "micromegas_interface.hpp"
 
 #include <iostream>
 #include <iomanip>

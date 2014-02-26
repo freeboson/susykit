@@ -20,36 +20,25 @@
 
 #include <iostream>
 
-#include "libconstrain.h"
-#include "sujmicro.h"
-#include "sujfeyn.hpp"
-#include "sujsoft.hpp"
+#include "libconstrain.hpp"
+#include "micromegas_interface.hpp"
+#include "feynhiggs_interface.hpp"
+#include "softsusy_interface.hpp"
 
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <ctime>
 
-#include <boost/version.hpp>
-#include <boost/random/mersenne_twister.hpp>
+#include <random>
 
-#if (BOOST_VERSION >= 104700)
-  #include <boost/random/uniform_int_distribution.hpp>
-  typedef boost::random::uniform_int_distribution<> uniform_int_dist;
-  typedef boost::random::mt19937 boost_mt19937;
-#else
-  #include <boost/random/uniform_int.hpp>
-  typedef boost::uniform_int<> uniform_int_dist;
-  typedef boost::mt19937 boost_mt19937;
-#endif
+typedef std::uniform_int_distribution<> uniform_int_dist;
+typedef std::mt19937 boost_mt19937;
 
 #define NUM_REQ_ARGS 2
 #define NUM_REQ_ARGS_ALT 4
 
 using namespace std;
-
-//extern string suj_slha_out(double m0, double mhf, double a0, double tb, double sgnMu, MssmSoftsusy r);
-extern string suj_slha_out(double mGUT, const DoubleVector &pars, double tb, double sgnMu, MssmSoftsusy r);
 
 void usage(const string &s)
 {

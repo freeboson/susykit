@@ -1,5 +1,5 @@
 
-#include "sujsoft.hpp"
+#include "softsusy_interface.hpp"
 #include "softsusy.h" // for the bc's
 
 #include <string>

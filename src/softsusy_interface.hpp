@@ -4,7 +4,7 @@
 #define SUJSOFT_HPP
 
 #include "softsusy_opts.hpp"
-#include "libconstrain.h"
+#include "libconstrain.hpp"
 
 class softsusy_driver
 {
