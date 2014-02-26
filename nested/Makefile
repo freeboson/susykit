@@ -35,19 +35,16 @@ LCONSTRAIN=-L$(CONSTRAIN) -lconstrain
 LMULTINEST=-L$(MULTINEST) -lnest3 
 LFEYNHIGGS=$(FEYNHIGGS)/x86_64-Linux/lib64/libFH.a -lgfortran
 
-CXXINCL=-I$(CONSTRAIN) -I$(MICROMEGAS) -I$(SOFTSUSY)  -I$(FEYNHIGGS) -I$(SUPERISO)/src -I../
-LDFLAGS+=$(LMICRO) $(LCONSTRAIN) $(LSOFTSUSY) $(LFEYNHIGGS) $(LMULTINEST)
+CXXINCL=-I../include -I$(CONSTRAIN) -I$(MICROMEGAS) -I$(SOFTSUSY)  -I$(FEYNHIGGS) -I$(SUPERISO)/src -I../
+LDFLAGS+=$(LMICRO) $(LCONSTRAIN) $(LSOFTSUSY) $(LFEYNHIGGS) $(LMULTINEST) -L../lib -lsusykit
 
 
-OBJS=../sujmicro.o  ../sujsoft.o ../sujfeyn.o ../softsusy_opts.o nestface.o priors.o
+OBJS=nestface.o priors.o
 
 main ?= susytikNS.cpp
 
 all: $(main) $(OBJS)
 	$(CXX) $(CXXFLAGS) $(CXXINCL) -o $(main:.cpp=.x) $(main) $(OBJS) $(LDFLAGS)
-
-#susytikNS: susytikNS.o $(OBJS)
-#	$(CXX) -o susytikNS.x susytikNS.o $(OBJS) $(LDFLAGS)
 
 clean:
 	rm -rf *.o *.x
