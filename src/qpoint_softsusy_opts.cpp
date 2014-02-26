@@ -33,7 +33,7 @@ void qpoint_opts::usage() const
 {
 	cerr 	<< setiosflags(ios::left)
 		<< "General command:" << endl
-		<< "qpoint [options] m0 [MH1 MH2] [mq ml] [m3rd] <MG1 MG2 MG3 | mhf> <At Ab Atau | A0> <tb> <sgn(mu)>" << endl
+		<< "qpoint [options] -- m0 [MH1 MH2] [mq ml] [m3rd] <MG1 MG2 MG3 | mhf> <At Ab Atau | A0> <tb> <sgn(mu)>" << endl
 		<< endl
 		<< "The following options are available:" << endl
 		<< "  " << setw(26) << "-H, --help" << " print this message" << endl
