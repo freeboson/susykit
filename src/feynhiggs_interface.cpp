@@ -197,6 +197,9 @@ void feynhiggs_driver::calc_observables(model *m)
 	m->set_datum(susy_dict::m_A0, MHiggs[2]);
 	m->set_datum(susy_dict::m_Hpm, MHiggs[3]);
 
+	// this is replacing micromegas
+	// TODO: PREFIX THESE!!!
+	m->set_observable(susy_dict::observable::mw_mssm, MWMSSM);
 	return;
 }
 

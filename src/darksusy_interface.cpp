@@ -92,7 +92,7 @@ int darksusy_driver::calc_observables (model* const m)
 
 	// TODO: FIX THIS!!!
 	// don't use DS for this, use SuperIso
-	m->set_observable(susy_dict::observable::delta_rho, -1.0);
+	// m->set_observable(susy_dict::observable::delta_rho, -1.0); // set by FH
 	m->set_observable(susy_dict::observable::gmuon, -1.0);
 	m->set_observable(susy_dict::observable::bsgnlo, -1.0);
 	m->set_observable(susy_dict::observable::bsmumu, -1.0);

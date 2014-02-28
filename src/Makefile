@@ -22,7 +22,7 @@ BOOST_INCL=
 ################################################################
 
 
-CXX		= g++
+CXX		= clang
 LCONSFILES	= parseutils.cpp parse.cpp model.cpp model_lookup.cpp special_lookups.cpp get_slha.cpp likeconfig.cpp likedatum.cpp loglike.cpp 
 CONFILES	= constraint.cpp constrain.cpp constrain_opts.cpp
 QPARSEFILES	= qparse.cpp
@@ -104,6 +104,10 @@ clean:
 	pushd ../lib/ && (rm -rf $(LIBS); popd)
 	pushd ../test/ && (rm -rf hepstats_test; popd)
 	make -C ../nested clean
+
+NOCPP11:=$(filter-out -std=c++0x,$(CFLAGS))
+superiso_interface_pimpl.o:
+	$(CXX) $(NOCPP11) $(CXXINCL) -c superiso_interface_pimpl.cpp -o superiso_interface_pimpl.o
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(CXXINCL) -c $< -o $@
