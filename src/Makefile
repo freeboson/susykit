@@ -27,7 +27,7 @@ LCONSFILES	= parseutils.cpp parse.cpp model.cpp model_lookup.cpp special_lookups
 CONFILES	= constraint.cpp constrain.cpp constrain_opts.cpp
 QPARSEFILES	= qparse.cpp
 SLHAFILES	= sdb2slha.cpp
-LSKITFILES	= micromegas_interface.cpp softsusy_interface.cpp feynhiggs_interface.cpp softsusy_opts.cpp # superiso, darksusy not ready
+LSKITFILES	= darksusy_interface.cpp micromegas_interface.cpp softsusy_interface.cpp feynhiggs_interface.cpp softsusy_opts.cpp # superiso, darksusy not ready
 LCONSOBJS	= $(LCONSFILES:.cpp=.o)
 CONOBJS		= $(CONFILES:.cpp=.o)
 PLOTOBJS	= $(PLOTFILES:.cpp=.o)

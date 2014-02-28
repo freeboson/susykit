@@ -256,7 +256,8 @@ namespace susy_dict
 
 		const std::list<std::string> observe_row = {
 
-		// micromegas
+		// micromegas OR DarkSUSY/SuperISO
+		// TODO: Clean this all up.
 
 			micro_valid_bit,
 

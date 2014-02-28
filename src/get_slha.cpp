@@ -72,7 +72,7 @@ string get_slha::sp_modsel(const model *m) const
 	oss
 		<< "Block SPINFO         # Program information" << endl
 		<< "1   SOFTSUSY    # spectrum calculator" << endl
-		<< "2   3.2.4         # version number" << endl
+		<< "2   3.4.0         # version number" << endl
 		<< "Block MODSEL  # Select model" << endl;
 	if (m->get_model_type() == model::mSUGRA)
 	{

@@ -1,18 +1,30 @@
-#include <iostream>
-#include <iomanip>
 
-#include <string>
-#include <sstream>
-#include <fstream>
+
+/*
+
+    ****************************************************************************
+    *                                                                          *
+    *                                                                          *
+    * Sujeet Akula                                                             *
+    * sujeet@freeboson.org                                                     *
+    *                                                                          *
+    *                                                                          *
+    *                                                                          *
+    *                                                                          *
+    *                                                                          *
+    *                                                                          *
+    *                                                                          *
+    *                                                                          *
+    *                                                                          *
+    *                                                                          *
+    ****************************************************************************
+
+*/
+
 
 #include <stdexcept>
 
-#include "libconstrain.hpp"
-#include "micromegas_interface.hpp"
-#include "qpoint_softsusy_opts.hpp"
-#include "softsusy_interface.hpp"
-#include "feynhiggs_interface.hpp"
-//#include "sujiso.hpp"
+#include "darksusy_interface.hpp"
 
 #include "src/include/ftypes.h"
 #include "src/include/RecordIndices.h"
@@ -22,72 +34,82 @@ using namespace std;
 using namespace susy_dict;
 
 extern "C" {
+
+	// this is to access the dsslhacom COMMON block (ewww)
 	extern struct {
 		COMPLEX slha[nslhadata]; // COMPLEX is defined in ftypes.h
 	} dsslhacom_; // this is from include/dsslha.f in DS
-extern void FORTRAN(slhaclear)(COMPLEX *slhadata);
-extern void FORTRAN(dsinit)();
-extern REAL FORTRAN(dsrdomega)(INTEGER *omtype, INTEGER *fast, REAL *xf, INTEGER *ierr, INTEGER *iwar, INTEGER *nfc);
-extern void FORTRAN(dsddneunuc)(REAL *sigsip, REAL *sigsin, REAL *sigsdp, REAL *sigsdn);
-extern void FORTRAN(dsfromslha)();
-extern void FORTRAN(dsprep)();
+
+	// basic darksusy routines for setting up the SLHA data
+	extern void FORTRAN(dsinit)();
+	extern void FORTRAN(dsfromslha)();
+	extern void FORTRAN(dsprep)();
+
+	// routines from darksusy for computations
+	extern REAL FORTRAN(dsrdomega)(INTEGER *omtype, INTEGER *fast, REAL *xf, INTEGER *ierr, INTEGER *iwar, INTEGER *nfc);
+	extern void FORTRAN(dsddneunuc)(REAL *sigsip, REAL *sigsin, REAL *sigsdp, REAL *sigsdn);
+
+	// this is from FH
+	extern void FORTRAN(slhaclear)(COMPLEX *slhadata);
 }
 
+// a modification of the FeynHiggs macros for writing the SLHA "data structure"
 #define SlhaData Slhadata //macros in FeynHiggs are meant to be case-insensitive
 #define Slhadata(i) dsslhacom_.slha[i-1]
 
-void pass_slha_data(const model *m);
-
-int main(int argc, char** argv)
+darksusy_driver::darksusy_driver()
 {
-	/// Sets up exception handling
-	signal(SIGFPE, FPE_ExceptionHandler);
+	FORTRAN(dsinit)();
+	FORTRAN(slhaclear)(dsslhacom_.slha);
+}
 
-	softsusy_opts *sugra;
-	try {
-		sugra = new qpoint_opts(argc,argv);
-	} catch (exception &e) {
-		if (sugra != nullptr)
-			delete sugra;
+int darksusy_driver::operator() (model* const m)
+{
+#undef invalid // holy crap, FeynHiggs, prefix your macros!
+	if (m->get_model_type() == model::invalid)
+	{
 		return 1;
 	}
+#define invalid (-999)
 
-	model m;
+	pass_darksusy_slha_data(m);
+	calc_observables(m);
 
-	softsusy_driver softsusy(sugra);
-	micromegas_driver micro;
-	feynhiggs_driver feynhiggs;
-//	superiso_driver superiso;
+	return 0;
+}
 
-	try { 
-		m = softsusy(); // need to check for displayProblem().test() and neutralino LSP 
-	} catch (const string &s) { cerr << "SOFTSUSY exception: " << s << endl; return 1;}
-
-
-	feynhiggs(&m);
-	micro(&m);
-
-	pass_slha_data(&m);
-
+int darksusy_driver::calc_observables (model* const m)
+{
+	// TODO: add error checking from DS
 	INTEGER omtype = 1, fast = 0, ierr, iwar, nfc;
 	REAL xf, omegah2;
 	REAL sigsip, sigsin, sigsdp, sigsdn;
 
 	omegah2 = FORTRAN(dsrdomega)(&omtype, &fast, &xf, &ierr, &iwar, &nfc);
 	FORTRAN(dsddneunuc)(&sigsip, &sigsin, &sigsdp, &sigsdn);
-	cout << "MicrOMEGAs: omega h^2 = " << m.get_observable(observable::omega) << endl;
-	cout << "MicrOMEGAs: proton_SI = " << 1e-36*m.get_observable(observable::proton_SI) << endl;
-	cout << "MicrOMEGAs: proton_SD = " << 1e-36*m.get_observable(observable::proton_SD) << endl;
-	cout << "MicrOMEGAs: neutron_SI = " << 1e-36*m.get_observable(observable::neutron_SI) << endl;
-	cout << "MicrOMEGAs: neutron_SD = " << 1e-36*m.get_observable(observable::neutron_SD) << endl;
-	cout << "DarkSUSY: omega h^2 = " << omegah2 << endl;
-	cout << "DarkSUSY: proton_SI = " << sigsip << endl;
-	cout << "DarkSUSY: proton_SD = " << sigsdp << endl;
-	cout << "DarkSUSY: neutron_SI = " << sigsin << endl;
-	cout << "DarkSUSY: neutron_SD = " << sigsdn << endl;
 
+	m->set_observable(susy_dict::observable::micro_valid_bit, 1.0);
 
-	delete sugra;
+	// TODO: FIX THIS!!!
+	// don't use DS for this, use SuperIso
+	m->set_observable(susy_dict::observable::delta_rho, -1.0);
+	m->set_observable(susy_dict::observable::gmuon, -1.0);
+	m->set_observable(susy_dict::observable::bsgnlo, -1.0);
+	m->set_observable(susy_dict::observable::bsmumu, -1.0);
+	m->set_observable(susy_dict::observable::btaunu, -1.0);
+
+	m->set_observable(susy_dict::observable::omega, omegah2);
+#if 0
+	m->set_observable(susy_dict::observable::proton_SI, sigsip);
+	m->set_observable(susy_dict::observable::proton_SD, sigsdp);
+	m->set_observable(susy_dict::observable::neutron_SI, sigsin);
+	m->set_observable(susy_dict::observable::neutron_SD, sigsdn);
+#else
+	m->set_observable(susy_dict::observable::proton_SI, 1e36*sigsip);
+	m->set_observable(susy_dict::observable::proton_SD, 1e36*sigsdp);
+	m->set_observable(susy_dict::observable::neutron_SI, 1e36*sigsin);
+	m->set_observable(susy_dict::observable::neutron_SD, 1e36*sigsdn);
+#endif
 
 	return 0;
 }
@@ -98,13 +120,8 @@ int main(int argc, char** argv)
 // then two literal integers for the row/col
 #define matblock(name,i,j) m->get_datum( name ## _ ## i ## j )
 
-
-void pass_slha_data(const model *m)
+void darksusy_driver::pass_darksusy_slha_data(const model* const m)
 {
-	FORTRAN(dsinit)();
-
-	FORTRAN(slhaclear)(dsslhacom_.slha);
-
 	// sminputs
 
 	SMInputs_invAlfaMZ.re = m->get_datum(alpha_em_inv);
