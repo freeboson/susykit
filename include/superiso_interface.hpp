@@ -50,7 +50,9 @@ private:
 	double bsmumu();
 	double btaunu();
 	double gmuon();
+#ifndef SUPERISO_NO_RELIC
 	double relic_density();
+#endif
 
 	std::shared_ptr<parameters> superiso_params;
 };

@@ -47,7 +47,9 @@ void superiso_driver::calc_observables(model *m)
 	m->set_observable(observable::btaunu, btaunu());
 	m->set_observable(observable::gmuon, gmuon());
 
+#ifndef SUPERISO_NO_RELIC
 	std::cerr << "SuperISO Relic: omega h^2 = " << relic_density() << std::endl;
+#endif
 }
 
 
@@ -174,6 +176,10 @@ void superiso_driver::pass_superiso_slha_data(const model &m)
 	superiso_params->mass_er = m.get_datum(m_e_r);
 	superiso_params->mass_mur = m.get_datum(m_mu_r);
 	superiso_params->mass_tau2 = m.get_datum(m_stau_2);
+
+	// alpha
+	
+	superiso_params->alpha = m.get_datum(higgs_alpha);
 
 	// nmix
 	
@@ -362,6 +368,7 @@ double superiso_driver::gmuon()
 	return muon_gm2(superiso_params.get());
 }
 
+#ifndef SUPERISO_NO_RELIC
 double superiso_driver::relic_density()
 {
 
@@ -375,5 +382,5 @@ double superiso_driver::relic_density()
 
 	return ::relic_density(Wefftab,nlines_Weff,superiso_params.get(),&paramrelic);
 }
-
+#endif
 

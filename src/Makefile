@@ -8,17 +8,21 @@ BASE=$(HOME)/school/research
 #SOFTSUSY=$(BASE)/softsusy/current
 #use this for >=softsusy-3.4.0
 SOFTSUSY=$(BASE)/softsusy/current/src
+SOFTSUSY_VERSION_POST_340=1
 
 MICROMEGAS=$(BASE)/micromegas/current
 CALCHELP=$(MICROMEGAS)/CalcHEP_src
 DARKSUSY=$(BASE)/darksusy/current
-FEYNHIGGS=$(BASE)/feynhiggs/current
+FEYNHIGGS=$(DARKSUSY)/contrib/FeynHiggs-2.10.0
+
 SUPERISO=$(BASE)/superiso_relic/current
+SUPERISO_NO_RELIC=1
 
 # sometimes boost is in your include path
 # but if not, set this to -I<boost include dir>
 #BOOST_INCL=-I$(BOOST_DIR)/include
 BOOST_INCL=
+
 ################################################################
 
 
@@ -40,7 +44,6 @@ CXXFLAGS	= -std=c++0x -O3 -march=native -funroll-loops
 CXXINCL		= -I../include -I$(MICROMEGAS) -I$(SOFTSUSY) $(BOOST_INCL) -I$(FEYNHIGGS) -I$(FEYNHIGGS)/src/include -I$(SUPERISO)/src
 LDDIRS		= -L../lib -L$(SOFTSUSY)/.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src -L$(SUPERISO)/src/relic
 
-CXXFLAGS+=-DSOFTSUSY_POST34
 
 
 all: $(LIBS) $(BINS) hepstats_test darktest
@@ -50,8 +53,7 @@ debug: CXXFLAGS= -O0 -ggdb -std=c++0x -DLCONSTRAIN_DEBUG -DSOFTSUSY_POST34
 debug: all
 
 libconstrain.a: $(LCONSOBJS) 
-	ar csr ../lib/libconstrain.a $(LCONSOBJS)
-	ranlib ../lib/libconstrain.a
+	ar csr ../lib/$@ $^
 
 qparse: libconstrain.a $(QPARSEOBJS)
 	$(CXX) $(CXXFLAGS) $(QPARSEOBJS) $(LDDIRS) -lconstrain -o ../bin/qparse
@@ -66,9 +68,7 @@ hepstats_test: libconstrain.a hepstats_test.o
 	$(CXX) $(CXXFLAGS) $(CXXINCL) hepstats_test.o $(LDDIRS) -lconstrain -o ../test/hepstats_test
 
 libsusykit.a: $(LSKITOBJS)
-	ar csr ../lib/libsusykit.a $(LSKITOBJS)
-	ranlib ../lib/libsusykit.a
-
+	ar csr ../lib/$@ $^
 
 LMICRO2=$(MICROMEGAS)/sources/micromegas.a $(CALCHELP)/lib/dynamic_me.a \
 	$(MICROMEGAS)/MSSM/work/work_aux.a $(MICROMEGAS)/MSSM/lib/aLib.a \
@@ -84,7 +84,18 @@ LMICRO3=$(MICROMEGAS)/sources/micromegas.a $(CALCHELP)/lib/dynamic_me.a \
 	-lX11 -lm -rdynamic -ldl
 
 LMICRO=$(LMICRO2)
-LDFLAGS+= -Wl,-Bstatic -lsusykit -lconstrain -lisospin -lrelic -lsoft -ldarksusy -lisajet -lHB -lFH -lgfortran $(LMICRO)
+
+
+ifeq ($(SOFTSUSY_VERSION_POST_340),1)
+	CXXFLAGS += -DSOFTSUSY_POST34
+endif
+ifeq ($(SUPERISO_NO_RELIC),1)
+	CXXFLAGS += -DSUPERISO_NO_RELIC 
+	LDFLAGS+= -Wl,-Bstatic -lsusykit -lconstrain -lisospin -lsoft -ldarksusy -lisajet -lHB -lFH -lgfortran $(LMICRO)
+else
+	LDFLAGS+= -Wl,-Bstatic -lsusykit -lconstrain -lisospin -lrelic -lsoft -ldarksusy -lisajet -lHB -lFH -lgfortran $(LMICRO)
+endif
+
 
 susykit_init: $(LIBS) susykit_init.o
 	$(CXX) $(CXXFLAGS) -o ../bin/susykit_init susykit_init.o $(LDDIRS) $(LDFLAGS)
