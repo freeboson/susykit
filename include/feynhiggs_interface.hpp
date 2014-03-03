@@ -64,7 +64,6 @@ private:
 	void calc_observables(model *m);
 
 	void pass_feynhiggs_slha_data(const model *m);
-
 };
 
 #endif

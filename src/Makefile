@@ -22,12 +22,12 @@ BOOST_INCL=
 ################################################################
 
 
-CXX		= clang
+CXX		= g++
 LCONSFILES	= parseutils.cpp parse.cpp model.cpp model_lookup.cpp special_lookups.cpp get_slha.cpp likeconfig.cpp likedatum.cpp loglike.cpp 
 CONFILES	= constraint.cpp constrain.cpp constrain_opts.cpp
 QPARSEFILES	= qparse.cpp
 SLHAFILES	= sdb2slha.cpp
-LSKITFILES	= darksusy_interface.cpp micromegas_interface.cpp softsusy_interface.cpp feynhiggs_interface.cpp softsusy_opts.cpp # superiso, darksusy not ready
+LSKITFILES	= superiso_interface.cpp darksusy_interface.cpp micromegas_interface.cpp softsusy_interface.cpp feynhiggs_interface.cpp softsusy_opts.cpp
 LCONSOBJS	= $(LCONSFILES:.cpp=.o)
 CONOBJS		= $(CONFILES:.cpp=.o)
 PLOTOBJS	= $(PLOTFILES:.cpp=.o)
@@ -38,15 +38,15 @@ BINS   		= constrain qparse sdb2slha qpoint susykit_init susykit_scan gen_seeds
 LIBS   		= libconstrain.a libsusykit.a 
 CXXFLAGS	= -std=c++0x -O3 -march=native -funroll-loops
 CXXINCL		= -I../include -I$(MICROMEGAS) -I$(SOFTSUSY) $(BOOST_INCL) -I$(FEYNHIGGS) -I$(FEYNHIGGS)/src/include -I$(SUPERISO)/src
-LDDIRS		= -L../lib -L$(SOFTSUSY)/.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src
+LDDIRS		= -L../lib -L$(SOFTSUSY)/.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src -L$(SUPERISO)/src/relic
 
 CXXFLAGS+=-DSOFTSUSY_POST34
 
 
-all: $(LIBS) $(BINS) hepstats_test
+all: $(LIBS) $(BINS) hepstats_test darktest
 
 #debug: clean
-debug: CXXFLAGS+= -O0 -ggdb -DLCONSTRAIN_DEBUG
+debug: CXXFLAGS= -O0 -ggdb -std=c++0x -DLCONSTRAIN_DEBUG -DSOFTSUSY_POST34
 debug: all
 
 libconstrain.a: $(LCONSOBJS) 
@@ -63,7 +63,7 @@ sdb2slha: libconstrain.a $(SLHAOBJS)
 	$(CXX) $(CXXFLAGS) $(SLHAOBJS) $(LDDIRS) -lconstrain -o ../bin/sdb2slha
 
 hepstats_test: libconstrain.a hepstats_test.o
-	$(CXX) $(CXXFLAGS $(CXXINCL)) hepstats_test.o $(LDDIRS) -lconstrain -o ../test/hepstats_test
+	$(CXX) $(CXXFLAGS) $(CXXINCL) hepstats_test.o $(LDDIRS) -lconstrain -o ../test/hepstats_test
 
 libsusykit.a: $(LSKITOBJS)
 	ar csr ../lib/libsusykit.a $(LSKITOBJS)
@@ -84,7 +84,7 @@ LMICRO3=$(MICROMEGAS)/sources/micromegas.a $(CALCHELP)/lib/dynamic_me.a \
 	-lX11 -lm -rdynamic -ldl
 
 LMICRO=$(LMICRO2)
-LDFLAGS+= -Wl,-Bstatic -lsusykit -lconstrain -lsoft -lFH -lHB -lisajet -ldarksusy -lgfortran $(LMICRO)
+LDFLAGS+= -Wl,-Bstatic -lsusykit -lconstrain -lisospin -lrelic -lsoft -ldarksusy -lisajet -lHB -lFH -lgfortran $(LMICRO)
 
 susykit_init: $(LIBS) susykit_init.o
 	$(CXX) $(CXXFLAGS) -o ../bin/susykit_init susykit_init.o $(LDDIRS) $(LDFLAGS)
@@ -98,6 +98,9 @@ qpoint: $(LIBS) qpoint_softsusy_opts.o qpoint.o
 gen_seeds: gen_seeds.o
 	$(CXX) $(CXXFLAGS) gen_seeds.o -o ../bin/gen_seeds
 
+darktest: $(LIBS) darktest.o
+	$(CXX) $(CXXFLAGS) $(CXXINCL) darktest.o qpoint_softsusy_opts.o $(LDDIRS) -o ../test/darktest $(LDFLAGS)
+
 clean:
 	rm -rf *.o
 	pushd ../bin/ && (rm -rf $(BINS); popd)
@@ -105,9 +108,9 @@ clean:
 	pushd ../test/ && (rm -rf hepstats_test; popd)
 	make -C ../nested clean
 
-NOCPP11:=$(filter-out -std=c++0x,$(CFLAGS))
-superiso_interface_pimpl.o:
-	$(CXX) $(NOCPP11) $(CXXINCL) -c superiso_interface_pimpl.cpp -o superiso_interface_pimpl.o
+#NOCPP11:=$(filter-out -std=c++0x,$(CXXFLAGS))
+#superiso_interface_pimpl.o:
+#	$(CXX) $(NOCPP11) $(CXXINCL) -c superiso_interface_pimpl.cpp -o superiso_interface_pimpl.o
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(CXXINCL) -c $< -o $@

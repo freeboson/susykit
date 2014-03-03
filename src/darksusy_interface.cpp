@@ -48,6 +48,7 @@ extern "C" {
 	// routines from darksusy for computations
 	extern REAL FORTRAN(dsrdomega)(INTEGER *omtype, INTEGER *fast, REAL *xf, INTEGER *ierr, INTEGER *iwar, INTEGER *nfc);
 	extern void FORTRAN(dsddneunuc)(REAL *sigsip, REAL *sigsin, REAL *sigsdp, REAL *sigsdn);
+	extern void FORTRAN(dsbsgammafull)(REAL *bsgamma, INTEGER *include_MSSM_flag);
 
 	// this is from FH
 	extern void FORTRAN(slhaclear)(COMPLEX *slhadata);
@@ -85,8 +86,12 @@ int darksusy_driver::calc_observables (model* const m)
 	REAL xf, omegah2;
 	REAL sigsip, sigsin, sigsdp, sigsdn;
 
+	INTEGER include_MSSM_flag = 1;
+	REAL bsgamma;
+
 	omegah2 = FORTRAN(dsrdomega)(&omtype, &fast, &xf, &ierr, &iwar, &nfc);
 	FORTRAN(dsddneunuc)(&sigsip, &sigsin, &sigsdp, &sigsdn);
+	FORTRAN(dsbsgammafull)(&bsgamma, &include_MSSM_flag);
 
 	m->set_observable(susy_dict::observable::micro_valid_bit, 1.0);
 
@@ -94,7 +99,7 @@ int darksusy_driver::calc_observables (model* const m)
 	// don't use DS for this, use SuperIso
 	// m->set_observable(susy_dict::observable::delta_rho, -1.0); // set by FH
 	m->set_observable(susy_dict::observable::gmuon, -1.0);
-	m->set_observable(susy_dict::observable::bsgnlo, -1.0);
+	m->set_observable(susy_dict::observable::bsgnlo, bsgamma);
 	m->set_observable(susy_dict::observable::bsmumu, -1.0);
 	m->set_observable(susy_dict::observable::btaunu, -1.0);
 

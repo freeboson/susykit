@@ -14,7 +14,7 @@
 using namespace std;
 
 qpoint_opts::qpoint_opts(int argc, char**argv)
-:softsusy_opts()
+:softsusy_opts(),slha_format(false)
 {
 	try {
 		opthandle(argc,argv);
@@ -37,6 +37,7 @@ void qpoint_opts::usage() const
 		<< endl
 		<< "The following options are available:" << endl
 		<< "  " << setw(26) << "-H, --help" << " print this message" << endl
+		<< "  " << setw(26) << "-s, --slha" << " output SLHA to stderr" << endl
 		<< endl
 		<< "Non-universality flags:" << endl
 		<< "  " << setw(26) << "-h, --higgs" << " seperate masses for Higgs fields, requires MH1 and MH2" << endl
@@ -59,6 +60,7 @@ int qpoint_opts::opthandle(int argc, char** argv)
 	static option longopts[] = {
 		// help
 		{"help",	no_argument,		NULL, 'H'},
+		{"slha",	no_argument,		NULL, 's'},
 		{"higgs",	no_argument,		NULL, 'h'},
 		{"gaugino",	no_argument,		NULL, 'g'},
 		{"trilinear",	no_argument,		NULL, 't'},
@@ -68,8 +70,8 @@ int qpoint_opts::opthandle(int argc, char** argv)
 		{"mq-ml",	no_argument,		NULL, 'f'},
 		{"full",	no_argument,		NULL, 'F'},
 		{"full-sugra",	no_argument,		NULL, 'F'},
-		{"alphas",	required_argument,	NULL, 's'},
-		{"alpha-s",	required_argument,	NULL, 's'},
+		{"alphas",	required_argument,	NULL, 'S'},
+		{"alpha-s",	required_argument,	NULL, 'S'},
 		{"alphaem",	required_argument,	NULL, 'e'},
 		{"alpha-em",	required_argument,	NULL, 'e'},
 		{"alphaeminv",	required_argument,	NULL, 'e'},
@@ -81,7 +83,7 @@ int qpoint_opts::opthandle(int argc, char** argv)
 		{ NULL,		no_argument,		NULL, 0}
 	};
 
-	static const char *optcstr = "Hhgt3fFs:e:T:b:";
+	static const char *optcstr = "Hshgt3fFS:e:T:b:";
 
 	int longindex = 0;
 
@@ -136,7 +138,7 @@ int qpoint_opts::opthandle(int argc, char** argv)
 					full_sugra = true;	// this is a special case -- deal with it later
 					break;
 				
-				case 's':
+				case 'S':
 					if (NULL == optarg) 
 						throw(runtime_error("getopt_long() error!!!"));
 
@@ -161,7 +163,11 @@ int qpoint_opts::opthandle(int argc, char** argv)
 						throw(runtime_error("getopt_long() error!!!"));
 					mbmb = boost::lexical_cast<double>(optarg);
 					break;
-	
+
+				case 's':
+					slha_format = true;
+					break;
+
 				case 0:
 				case ':':
 				case 'H':

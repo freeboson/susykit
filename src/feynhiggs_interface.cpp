@@ -199,7 +199,11 @@ void feynhiggs_driver::calc_observables(model *m)
 
 	// this is replacing micromegas
 	// TODO: PREFIX THESE!!!
-	m->set_observable(susy_dict::observable::mw_mssm, MWMSSM);
+	m->set_observable(susy_dict::observable::delta_rho, Deltarho);
+	m->set_observable(susy_dict::observable::bsgnlo, bsgMSSM);
+	m->set_observable(susy_dict::observable::bsmumu, bsmumuMSSM);
+	m->set_observable(susy_dict::observable::gmuon, gm2);
+
 	return;
 }
 

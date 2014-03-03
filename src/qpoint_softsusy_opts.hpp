@@ -14,6 +14,8 @@ public:
 
 	void usage() const;
 
+	bool slha() const { return slha_format; }
+
 private:
 
 	int opthandle(int argc, char** argv);
@@ -26,6 +28,7 @@ private:
 	bool mq_ml;
 	bool full_sugra;
 
+	bool slha_format;
 };
 
 #endif

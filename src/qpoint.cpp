@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 	/// Sets up exception handling
 	signal(SIGFPE, FPE_ExceptionHandler);
 
-	softsusy_opts *sugra;
+	qpoint_opts *sugra;
 	try {
 		sugra = new qpoint_opts(argc,argv);
 	} catch (exception &e) {
@@ -49,6 +49,8 @@ int main(int argc, char** argv)
 	}
 
 	model m;
+
+	get_slha slha;
 
 	softsusy_driver softsusy(sugra);
 	micromegas_driver micro;
@@ -64,6 +66,9 @@ int main(int argc, char** argv)
 	micro(&m);
 
 	cout << m << endl;
+
+	if (sugra->slha())
+		cerr << slha(m) << endl;
 
 	delete sugra;
 
