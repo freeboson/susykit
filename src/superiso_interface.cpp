@@ -310,12 +310,16 @@ void superiso_driver::pass_superiso_slha_data(const model &m)
 	superiso_params->A_mu = m.get_datum(amu_q);
 	superiso_params->A_tau = m.get_datum(atau_q);
 
+#ifndef SUPERISO_NO_RELIC
+
 	// decay
 
 	superiso_params->width_h0 = m.get_observable(observable::width_h0);
 	superiso_params->width_H0 = m.get_observable(observable::width_H0);
 	superiso_params->width_A0 = m.get_observable(observable::width_A0);
 	superiso_params->width_H = m.get_observable(observable::width_Hpm);
+
+#endif
 
 	slha_adjust(); // post-processing
 }
