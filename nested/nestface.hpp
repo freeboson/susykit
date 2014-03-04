@@ -16,6 +16,7 @@
 
 #include "libconstrain.hpp"
 #include "libsusykit.hpp"
+#include "hepstats.hpp"
 #include "priors.hpp"
 
 void create_dir(const std::string &dir);

@@ -15,6 +15,8 @@ CALCHELP=$(MICROMEGAS)/CalcHEP_src
 DARKSUSY=$(BASE)/darksusy/current
 FEYNHIGGS=$(DARKSUSY)/contrib/FeynHiggs-2.10.0
 
+MULTINEST=$(BASE)/multinest/current
+
 SUPERISO=$(BASE)/superiso_relic/current
 SUPERISO_NO_RELIC=1
 
@@ -32,14 +34,14 @@ CXXINCL		= -I../include -I$(MICROMEGAS) -I$(SOFTSUSY) $(BOOST_INCL) -I$(FEYNHIGG
 LDDIRS		= -L../lib -L$(SOFTSUSY)/.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src -L$(SUPERISO)/src/relic
 CXXFLAGS	= -std=c++0x -O3 -march=native -funroll-loops
 CXXINCL		= -I../include -I$(MICROMEGAS) -I$(SOFTSUSY) $(BOOST_INCL) -I$(FEYNHIGGS) -I$(FEYNHIGGS)/src/include -I$(SUPERISO)/src
-LDDIRS		= -L../lib -L$(SOFTSUSY)/.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src -L$(SUPERISO)/src/relic
+LDDIRS		= -L../lib -L$(SOFTSUSY)/.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src -L$(MULTINEST)
 
 ifeq ($(SOFTSUSY_VERSION_POST_340),1)
 	CXXFLAGS += -DSOFTSUSY_POST34
 endif
 ifeq ($(SUPERISO_NO_RELIC),1)
 	CXXFLAGS += -DSUPERISO_NO_RELIC 
-	LDFLAGS+= -static -lsusykit -lconstrain -lisospin -lsoft -ldarksusy -lisajet -lHB -lFH -lgfortran
+	LDFLAGS+= -static -lsusykit -lconstrain -lisospin -lsoft -ldarksusy -lisajet -lHB -lFH -lnest3 -lgfortran
 else
 	LDFLAGS+= -static -lsusykit -lconstrain -lisospin -lrelic -lsoft -ldarksusy -lisajet -lHB -lFH -lgfortran
 endif
