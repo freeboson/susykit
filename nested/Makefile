@@ -45,7 +45,7 @@ else
 endif
 
 
-main ?= susytikNS.cpp
+main ?= susykitNS.cpp
 
 all: $(main) $(OBJS)
 	$(CXX) $(CXXFLAGS) $(CXXINCL) $(LDDIRS) -o $(main:.cpp=.x) $(main) $(OBJS) $(LDFLAGS)
