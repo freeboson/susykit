@@ -66,6 +66,7 @@ darksusy_driver::darksusy_driver()
 
 int darksusy_driver::operator() (model* const m)
 {
+	FORTRAN(slhaclear)(dsslhacom_.slha);
 #undef invalid // holy crap, FeynHiggs, prefix your macros!
 	if (m->get_model_type() == model::invalid)
 	{
