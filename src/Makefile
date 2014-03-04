@@ -37,7 +37,9 @@ PLOTOBJS	= $(PLOTFILES:.cpp=.o)
 QPARSEOBJS	= $(QPARSEFILES:.cpp=.o)
 SLHAOBJS	= $(SLHAFILES:.cpp=.o)
 LSKITOBJS	= $(LSKITFILES:.cpp=.o)
-BINS   		= constrain qparse sdb2slha qpoint susykit_init susykit_scan gen_seeds
+MAIN		= constrain qparse sdb2slha qpoint gen_seeds susykit_scan 
+AUX   		= susykit_init gen_seeds
+TEST		= hepstats_test darktest
 LIBS   		= libconstrain.a libsusykit.a 
 CXXFLAGS	= -std=c++0x -O3 -march=native -funroll-loops
 CXXINCL		= -I../include -I$(MICROMEGAS) -I$(SOFTSUSY) $(BOOST_INCL) -I$(FEYNHIGGS) -I$(FEYNHIGGS)/src/include -I$(SUPERISO)/src
@@ -45,7 +47,7 @@ LDDIRS		= -L../lib -L$(SOFTSUSY)/.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src -L$(S
 
 
 
-all: $(LIBS) $(BINS) hepstats_test darktest
+all: $(LIBS) $(MAIN)
 
 #debug: clean
 debug: CXXFLAGS= -O0 -ggdb -std=c++0x -DLCONSTRAIN_DEBUG -DSOFTSUSY_POST34
@@ -90,9 +92,9 @@ ifeq ($(SOFTSUSY_VERSION_POST_340),1)
 endif
 ifeq ($(SUPERISO_NO_RELIC),1)
 	CXXFLAGS += -DSUPERISO_NO_RELIC 
-	LDFLAGS+= -Wl,-Bstatic -lsusykit -lconstrain -lisospin -lsoft -ldarksusy -lisajet -lHB -lFH -lgfortran $(LMICRO)
+	LDFLAGS+= -static -lsusykit -lconstrain -lisospin -lsoft -ldarksusy -lisajet -lHB -lFH -lgfortran
 else
-	LDFLAGS+= -Wl,-Bstatic -lsusykit -lconstrain -lisospin -lrelic -lsoft -ldarksusy -lisajet -lHB -lFH -lgfortran $(LMICRO)
+	LDFLAGS+= -static -lsusykit -lconstrain -lisospin -lrelic -lsoft -ldarksusy -lisajet -lHB -lFH -lgfortran
 endif
 
 
@@ -109,13 +111,13 @@ gen_seeds: gen_seeds.o
 	$(CXX) $(CXXFLAGS) gen_seeds.o -o ../bin/gen_seeds
 
 darktest: $(LIBS) darktest.o
-	$(CXX) $(CXXFLAGS) $(CXXINCL) darktest.o qpoint_softsusy_opts.o $(LDDIRS) -o ../test/darktest $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(CXXINCL) darktest.o qpoint_softsusy_opts.o $(LDDIRS) -o ../test/darktest $(LDFLAGS) $(LMICRO)
 
 clean:
 	rm -rf *.o
-	pushd ../bin/ && (rm -rf $(BINS); popd)
+	pushd ../bin/ && (rm -rf $(MAIN) $(AUX); popd)
 	pushd ../lib/ && (rm -rf $(LIBS); popd)
-	pushd ../test/ && (rm -rf hepstats_test; popd)
+	pushd ../test/ && (rm -rf $(TEST); popd)
 	make -C ../nested clean
 
 #NOCPP11:=$(filter-out -std=c++0x,$(CXXFLAGS))
