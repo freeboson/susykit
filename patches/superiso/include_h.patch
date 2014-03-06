@@ -1,0 +1,17 @@
+--- ../../../superiso_relic/current/src/include.h	2012-06-16 08:00:00.000000000 -0700
++++ include.h	2014-03-03 15:23:25.383117428 -0800
+@@ -8,7 +8,13 @@
+ #include <errno.h>
+ #include <sys/wait.h>
+ #include <sys/stat.h>
+-#include <complex.h>
++
++#ifndef SUSYKIT_INCLUDED
++#  include <complex.h>
++#else
++#  define complex _Complex
++#endif
++
+ #include <string.h>
+ #include <strings.h>
+ 

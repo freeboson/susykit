@@ -4,7 +4,7 @@
 #include <cstring>
 #include <forward_list>
 
-#include "nestface.h"
+#include "nestface.hpp"
 #include "hepstats.hpp"
 #include "priors.hpp"
 
@@ -12,16 +12,16 @@ const double logZero = -1e90;
 
 namespace multinest_options
 {
-	int IS = 1;					// do importance sampling?
+	int IS = 0;					// do importance sampling?
 	int mmodal = 1;					// do mode separation?
-	int ceff = 0;					// run in constant efficiency mode?
+	int ceff = 1;					// run in constant efficiency mode?
 	int nlive = 20000;				// number of live points
 	double efr = 0.8;				// set the required efficiency
 	double tol = 1e-4;				// tol, defines the stopping criteria
-	const int ndims = 10;				// dimensionality (no. of free parameters)
+	const int ndims = 7;				// dimensionality (no. of free parameters)
 	int nPar = ndims + (susy_dict::NUSUGRA_row.size()-1) + susy_dict::observable::observe_row.size();	// total no. of parameters including free & derived parameters
 	int nClsPar = 6;				// no. of parameters to do mode separation on
-	int updInt = 2000;				// after how many iterations feedback is required & the output files should be updated
+	int updInt = 20;				// after how many iterations feedback is required & the output files should be updated
 							// note: posterior files are updated & dumper routine is called after every updInt*10 iterations
 	double Ztol = logZero;				// all the modes with logZ < Ztol are ignored
 	int maxModes = 100;				// expected max no. of modes (used only for memory allocation)
@@ -117,17 +117,17 @@ void dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **po
 void init_priors()
 {
 	prior_list = {
-		make_shared<priors::log> (1.0, 3.0), // m0  // these will be < 1 TeV
-		make_shared<priors::log> (1.0, 3.0), // m1
-		make_shared<priors::log> (1.0, 3.0), // m2
-		make_shared<priors::log> (2.7, 4.7), // m3 // start gluino mass > 500 GeV
-		make_shared<priors::linear> (-50e3, 50e3), // a0
+		make_shared<priors::log> (1.0, 3.3), // m0  // these will be < 1 TeV
+		make_shared<priors::log> (1.0, 3.3), // m1
+		make_shared<priors::log> (1.0, 3.3), // m2
+		make_shared<priors::log> (3.0, 4.7), // m3 // start gluino mass > 500 GeV
+		make_shared<priors::linear> (-10, 10), // a0/m3
 		make_shared<priors::linear> (2.0, 62.0), // tb
 
-		make_shared<priors::linear> (173.07 - 2*0.789, 173.07 + 2*0.789), // mtop(pole)
-		make_shared<priors::linear> (4.18 - 2*0.03, 4.18 + 2*0.03), // mb(mb)
-		make_shared<priors::linear> (0.1184 - 2*7e-4, 0.1184 + 2*7e-4), // alpha_s(MZ)
-		make_shared<priors::linear> (127.916 - 2*0.015, 127.916 + 2*0.015), // alpha_em_inv(MZ)
+		make_shared<priors::linear> (173.07 - 2*0.789, 173.07 + 2*0.789)//, // mtop(pole)
+//		make_shared<priors::linear> (4.18 - 2*0.03, 4.18 + 2*0.03), // mb(mb)
+//		make_shared<priors::linear> (0.1184 - 2*7e-4, 0.1184 + 2*7e-4), // alpha_s(MZ)
+//		make_shared<priors::linear> (127.916 - 2*0.015, 127.916 + 2*0.015), // alpha_em_inv(MZ)
 	};
 }
 
@@ -163,14 +163,16 @@ std::unique_ptr<softsusy_opts> map_cube_to_opts(double *cube)
 	const double * const m1 = &cube[cube_index++];
 	const double * const m2 = &cube[cube_index++];
 	const double * const m3 = &cube[cube_index++];
-	const double * const a0 = &cube[cube_index++];
+	const double * const a0_by_m3 = &cube[cube_index++];
 	const double * const tb = &cube[cube_index++];
 
 	// nuisance params
 	const double * const mtop = &cube[cube_index++];
-	const double * const mbmb = &cube[cube_index++];
-	const double * const alpha_s = &cube[cube_index++];
-	const double * const alpha_em_inv= &cube[cube_index++];
+//	const double * const mbmb = &cube[cube_index++];
+//	const double * const alpha_s = &cube[cube_index++];
+//	const double * const alpha_em_inv= &cube[cube_index++];
+
+	const double a0 = (*a0_by_m3) * (*m3);
 
 	// build pars
 	DoubleVector pars(49);
@@ -181,9 +183,9 @@ std::unique_ptr<softsusy_opts> map_cube_to_opts(double *cube)
 	pars(3) = *m3;
 
 	// trilinear couplings
-	pars(11) = *a0;
-	pars(12) = *a0;
-	pars(13) = *a0;
+	pars(11) = a0;
+	pars(12) = a0;
+	pars(13) = a0;
 
 	// Higgs field mass^2
 	pars(21) = (*m0) * abs(*m0);
@@ -199,9 +201,9 @@ std::unique_ptr<softsusy_opts> map_cube_to_opts(double *cube)
 	point->set_pars(pars);
 	point->set_tb(*tb);
 	point->set_mtop_pole(*mtop);
-	point->set_mbmb(*mbmb);
-	point->set_alpha_s(*alpha_s);
-	point->set_alpha_em_inv(*alpha_em_inv);
+//	point->set_mbmb(*mbmb);
+//	point->set_alpha_s(*alpha_s);
+//	point->set_alpha_em_inv(*alpha_em_inv);
 
 	return point;
 }

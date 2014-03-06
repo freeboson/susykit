@@ -25,7 +25,8 @@
 #include "qpoint_softsusy_opts.hpp"
 #include "softsusy_interface.hpp"
 #include "feynhiggs_interface.hpp"
-//#include "sujiso.hpp"
+#include "darksusy_interface.hpp"
+#include "superiso_interface.hpp"
 
 #include <string>
 #include <sstream>
@@ -53,9 +54,10 @@ int main(int argc, char** argv)
 	get_slha slha;
 
 	softsusy_driver softsusy(sugra);
-	micromegas_driver micro;
+//	micromegas_driver micro;
 	feynhiggs_driver feynhiggs;
-//	superiso_driver superiso;
+	darksusy_driver darksusy;
+	superiso_driver superiso;
 
 	try { 
 		m = softsusy(); // need to check for displayProblem().test() and neutralino LSP 
@@ -63,7 +65,8 @@ int main(int argc, char** argv)
 
 
 	feynhiggs(&m);
-	micro(&m);
+	darksusy(&m);
+	superiso(&m);
 
 	cout << m << endl;
 

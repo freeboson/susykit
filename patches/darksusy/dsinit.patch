@@ -1,0 +1,37 @@
+--- ../../../darksusy/current/src/ini/dsinit.f	2013-02-09 22:43:34.000000000 -0800
++++ dsinit.f	2014-03-06 12:23:56.848345675 -0800
+@@ -237,7 +237,7 @@
+       call dsmhset('default')
+ 
+ c...initialize Sun potential
+-      call dsntsunread
++c      call dsntsunread
+ 
+ c...load table of nuclides
+       call dsreadnuclides
+@@ -345,20 +345,20 @@
+ c... added by Erik Lundstrom (090316)
+ c... initialize HiggsBounds if HiggsBounds is to be used for
+ c... calculation of higgs boson accelerator bounds 
+-      if (higwid.eq.5) then
++c      if (higwid.eq.5) then
+ 
+ c old call to HiggsBounds         call initialize_HiggsBounds(3,'onlyL')
+ c...JE FIX: change below to LandH to also include tevatron?
+ c         call initialize_HiggsBounds(3,1,'onlyL')
+-         call initialize_HiggsBounds(3,1,'LandH')
++c         call initialize_HiggsBounds(3,1,'LandH')
+ 
+-      endif
++c      endif
+ 
+ c...Setup defaults for wa routine
+-      call dsinit_wa
++c      call dsinit_wa
+ 
+ c...Setup defaults for ha routine
+-      call dsinit_ha
++c      call dsinit_ha
+ 
+ 
+       write(*,*) 'Initialization of DarkSUSY complete.'

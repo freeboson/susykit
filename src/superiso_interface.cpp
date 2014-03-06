@@ -42,6 +42,8 @@ void superiso_driver::operator() (model *m)
 
 void superiso_driver::calc_observables(model *m)
 {
+	m->set_observable(observable::micro_valid_bit, 1.0);
+
 	m->set_observable(observable::bsgnlo, bsgamma());
 	m->set_observable(observable::bsmumu, bsmumu());
 	m->set_observable(observable::btaunu, btaunu());

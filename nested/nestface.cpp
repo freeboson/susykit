@@ -1,104 +1,81 @@
-#ifdef __INTEL_COMPILER 			// if the MultiNest library was compiled with ifort
-       #define NESTRUN nested_mp_nestrun_
-#elif defined __GNUC__ 				// if the MultiNest library was compiled with gfortran
-       #define NESTRUN __nested_MOD_nestrun
-#else
-       #error Do not know how to link to Fortran libraries, check symbol table for your platform (nm libnest3.a | grep nestrun)
-#endif
-       #define NESTRUN nested_mp_nestrun_ //override
 
-#ifndef MULTINEST_H
-#define MULTINEST_H
-#pragma once
+#include "nestface.hpp"
 
-#include <stdexcept>
+// for create_dir stuff
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+// errno stuff
+#include <cerrno>
+#include <cstring> // for strerror()
+#include <sstream>
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+#include <forward_list>
+
 #include <string>
-#include <memory>
+//#include <regex>
 
-#include "hepstats.hpp"
-#include "softsusy_opts.hpp"
-#include "priors.hpp"
+hepstats::loglike loglike_calc;
 
-void create_dir(const std::string &dir);
-void set_loglike_conf(const std::string &like_conf_name);
-std::string get_full_root(const std::string &dir, const std::string &file_root);
+//std::regex nl_match(R"(\n)");
 
-
-// N.B. YOU MUST WRITE THIS FUNCTION!!
-extern std::unique_ptr<softsusy_opts> map_cube_to_opts(double *cube);
-
-/***************************************** C++ Interface to MultiNest **************************************************/
-
-namespace nested
+void create_dir(const std::string &dir)
 {
-#ifdef OLD_MN
-	extern "C" {
-		void NESTRUN(int &mmodal, int &ceff, int &nlive, double &tol, double &efr, int &ndims,
-			int &nPar, int &nClsPar, int &maxModes, int &updInt, double &Ztol, char *root, int &seed,
-			int *pWrap, int &fb, int &resume, int &outfile, int &initMPI, double &logZero, int &maxiter,
-			void (*Loglike)(double *Cube, int &n_dim, int &n_par, double &lnew, void *),
-			void (*dumper)(int &, int &, int &, double **, double **, double **, double &, double &, double &, void *),
-			void *context, int &root_len);
-	}
-
-	static void run(bool mmodal, bool ceff, int nlive, double tol, double efr, int ndims, int nPar, int nClsPar, int maxModes,
-		int updInt, double Ztol, const std::string & root, int seed, int *pWrap, bool fb, bool resume, bool outfile, 
-		bool initMPI, double logZero, int maxiter, void (*LogLike)(double *Cube, int &n_dim, int &n_par, double &lnew, void *),
-		void (*dumper)(int &, int &, int &, double **, double **, double **, double &, double &, double &, void *), void *context)
+	if (0 != mkdir(dir.c_str(),S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH))
 	{
-		char t_root[100];
-		std::fill(t_root, t_root + 100, ' ');
-		snprintf(t_root, 99, "%s", root.c_str());
-		int root_len = strlen(t_root);
-		t_root[strlen(t_root)] = ' ';
-	
-		int t_fb = fb;
-		int t_resume = resume;
-		int t_outfile = outfile;
-		int t_initMPI = initMPI;
-		int t_mmodal = mmodal;
-		int t_ceff = ceff;
-		
-		NESTRUN(t_mmodal, t_ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, t_root, seed, pWrap, t_fb, 
-		t_resume, t_outfile, t_initMPI, logZero, maxiter, LogLike, dumper, context, root_len);
+		if (EEXIST == errno)
+		{
+			std::cerr << dir << " exists... continuing..." << std::endl;
+		}
+		else
+		{
+			std::stringstream error_msg;
+			error_msg << "Error creating " << dir << ": " << strerror(errno);
+			throw(runtime_error(error_msg.str()));
+		}
 	}
-
-#else
-
-	extern "C" {
-		void NESTRUN(int &IS, int &mmodal, int &ceff, int &nlive, double &tol, double &efr, int &ndims,
-			int &nPar, int &nClsPar, int &maxModes, int &updInt, double &Ztol, char *root, int &seed,
-			int *pWrap, int &fb, int &resume, int &outfile, int &initMPI, double &logZero, int &maxiter,
-			void (*Loglike)(double *Cube, int &n_dim, int &n_par, double &lnew, void *),
-			void (*dumper)(int &, int &, int &, double **, double **, double **, double &, double &, double &, void *),
-			void *context, int &root_len);
-	}
-
-	static void run(bool IS, bool mmodal, bool ceff, int nlive, double tol, double efr, int ndims, int nPar, int nClsPar, int maxModes,
-		int updInt, double Ztol, const std::string & root, int seed, int *pWrap, bool fb, bool resume, bool outfile, 
-		bool initMPI, double logZero, int maxiter, void (*LogLike)(double *Cube, int &n_dim, int &n_par, double &lnew, void *),
-		void (*dumper)(int &, int &, int &, double **, double **, double **, double &, double &, double &, void *), void *context)
+	else
 	{
-		char t_root[100];
-		std::fill(t_root, t_root + 100, ' ');
-		snprintf(t_root, 99, "%s", root.c_str());
-		int root_len = strlen(t_root);
-		t_root[strlen(t_root)] = ' ';
-	
-		int t_fb = fb;
-		int t_resume = resume;
-		int t_outfile = outfile;
-		int t_initMPI = initMPI;
-		int t_mmodal = mmodal;
-		int t_IS = IS;
-		int t_ceff = ceff;
-		
-		NESTRUN(t_IS, t_mmodal, t_ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, t_root, seed, pWrap, t_fb, 
-		t_resume, t_outfile, t_initMPI, logZero, maxiter, LogLike, dumper, context, root_len);
-	}	
+		std::cerr << "Created directory " << dir << std::endl;
+	}
+}
 
 
-#endif
+void set_loglike_conf(const std::string &like_conf_name)
+{
+	std::cerr << "Reading likelihood function configuration from " << like_conf_name << "..." << std::endl;
+
+	std::ifstream reader;
+	reader.open(like_conf_name.c_str());
+	if (reader.fail())
+	{
+		std::stringstream error_msg;
+		error_msg << "Error opening " << like_conf_name << " for reading!";
+		throw(runtime_error(error_msg.str()));
+	}
+
+	hepstats::likeconfig config(&reader);
+	loglike_calc = config();
+
+	if (reader.is_open()) 
+		reader.close();
+}
+
+std::string get_full_root(const std::string &dir, const std::string &file_root)
+{
+	std::stringstream full_root;
+
+	full_root << dir << "/" << file_root;
+	if (full_root.str().size() > 100)
+	{
+		throw length_error("Error: director+root larger than arbitrary cap. Feel free to change this.");
+	}
+	return full_root.str();
 }
 
 /******************************************** loglikelihood routine ****************************************************/
@@ -115,34 +92,153 @@ namespace nested
 // Output arguments
 // lnew 						= loglikelihood
 
-void log_like_request(double *Cube, int &ndim, int &npars, double &lnew, void *context);
+//#define DEBUG
+
+darksusy_driver darksusy;
+
+void log_like_request(double *Cube, int &ndim, int &npars, double &lnew, void *context)
+{
+
+	model m;
+	lnew = -1e90;
+
+	auto sugra = map_cube_to_opts(Cube);
+
+#ifdef DEBUG
+
+	std::forward_list<int> *pars_inputs = static_cast<std::forward_list<int>*>(context);
+
+	std::stringstream point_summary;
+	
+	point_summary << "inputs = [ "
+		      << " --mtop='" << sugra->get_mtop_pole() << "'"
+		      << " --mbmb='" << sugra->get_mbmb() << "'"
+		      << " --alpha-s='" << sugra->get_alpha_s() << "'"
+		      << " --alpha-em-inv='" << sugra->get_alpha_em_inv() << "'"
+		      << " -- ";
+	for (int index : *pars_inputs)
+		point_summary << "'" << sugra->pars_at(index) << "' ";
+	point_summary << "'" << sugra->get_tb() << "' " << "'" << sugra->get_sgnmu() << "' ]";
+
+#endif
+
+	softsusy_driver softsusy(sugra.get()); // softsusy_driver will just copy the contents
+	feynhiggs_driver feynhiggs;
+	superiso_driver superiso; // not ready yet
+
+	try { 
+
+		m = softsusy(); // need to check for displayProblem().test() and neutralino LSP 
+
+	} catch (string s) { 
+#ifdef DEBUG
+		s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
+		std::cerr 
+			<< point_summary.str() << " :: "
+			<< s << endl;
+#endif
+		return; 
+	}
+
+	if (susy_dict::m_o1 != m.get_hierarchy(0))
+	{
+		return;	   // neutralino1 is not the LSP...
+			  // may use a tolerance in the 
+			  // mass gap in the future
+	}
+
+	double softsusy_higgs = m.get_datum(susy_dict::m_h0);
+
+	try {
+
+		feynhiggs(&m);
+		darksusy(&m);
+		superiso(&m);
+
+	} catch (exception &e) {
+
+		std::cerr << "Observables error :: " << e.what() << std::endl;
+		return;
+
+	}
 
 
-/************************************************* dumper routine ******************************************************/
+	lnew = loglike_calc.get_log_like(m);
 
-// The dumper routine will be called every updInt*10 iterations
-// MultiNest doesn not need to the user to do anything. User can use the arguments in whichever way he/she wants
-//
-//
-// Arguments:
-//
-// nSamples 						= total number of samples in posterior distribution
-// nlive 						= total number of live points
-// nPar 						= total number of parameters (free + derived)
-// physLive[1][nlive * (nPar + 1)] 			= 2D array containing the last set of live points (physical parameters plus derived parameters) along with their loglikelihood values
-// posterior[1][nSamples * (nPar + 2)] 			= posterior distribution containing nSamples points. Each sample has nPar parameters (physical + derived) along with the their loglike value & posterior probability
-// paramConstr[1][4*nPar]:
-// paramConstr[0][0] to paramConstr[0][nPar - 1] 	= mean values of the parameters
-// paramConstr[0][nPar] to paramConstr[0][2*nPar - 1] 	= standard deviation of the parameters
-// paramConstr[0][nPar*2] to paramConstr[0][3*nPar - 1] = best-fit (maxlike) parameters
-// paramConstr[0][nPar*4] to paramConstr[0][4*nPar - 1] = MAP (maximum-a-posteriori) parameters
-// maxLogLike						= maximum loglikelihood value
-// logZ							= log evidence value
-// logZerr						= error on log evidence value
-// context						void pointer, any additional information
+#ifdef DEBUG
+
+	get_lsl lsl;
+
+	point_summary << " :: ln(like) = " << lnew;
+
+	point_summary << " :: outputs = ["
+		      << " m_h0: " << m.get_datum(susy_dict::m_h0)
+		      << " omega: " << m.get_observable(susy_dict::observable::omega)
+		      << " m_o1: " << m.get_datum(susy_dict::m_o1)
+		      << " m_1pm: " << m.get_datum(susy_dict::m_1pm)
+		      << " m_o2: " << m.get_datum(susy_dict::m_o2)
+		      << " m_lsl: " << lsl(m)
+		      << " ]";
+
+	std::cerr << point_summary.str() << std::endl;
+
+#else
+
+	std::forward_list<int> *pars_inputs = static_cast<std::forward_list<int>*>(context);
+
+	std::stringstream point_summary;
+	point_summary << "ln(like) = " << lnew << " :: ";
+	
+	point_summary << "inputs = [ "
+		      << " --mtop='" << sugra->get_mtop_pole() << "'"
+		      << " --mbmb='" << sugra->get_mbmb() << "'"
+		      << " --alpha-s='" << sugra->get_alpha_s() << "'"
+		      << " --alpha-em-inv='" << sugra->get_alpha_em_inv() << "'"
+		      << " -- ";
+	for (int index : *pars_inputs)
+		point_summary << "'" << sugra->pars_at(index) << "' ";
+	point_summary << "'" << sugra->get_tb() << "' " << "'" << sugra->get_sgnmu() << "' ]";
+
+	get_lsl lsl;
+
+	point_summary << " :: outputs = ["
+		      << " m_h0: " << m.get_datum(susy_dict::m_h0)
+		      << " omega: " << m.get_observable(susy_dict::observable::omega)
+		      << " proton_SI: " << (m.get_observable(susy_dict::observable::proton_SI)*1e-36)
+		      << " m_o1: " << m.get_datum(susy_dict::m_o1)
+		      << " m_1pm: " << m.get_datum(susy_dict::m_1pm)
+		      << " m_o2: " << m.get_datum(susy_dict::m_o2)
+		      << " m_lsl: " << lsl(m)
+		      << " ]";
+
+	std::cerr << point_summary.str() << std::endl;
+
+#endif
+
+	auto *slha_row = &susy_dict::mSUGRA_row;
+	if (sugra->is_nusugra())
+		slha_row = &susy_dict::NUSUGRA_row;
+
+	auto row_begin = slha_row->begin();
+
+	std::transform(
+		++row_begin, // skip the model name
+		slha_row->end(),
+		Cube+ndim, 			 // these start after free params
+		[&m] (const std::string &key) -> double {
+			return m.get_datum(key);
+		}
+	);
+
+	std::transform(
+		susy_dict::observable::observe_row.begin(),
+		susy_dict::observable::observe_row.end(),
+		Cube + ndim + (slha_row->size()-1), 
+		[&m] (const std::string &key) -> double {
+			return m.get_observable(key);
+		}
+	);
+
+}
 
 
-extern void dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **posterior, double **paramConstr, double &maxLogLike, double &logZ, double &logZerr, void *context);
-
-/***********************************************************************************************************************/
-#endif // MULTINEST_H
