@@ -14,7 +14,7 @@ namespace multinest_options
 {
 	int IS = 0;					// do importance sampling?
 	int mmodal = 1;					// do mode separation?
-	int ceff = 0;					// run in constant efficiency mode?
+	int ceff = 1;					// run in constant efficiency mode?
 	int nlive = 20000;				// number of live points
 	double efr = 0.8;				// set the required efficiency
 	double tol = 1e-4;				// tol, defines the stopping criteria
@@ -168,9 +168,9 @@ std::unique_ptr<softsusy_opts> map_cube_to_opts(double *cube)
 
 	// nuisance params
 	const double * const mtop = &cube[cube_index++];
-	const double * const mbmb = &cube[cube_index++];
-	const double * const alpha_s = &cube[cube_index++];
-	const double * const alpha_em_inv= &cube[cube_index++];
+//	const double * const mbmb = &cube[cube_index++];
+//	const double * const alpha_s = &cube[cube_index++];
+//	const double * const alpha_em_inv= &cube[cube_index++];
 
 	const double a0 = (*a0_by_m3) * (*m3);
 
@@ -201,9 +201,9 @@ std::unique_ptr<softsusy_opts> map_cube_to_opts(double *cube)
 	point->set_pars(pars);
 	point->set_tb(*tb);
 	point->set_mtop_pole(*mtop);
-	point->set_mbmb(*mbmb);
-	point->set_alpha_s(*alpha_s);
-	point->set_alpha_em_inv(*alpha_em_inv);
+//	point->set_mbmb(*mbmb);
+//	point->set_alpha_s(*alpha_s);
+//	point->set_alpha_em_inv(*alpha_em_inv);
 
 	return point;
 }
