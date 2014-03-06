@@ -1,8 +1,8 @@
 SHELL = /bin/bash
 
 ########## Set these directories ###############################
-BASE=$(HOME)/susykit
-#BASE=$(HOME)/school/research
+#BASE=$(HOME)/susykit
+BASE=$(HOME)/school/research
 
 #use this for <softsusy-3.4.0
 #SOFTSUSY=$(BASE)/softsusy/current
