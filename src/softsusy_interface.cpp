@@ -18,7 +18,7 @@ softsusy_driver::softsusy_driver(const softsusy_opts * const _sugra)
 		// throw something;
 		return;
 	}
-
+	signal(SIGFPE, FPE_ExceptionHandler);
 	init_qedqcd();
 }
 
