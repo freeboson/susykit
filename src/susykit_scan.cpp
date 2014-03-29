@@ -151,8 +151,9 @@ int main(int argc, char** argv)
 	int npoints = 0;
 
 	model_parser mp;
-	darksusy_driver darksusy;
-	superiso_driver superiso;
+	micromegas_driver micro;
+//	darksusy_driver darksusy;
+//	superiso_driver superiso;
 	while( npoints < 1000000 ) // arbitrary stopping condition
 	{
 
@@ -221,8 +222,8 @@ int main(int argc, char** argv)
 		} catch (const string &s) { cerr << "SOFTSUSY exception: " << s << endl; continue;}
 
 		feynhiggs(&m);
-		darksusy(&m);
-		superiso(&m);
+		micro(&m);
+//		superiso(&m);
 
 		// everything should be good here...
 		npoints++;

@@ -54,9 +54,9 @@ int main(int argc, char** argv)
 	get_slha slha;
 
 	softsusy_driver softsusy(sugra);
-//	micromegas_driver micro;
+	micromegas_driver micro;
 	feynhiggs_driver feynhiggs;
-	darksusy_driver darksusy;
+//	darksusy_driver darksusy;
 	superiso_driver superiso;
 
 	try { 
@@ -65,8 +65,9 @@ int main(int argc, char** argv)
 
 
 	feynhiggs(&m);
-	darksusy(&m);
-	superiso(&m);
+	micro(&m);
+//	darksusy(&m);
+//	superiso(&m);
 
 	cout << m << endl;
 
