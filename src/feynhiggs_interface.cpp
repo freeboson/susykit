@@ -61,7 +61,7 @@ feynhiggs_driver::feynhiggs_driver()
 	tanbeta_renorm(0),		// DR-bar
 	higgs_mixing(2),		// only CP-even mixing
 	p2_approx(0),			// full propagator pole determination
-	loop_level(2),			// 2 loops
+	loop_level(3),			// 3 loops!! (NEW)
 	run_mt(1),			// run mt
 	bottom_resum(1),		// resum corrections O(tb^n)
 	two_loop_complex_approx(0),	// all corrections

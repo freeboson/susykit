@@ -35,11 +35,13 @@ class seedgen
 {
 public:
 	
-	using seed_type = std::random_device::result_type;
+	typedef std::random_device::result_type seed_type;
 
 	seedgen(unsigned int _num_seeds);
 
         seed_type operator()();
+
+	seed_type* get();
 
 private:
 
@@ -47,7 +49,7 @@ private:
 
 	unsigned int num_seeds;
 	std::unordered_set<seed_type> seeds;
-	std::unordered_set<seed_type>::const_iterator seed_it;
+	std::unordered_set<seed_type>::iterator seed_it;
 
 };
 
