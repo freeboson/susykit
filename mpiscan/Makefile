@@ -57,7 +57,7 @@ LMICRO=$(LMICRO2)
 
 LDFLAGS+= -lsusykit -lconstrain -lisospin -lsoft -lFH $(LMICRO)
 
-main ?= main.cpp
+main ?= mSUGRA.cpp
 
 all: $(main) $(OBJS)
 	$(CXX) $(CXXFLAGS) $(CXXINCL) $(LDDIRS) -o $(main:.cpp=.x) $(main) $(OBJS) $(LDFLAGS)
