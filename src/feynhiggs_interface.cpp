@@ -176,33 +176,63 @@ void feynhiggs_driver::calc_observables(model *m)
 		<< "mHpm:\t"		<< m->get_datum(m_Hpm) << endl
 		<< endl;
 #endif
+
+	// FeynHiggs reports nans as 'valid'
+	if (
+		isfinite(MWMSSM)
+		&& isfinite(SW2MSSM)
+		&& isfinite(edmeTh)
+		&& isfinite(edmn)
+		&& isfinite(edmHg)
+		&& isfinite(deltaMsMSSM)
+		&& isfinite(GammaTot(1))
+		&& isfinite(GammaTot(2))
+		&& isfinite(GammaTot(3))
+		&& isfinite(GammaTot(4))
+		&& isfinite(SAeff.re)
+		&& isfinite(MHiggs[0])
+		&& isfinite(MHiggs[1])
+		&& isfinite(MHiggs[2])
+		&& isfinite(MHiggs[3])
+		&& isfinite(Deltarho)
+		&& isfinite(bsgMSSM)
+		&& isfinite(bsmumuMSSM)
+		&& isfinite(gm2)
+					)
+	{
+		
+		m->set_observable(susy_dict::observable::fh_valid_bit, 1.0);
+		
+		m->set_observable(susy_dict::observable::mw_mssm, MWMSSM);
+		m->set_observable(susy_dict::observable::sw2_mssm, SW2MSSM);
+		m->set_observable(susy_dict::observable::edmeTh, edmeTh);
+		m->set_observable(susy_dict::observable::edmn, edmn);
+		m->set_observable(susy_dict::observable::edmHg, edmHg);
+		m->set_observable(susy_dict::observable::deltaMs_mssm, deltaMsMSSM);
 	
-	m->set_observable(susy_dict::observable::fh_valid_bit, 1.0);
+		m->set_observable(susy_dict::observable::width_h0, GammaTot(1));
+		m->set_observable(susy_dict::observable::width_H0, GammaTot(2));
+		m->set_observable(susy_dict::observable::width_A0, GammaTot(3));
+		m->set_observable(susy_dict::observable::width_Hpm, GammaTot(4));
 	
-	m->set_observable(susy_dict::observable::mw_mssm, MWMSSM);
-	m->set_observable(susy_dict::observable::sw2_mssm, SW2MSSM);
-	m->set_observable(susy_dict::observable::edmeTh, edmeTh);
-	m->set_observable(susy_dict::observable::edmn, edmn);
-	m->set_observable(susy_dict::observable::edmHg, edmHg);
-	m->set_observable(susy_dict::observable::deltaMs_mssm, deltaMsMSSM);
-
-	m->set_observable(susy_dict::observable::width_h0, GammaTot(1));
-	m->set_observable(susy_dict::observable::width_H0, GammaTot(2));
-	m->set_observable(susy_dict::observable::width_A0, GammaTot(3));
-	m->set_observable(susy_dict::observable::width_Hpm, GammaTot(4));
-
-	m->set_datum(susy_dict::higgs_alpha, SAeff.re);
-	m->set_datum(susy_dict::m_h0, MHiggs[0]);
-	m->set_datum(susy_dict::m_H0, MHiggs[1]);
-	m->set_datum(susy_dict::m_A0, MHiggs[2]);
-	m->set_datum(susy_dict::m_Hpm, MHiggs[3]);
-
-	// this is replacing micromegas
-	// TODO: PREFIX THESE!!!
-	m->set_observable(susy_dict::observable::delta_rho, Deltarho);
-	m->set_observable(susy_dict::observable::bsgnlo, bsgMSSM);
-	m->set_observable(susy_dict::observable::bsmumu, bsmumuMSSM);
-	m->set_observable(susy_dict::observable::gmuon, gm2);
+		m->set_datum(susy_dict::higgs_alpha, SAeff.re);
+		m->set_datum(susy_dict::m_h0, MHiggs[0]);
+		m->set_datum(susy_dict::m_H0, MHiggs[1]);
+		m->set_datum(susy_dict::m_A0, MHiggs[2]);
+		m->set_datum(susy_dict::m_Hpm, MHiggs[3]);
+	
+		// this is replacing micromegas
+		// TODO: PREFIX THESE!!!
+		m->set_observable(susy_dict::observable::delta_rho, Deltarho);
+		m->set_observable(susy_dict::observable::bsgnlo, bsgMSSM);
+		m->set_observable(susy_dict::observable::bsmumu, bsmumuMSSM);
+		m->set_observable(susy_dict::observable::gmuon, gm2);
+	}
+	else
+	{
+		// TODO: report where !isfinite specifically
+		throw(runtime_error("FeynHiggs Error: failed isfinite"));
+	}
 
 	return;
 }
