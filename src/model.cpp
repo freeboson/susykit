@@ -205,7 +205,6 @@ void model::set_observables(const std::string &obs_dat_line)
 	int valid_bit;
 	if (iss >> valid_bit)
 	{
-		streampos data_start = iss.tellg();
 		unsigned int num_data = distance(istream_iterator<double>(iss), 
 					istream_iterator<double>());
 		if (1 != valid_bit)
@@ -224,11 +223,11 @@ void model::set_observables(const std::string &obs_dat_line)
 		else
 		{
 			iss.clear();
-			iss.seekg(data_start);
+			iss.seekg(ios_base::beg);
 
 			transform (	istream_iterator<double> (iss),
 					istream_iterator<double> (),
-					++observable::observe_row.begin(),
+					observable::observe_row.begin(),
 					inserter(observables, observables.begin()),
 					make_obs_pair()
 			);
