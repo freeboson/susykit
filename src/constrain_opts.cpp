@@ -125,7 +125,7 @@ int opthandle(int argc, char** argv, globalopts* gopts)
 		{ NULL,		no_argument,		NULL, 0}
 	};
 
-	static const char *optcstr = "hlpfamO:L:x:X:o:s:bBP";
+	static const char *optcstr = "hlpfamMO:L:x:X:o:s:bBP";
 
 	bool need_observables = false;
 	bool need_likeconfig = false;
@@ -189,11 +189,16 @@ int opthandle(int argc, char** argv, globalopts* gopts)
 				break;
 
 			case 'm':
-				gopts->merged_input = true;
+				// does not do anything anymore
+				break;
+
+			case 'M':
+				gopts->merged_input = false;
 				break;
 
 			case 'O':
 				if (NULL == optarg) { cerr << "getopt_long() error!!!" << endl; return 1; }
+				gopts->merged_input = false;
 				gopts->obs_file = true;
 				gopts->obs_filename = string(optarg);
 				break;

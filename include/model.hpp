@@ -116,6 +116,7 @@ private:
 	void build_spectrum();
 	void build_hierarchy();
 	void fix_minpar_keys();
+	void blank_observables();
 
 	susy_model model_type;
 	data_type obs_type;

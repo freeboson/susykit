@@ -28,7 +28,7 @@
 #ifndef SEEDGEN_HPP
 #define SEEDGEN_HPP
 
-#include <unordered_set>
+#include <vector>
 #include <random>
 
 class seedgen
@@ -41,15 +41,17 @@ public:
 
         seed_type operator()();
 
+#ifndef BOOST_MPI
 	seed_type* get();
+#endif
 
 private:
 
 	void build_seeds();
 
 	unsigned int num_seeds;
-	std::unordered_set<seed_type> seeds;
-	std::unordered_set<seed_type>::iterator seed_it;
+	std::vector<seed_type> seeds;
+	std::vector<seed_type>::iterator seed_it;
 
 };
 

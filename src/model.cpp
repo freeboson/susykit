@@ -44,6 +44,7 @@ model::model(string _model_name, map<string,double> _slha_data, susy_model _mode
 	build_spectrum();
 	build_hierarchy();
 	fix_minpar_keys();
+	blank_observables();
 }
 
 model::model(string _model_name, map<string,double> _slha_data, susy_model _model_type, const string &obs_dat_line)
@@ -211,6 +212,7 @@ void model::set_observables(const std::string &obs_dat_line)
 		{
 			cerr << "valid bit=" << valid_bit << " was not set!!" << endl;
 			obs_type = obs_invalid;
+			blank_observables();
 			return;
 		}
 		if ((num_data + 1) != observable::observe_row.size() || num_data < 1) // +1 to account for the "valid_bit"
@@ -219,6 +221,7 @@ void model::set_observables(const std::string &obs_dat_line)
 			     << num_data << " doubles provided" 
 			     << endl;
 			obs_type = obs_invalid;
+			blank_observables();
 		}
 		else
 		{
@@ -238,6 +241,7 @@ void model::set_observables(const std::string &obs_dat_line)
 	{
 		cerr << "Couldn't even check valid bit!" << endl;
 		obs_type = obs_invalid;
+		blank_observables();
 	}
 
 }
@@ -265,4 +269,9 @@ ostream& operator<< (ostream &o, const pair<double,string> &p)
 	return o;
 }
 
+void model::blank_observables()
+{
+	for (const auto &observable_key : observable::observe_row)
+		observables[observable_key] = 0.0;
+}
 

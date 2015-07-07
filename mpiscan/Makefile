@@ -30,10 +30,10 @@ CXX		= mpiCC
 FILES		= seedgen.cpp mpiscan.cpp
 OBJS		= $(FILES:.cpp=.o)
 CXXINCL		= -I../include -I$(MICROMEGAS) -I$(SOFTSUSY) $(BOOST_INCL) -I$(FEYNHIGGS) -I$(FEYNHIGGS)/src/include -I$(SUPERISO)/src
-CXXFLAGS	= -std=c++0x -fpermissive -Wno-deprecated
-LDDIRS		= -L../lib -L$(SOFTSUSY)/.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src -L$(FEYNHIGGS)/build 
+CXXFLAGS	= -std=c++0x -fpermissive -Wno-deprecated #-DBOOST_MPI
+LDDIRS		= -L../lib -L$(SOFTSUSY)/../.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src -L$(FEYNHIGGS)/build 
 LDFLAGS=-lgfortran #-lifcore
-LDFLAGS+=-lifcore -limf -lsvml -lc -lifport 
+LDFLAGS+=-lifcore -limf -lsvml -lc -lifport #-lboost_mpi
 
 ifeq ($(SOFTSUSY_VERSION_POST_340),1)
 	CXXFLAGS += -DSOFTSUSY_POST34

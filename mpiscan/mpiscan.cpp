@@ -99,7 +99,7 @@ string point_builder::mpi_setup(fstream *writer)
 		for (int rank = 1; rank < nprocs; rank++)
 		{
 			cerr << myid << "Sending seed to " << rank << endl;
-			MPI_Isend(&(*(sg.get())), 1, MPI_UNSIGNED, rank, 0, MPI_COMM_WORLD, &dummy);
+			MPI_Isend(sg.get(), 1, MPI_UNSIGNED, rank, 0, MPI_COMM_WORLD, &dummy);
 		}
 #endif
 

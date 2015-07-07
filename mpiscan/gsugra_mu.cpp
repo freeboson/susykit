@@ -20,6 +20,22 @@ using namespace std;
 
 using ulonglong = unsigned long long int;
 
+string get_qpoint_line( const softsusy_opts & sugra)
+{
+	auto pars = sugra.get_pars();
+	stringstream ss;
+	ss << "qpoint -g -- "
+	   << pars(31) << " " // m0
+	   << pars(1)  << " " // m1
+	   << pars(2)  << " " // m2
+	   << pars(3)  << " " // m3
+	   << pars(11) << " " // a0
+	   << sugra.get_tb() << " "
+	   << sugra.get_sgnmu();
+	
+	return ss.str();
+}
+
 class gsugra_mu_builder : public point_builder
 {
 public:
@@ -30,7 +46,9 @@ public:
 		mhft_dist(100, 1000),
 		m3_dist(2.0, 4.0), // log-scale, 100 GeV -> 10 TeV
 		a0_by_m3_dist(-10, 10),
-		tanb_dist (2, 62)
+		tanb_dist (2, 62),
+		sign_dist({1,1}),
+		signs({-1,1})
 	{
 		
 	}
@@ -39,9 +57,10 @@ public:
 	{
 		softsusy_opts sugra;
 
-		double m0 = pow(10.0, m0_dist(gen()));
-		double mhft = mhft_dist(gen());
-		double m3 = m3_dist(gen());
+		// added random signs for mhft and m3
+		double m0 = m0_dist(gen());
+		double mhft = signs[sign_dist(gen())] * mhft_dist(gen());
+		double m3 = signs[sign_dist(gen())] * pow(10.0, m3_dist(gen()));
 		double a0 = m3 * a0_by_m3_dist(gen());
 		double tanb = tanb_dist(gen());
 
@@ -81,9 +100,12 @@ public:
 			return true;
 		}
 
-//		if (m.get_datum(susy_dict::m_h0) < 120.0
-//		 	|| m.get_datum(susy_dict::m_h0) > 132.0)
-		if (m.get_datum(susy_dict::m_h0) > 132.0)
+		// this is a 5-sigma window around 125.7 \pm 0.4
+		if (m.get_datum(susy_dict::m_h0) < 123.7
+		 	|| m.get_datum(susy_dict::m_h0) > 127.7)
+			return true;
+
+		if (m.get_datum(susy_dict::hmix_mu) > 2000.0)
 			return true;
 
 //		if (m.get_observable(susy_dict::observable::omega) > 0.127)
@@ -100,6 +122,10 @@ private:
 	uniform_real_distribution<> a0_by_m3_dist;
 	uniform_real_distribution<> tanb_dist ;
 
+	// signs
+	const array<short, 2> signs;
+	discrete_distribution<size_t> sign_dist;
+
 };
 
 int main (int argc, char **argv)
@@ -115,7 +141,7 @@ int main (int argc, char **argv)
 //	micromegas_driver micro;
 //	superiso_driver superiso;
 
-	cerr << myid << "Starting scan..." << endl;
+//	cerr << myid << "Starting scan..." << endl;
 
 	ulonglong status_interval = 10ULL;
 
@@ -142,17 +168,21 @@ int main (int argc, char **argv)
 			//micro(&m);
 
 			if (gsugra_mu.filter_point(m))
+			{
+//				cerr << myid << "Filtered point." << endl;
 				continue;
+			}
 
 			writer << m << endl;
 
 		} catch (string &s) {
 
-//			cerr << myid << s << endl;
+//			cerr << myid << s << " :: " << get_qpoint_line(sugra) << endl;
 			continue;
 
 		} catch ( exception &e ) {
 
+//			cerr << myid << e.what() << endl;
 			continue;
 
 		}
