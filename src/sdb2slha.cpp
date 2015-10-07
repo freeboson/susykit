@@ -54,10 +54,17 @@ model get_model(istream &reader, unsigned int line_num)
 	}
 	return model();
 	#else
+	  #if 0
 	stream_model_parser get_model(&reader,true);
 	model m; 
 	for (unsigned int i = 1; i < line_num; i++) get_model();
 	return get_model();
+	  #else
+	    
+	for (unsigned int i = 1; i < line_num; i++) getline(reader,model_line);
+	stream_model_parser get_model(&reader,true);
+	return get_model();
+	  #endif
 	#endif
 
 }

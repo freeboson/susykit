@@ -1,8 +1,8 @@
 SHELL = /bin/bash
 
 ########## Set these directories ###############################
-#BASE=$(HOME)/susykit
-BASE=$(HOME)/school/research
+BASE=$(HOME)/susykit
+#BASE=$(HOME)/school/research
 
 #use this for <softsusy-3.4.0
 #SOFTSUSY=$(BASE)/softsusy/current
@@ -25,7 +25,7 @@ BOOST_INCL=-I$(BOOST_DIR)/include
 ################################################################
 
 
-CXX		= CC
+CXX		= clang++
 LCONSFILES	= parseutils.cpp parse.cpp model.cpp model_lookup.cpp special_lookups.cpp get_slha.cpp likeconfig.cpp likedatum.cpp loglike.cpp 
 CONFILES	= constraint.cpp constrain.cpp constrain_opts.cpp
 QPARSEFILES	= qparse.cpp
