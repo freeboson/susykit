@@ -22,7 +22,7 @@
 */
 
 
-#include "libconstrain/constrain_opts.hpp"
+#include "constrain_opts.hpp"
 #include <cstring>
 #include <algorithm>
 #include <fstream>

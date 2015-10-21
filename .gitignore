@@ -42,3 +42,7 @@ install_manifest.txt
 # python bytecode
 *.pyc
 
+# vim
+.*.swp
+
+

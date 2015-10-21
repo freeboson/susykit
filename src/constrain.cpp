@@ -28,8 +28,8 @@
 #include <vector>
 #include <string>
 
-#include "libconstrain/constraint.hpp"
-#include "libconstrain/constrain_opts.hpp"
+#include "constraint.hpp"
+#include "constrain_opts.hpp"
 #include "libconstrain/model.hpp"
 #include "libconstrain/parse.hpp"
 
