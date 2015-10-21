@@ -28,12 +28,12 @@
 #include <vector>
 #include <string>
 
-#include "constraint.hpp"
-#include "constrain_opts.hpp"
-#include "model.hpp"
-#include "parse.hpp"
+#include "libconstrain/constraint.hpp"
+#include "libconstrain/constrain_opts.hpp"
+#include "libconstrain/model.hpp"
+#include "libconstrain/parse.hpp"
 
-#include "hepstats.hpp"
+#include "libconstrain/hepstats.hpp"
 
 //#include "suj_dbg.h"
 

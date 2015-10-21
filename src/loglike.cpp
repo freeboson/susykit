@@ -22,7 +22,7 @@
 */
 
 
-#include "hepstats.hpp"
+#include "libconstrain/hepstats.hpp"
 
 #include <numeric>
 

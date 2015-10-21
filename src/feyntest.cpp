@@ -20,7 +20,11 @@
 
 #include <iostream>
 
-#include "libconstrain.h"
+#include "libconstrain/dict.hpp"
+#include "libconstrain/model.hpp"
+#include "libconstrain/parse.hpp"
+#include "libconstrain/get_slha.hpp"
+#include "libconstrain/special_lookups.hpp"
 
 // softsusy
 #include "mycomplex.h"
@@ -35,7 +39,7 @@
 #include "numerics.h"
 
 // feynhiggs
-#include "sujfeyn.hpp"
+#include "libsusykit/feynhiggs_interface.hpp"
 
 #include <string>
 #include <sstream>

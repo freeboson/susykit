@@ -20,11 +20,16 @@
 
 #include <iostream>
 
-#include "libconstrain.h"
-#include "sujmicro.h"
-#include "sujsoft.hpp"
-#include "sujfeyn.hpp"
-#include "sujfeyn.hpp"
+#include "libconstrain/dict.hpp"
+#include "libconstrain/model.hpp"
+#include "libconstrain/parse.hpp"
+#include "libconstrain/get_slha.hpp"
+#include "libconstrain/special_lookups.hpp"
+
+#include "libsusykit/micromegas_interface.hpp"
+#include "libsusykit/softsusy_interface.hpp"
+#include "libsusykit/feynhiggs_interface.hpp"
+#include "libsusykit/superiso_interface.hpp"
 
 #include <string>
 #include <sstream>

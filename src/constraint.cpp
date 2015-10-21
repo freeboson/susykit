@@ -23,7 +23,7 @@
 
 
 
-#include "constraint.hpp"
+#include "libconstrain/constraint.hpp"
 
 using namespace std;
 

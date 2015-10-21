@@ -24,7 +24,7 @@
 
 #include <stdexcept>
 
-#include "darksusy_interface.hpp"
+#include "libsusykit/darksusy_interface.hpp"
 
 #include "src/include/ftypes.h"
 #include "src/include/RecordIndices.h"
