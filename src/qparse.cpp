@@ -33,9 +33,9 @@
 #include <cmath>
 #include <list>
 
-#include "model.hpp"
-#include "model_lookup.hpp"
-#include "parse.hpp"
+#include "libconstrain/model.hpp"
+#include "libconstrain/model_lookup.hpp"
+#include "libconstrain/parse.hpp"
 #include "parseutils.hpp"
 
 using namespace std;

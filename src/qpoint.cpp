@@ -20,13 +20,18 @@
 
 #include <iostream>
 
-#include "libconstrain.hpp"
-#include "micromegas_interface.hpp"
-#include "qpoint_softsusy_opts.hpp"
-#include "softsusy_interface.hpp"
-#include "feynhiggs_interface.hpp"
-#include "darksusy_interface.hpp"
-#include "superiso_interface.hpp"
+#include "libconstrain/dict.hpp"
+#include "libconstrain/model.hpp"
+#include "libconstrain/parse.hpp"
+#include "libconstrain/get_slha.hpp"
+#include "libconstrain/special_lookups.hpp"
+
+#include "libsusykit/micromegas_interface.hpp"
+#include "libsusykit/qpoint_softsusy_opts.hpp"
+#include "libsusykit/softsusy_interface.hpp"
+#include "libsusykit/feynhiggs_interface.hpp"
+#include "libsusykit/darksusy_interface.hpp"
+#include "libsusykit/superiso_interface.hpp"
 
 #include <string>
 #include <sstream>

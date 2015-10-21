@@ -1,5 +1,5 @@
 
-#include "qpoint_softsusy_opts.hpp"
+#include "libsusykit/qpoint_softsusy_opts.hpp"
 
 #include "softsusy.h" // for the bc's
 

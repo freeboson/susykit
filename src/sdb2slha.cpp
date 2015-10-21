@@ -27,10 +27,10 @@
 #include <string>
 #include <sstream>
 
-#include "model.hpp"
-#include "parse.hpp"
-#include "parseutils.hpp"
-#include "get_slha.hpp"
+#include "libconstrain/dict.hpp"
+#include "libconstrain/model.hpp"
+#include "libconstrain/parse.hpp"
+#include "libconstrain/get_slha.hpp"
 
 using namespace std;
 
