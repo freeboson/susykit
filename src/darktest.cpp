@@ -14,11 +14,12 @@
 #include "libconstrain/special_lookups.hpp"
 
 #include "libsusykit/micromegas_interface.hpp"
-#include "libsusykit/qpoint_softsusy_opts.hpp"
 #include "libsusykit/softsusy_interface.hpp"
 #include "libsusykit/feynhiggs_interface.hpp"
 #include "libsusykit/darksusy_interface.hpp"
 #include "libsusykit/superiso_interface.hpp"
+
+#include "qpoint_softsusy_opts.hpp"
 
 using namespace std;
 using namespace susy_dict;

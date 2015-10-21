@@ -31,6 +31,8 @@
 #include "libsusykit/feynhiggs_interface.hpp"
 #include "libsusykit/superiso_interface.hpp"
 
+#include "qpoint_softsusy_opts.hpp"
+
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -43,9 +45,9 @@ int main(int argc, char** argv)
 	/// Sets up exception handling
 	signal(SIGFPE, FPE_ExceptionHandler);
 
-	point_opts *sugra;
+	qpoint_opts *sugra;
 	try {
-		sugra = new point_opts(argc,argv);
+		sugra = new qpoint_opts(argc,argv);
 	} catch (exception &e) {
 		if (sugra != nullptr)
 			delete sugra;
