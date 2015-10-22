@@ -26,7 +26,10 @@
 #define SUJSOFT_HPP
 
 #include "softsusy_opts.hpp"
-#include "libconstrain.hpp"
+#include "libconstrain/dict.hpp"
+#include "libconstrain/model.hpp"
+#include "libconstrain/model_lookup.hpp"
+#include "libconstrain/parse.hpp"
 
 class softsusy_driver
 {

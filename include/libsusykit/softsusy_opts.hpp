@@ -26,8 +26,8 @@
 #ifndef SOFTSUSY_OPTS_HPP
 #define SOFTSUSY_OPTS_HPP
 
-#include "softsusy.h"
-#include "linalg.h"
+#include "softsusy/softsusy.h"
+#include "softsusy/linalg.h"
 
 #include <stdexcept>
 

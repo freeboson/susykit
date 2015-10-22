@@ -1,7 +1,7 @@
 
 #include "qpoint_softsusy_opts.hpp"
 
-#include "softsusy.h" // for the bc's
+#include "softsusy/softsusy.h" // for the bc's
 
 #include <unistd.h>
 #include <getopt.h>

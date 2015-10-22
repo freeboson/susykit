@@ -1,6 +1,6 @@
 
 #include "libsusykit/softsusy_interface.hpp"
-#include "softsusy.h" // for the bc's
+#include "softsusy/softsusy.h" // for the bc's
 
 #include <string>
 #include <sstream>
@@ -198,17 +198,10 @@ model softsusy_driver::slha_to_model(const double &mGUT)
 	oss
 		// MASS
 		<< rge.displayMw() << "\t"	// W mass
-#if defined(SOFTSUSY_POST34)
 		<< s.mh0(1) << "\t"		// h0 mass
 		<< s.mh0(2) << "\t"		// H0 mass
 		<< s.mA0(1) << "\t"		// A0 mass
 		<< s.mHpm << "\t"		// H+ mass
-#else
-		<< s.mh0 << "\t"		// h0 mass
-		<< s.mH0 << "\t"		// H0 mass
-		<< s.mA0 << "\t"		// A0 mass
-		<< s.mHpm << "\t"		// H+ mass
-#endif
 		<< s.mGluino << "\t"		// ~g mass
 		<< s.mneut(1) << "\t"		// ~o1 mass
 		<< s.mneut(2) << "\t"		// ~o2 mass
