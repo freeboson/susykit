@@ -1,7 +1,7 @@
 
 #include "qpoint_softsusy_opts.hpp"
 
-#include "softsusy.h" // for the bc's
+#include "softsusy/softsusy.h" // for the bc's
 
 #include <unistd.h>
 #include <getopt.h>
@@ -9,7 +9,7 @@
 #include <iostream>
 #include <iomanip>
 #include <list>
-#include <boost/lexical_cast.hpp>
+#include <exception>
 
 using namespace std;
 
@@ -33,7 +33,7 @@ void qpoint_opts::usage() const
 {
 	cerr 	<< setiosflags(ios::left)
 		<< "General command:" << endl
-		<< "qpoint [options] -- m0 [MH1 MH2] [mq ml] [m3rd] <MG1 MG2 MG3 | mhf> <At Ab Atau | A0> <tb> <sgn(mu)>" << endl
+		<< "qpoint [options] -- <m0> [MH1 MH2] [mq ml] [m3rd] <MG1 MG2 MG3 | mhf> <At Ab Atau | A0> <tb> <sgn(mu)>" << endl
 		<< endl
 		<< "The following options are available:" << endl
 		<< "  " << setw(26) << "-H, --help" << " print this message" << endl
@@ -142,26 +142,26 @@ int qpoint_opts::opthandle(int argc, char** argv)
 					if (NULL == optarg) 
 						throw(runtime_error("getopt_long() error!!!"));
 
-					alpha_s = boost::lexical_cast<double>(optarg);
+					alpha_s = stod(optarg);
 					break;
 
 				case 'e':
 					if (NULL == optarg)
 						throw(runtime_error("getopt_long() error!!!"));
-					alpha_em_inv = boost::lexical_cast<double>(optarg);
+					alpha_em_inv = stod(optarg);
 					break;
 
 				case 'T':
 					if (NULL == optarg)
 						throw(runtime_error("getopt_long() error!!!"));
-					mtop_pole = boost::lexical_cast<double>(optarg);
+					mtop_pole = stod(optarg);
 					break;
 	
 
 				case 'b':
 					if (NULL == optarg)
 						throw(runtime_error("getopt_long() error!!!"));
-					mbmb = boost::lexical_cast<double>(optarg);
+					mbmb = stod(optarg);
 					break;
 
 				case 's':
@@ -176,7 +176,7 @@ int qpoint_opts::opthandle(int argc, char** argv)
 					need_help = true;
 					break;
 			}
-		} catch (boost::bad_lexical_cast const &e) {
+		} catch (exception const &e) {
 			throw(invalid_argument("Error: Malformed input"));
 		}
 	}
@@ -208,14 +208,14 @@ int qpoint_opts::opthandle(int argc, char** argv)
 			   			// after processing the getopt()'s
 
 	if ( (num_remaining_args <= 0) || (num_remaining_args != num_required_args) )
-		throw( invalid_argument("Error: expected " + boost::lexical_cast<string>(num_required_args) 
-		+ " arguments but only found " + boost::lexical_cast<string>(num_remaining_args) + ".")	   );
+		throw( invalid_argument("Error: expected " + to_string(num_required_args) 
+		+ " arguments but only found " + to_string(num_remaining_args) + ".")	   );
 
 	try {
 
 		make_pars(optind, argv);
 
-	} catch (boost::bad_lexical_cast const &e) {
+	} catch (exception const &e) {
 
 		throw(invalid_argument("Error: Malformed input"));
 	}
@@ -236,50 +236,50 @@ void qpoint_opts::make_pars(int argi, char** argv)
 
 	if ( (!higgs || !mq_ml) && !full_sugra )
 	{
-		m0 = boost::lexical_cast<double>(argv[argi++]);
+		m0 = stod(argv[argi++]);
 	}
 
 	if (higgs && !full_sugra)
 	{
-		m_h1 = boost::lexical_cast<double>(argv[argi++]);
-		m_h2 = boost::lexical_cast<double>(argv[argi++]);
+		m_h1 = stod(argv[argi++]);
+		m_h2 = stod(argv[argi++]);
 	}
 
 	if (mq_ml)
 	{
-		mq = boost::lexical_cast<double>(argv[argi++]);
-		ml = boost::lexical_cast<double>(argv[argi++]);
+		mq = stod(argv[argi++]);
+		ml = stod(argv[argi++]);
 	}
 
 	if (thirdgen)
 	{
-		m_3rd = boost::lexical_cast<double>(argv[argi++]);
+		m_3rd = stod(argv[argi++]);
 	}
 
 	if (gaugino)
 	{
-		m1 = boost::lexical_cast<double>(argv[argi++]);
-		m2 = boost::lexical_cast<double>(argv[argi++]);
-		m3 = boost::lexical_cast<double>(argv[argi++]);
+		m1 = stod(argv[argi++]);
+		m2 = stod(argv[argi++]);
+		m3 = stod(argv[argi++]);
 	}
 	else
 	{
-		mhf = boost::lexical_cast<double>(argv[argi++]);
+		mhf = stod(argv[argi++]);
 	}
 
 	if (trilinear)
 	{
-		at = boost::lexical_cast<double>(argv[argi++]);
-		ab = boost::lexical_cast<double>(argv[argi++]);
-		atau = boost::lexical_cast<double>(argv[argi++]);
+		at = stod(argv[argi++]);
+		ab = stod(argv[argi++]);
+		atau = stod(argv[argi++]);
 	}
 	else
 	{
-		a0 = boost::lexical_cast<double>(argv[argi++]);
+		a0 = stod(argv[argi++]);
 	}
 
-	tb = boost::lexical_cast<double>(argv[argi++]);
-	sgnmu = boost::lexical_cast<int>(argv[argi++]);
+	tb = stod(argv[argi++]);
+	sgnmu = stoi(argv[argi++]);
 
 	// all args have been extracted; all params set
 	// now populate pars for SOFTSUSY

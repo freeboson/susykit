@@ -22,10 +22,11 @@
 */
 
 
-#include "model_lookup.hpp"
-#include "dict.hpp"
+#include "libconstrain/model_lookup.hpp"
+#include "libconstrain/dict.hpp"
+#include "libconstrain/special_lookups.hpp"
+
 #include "parseutils.hpp"
-#include "special_lookups.hpp"
 
 // this will call the member function of the class of which "instance" is 
 // an instance of, pointed to by "mem_fn_ptr"

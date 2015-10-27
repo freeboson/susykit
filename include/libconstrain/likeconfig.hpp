@@ -21,38 +21,35 @@
 
 */
 
+
 #pragma once
-#ifndef SUJSOFT_HPP
-#define SUJSOFT_HPP
+#ifndef LIKECONFIG_HPP
+#define LIKECONFIG_HPP
 
-#include "softsusy_opts.hpp"
-#include "libconstrain.hpp"
+#include <string>
+#include <istream>
 
-class softsusy_driver
+#include "libconstrain/model.hpp"
+
+class hepstats::likeconfig
 {
 public:
-	softsusy_driver(const softsusy_opts * const _sugra);
+	likeconfig(std::istream *_conf_stream)
+		:conf_stream(_conf_stream)
+	{
+		process_stream();
+	}
 
-#if 0
-	// this member function will ignore any differences between
-	// _sugra and sugra when it comes to alpha_s, alpha_em, mb(mb)
-	// and m_top(pole) -- it only changes the pars DoubleVector, 
-	// tan(beta) and sgnmu.
-	void replace_soft_terms(const softsusy_opts * const _sugra);
-#endif
-
-	model operator() (bool gauge_unification = true);
+	loglike operator()() const { return get_loglike_fn(); }
+	loglike get_loglike_fn() const { return llhood; }
 
 private:
+	void process_stream();
 
-	void init_qedqcd();
-	double run();
+	std::istream *conf_stream;
+	loglike llhood;
 
-	model slha_to_model(const double &mGUT);
-
-	const softsusy_opts *sugra;
-	QedQcd oneset;
-	MssmSoftsusy rge;
+	static const std::string comment_chars;
 };
 
 #endif

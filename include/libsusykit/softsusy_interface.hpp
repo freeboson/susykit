@@ -21,16 +21,42 @@
 
 */
 
-
 #pragma once
-#ifndef LIBSUSYKIT_H
-#define LIBSUSYKIT_H
+#ifndef SUJSOFT_HPP
+#define SUJSOFT_HPP
 
-#include "softsusy_interface.hpp"
-#include "micromegas_interface.hpp"
-#include "darksusy_interface.hpp"
-#include "feynhiggs_interface.hpp"
-#include "superiso_interface.hpp"
+#include "softsusy_opts.hpp"
+#include "libconstrain/dict.hpp"
+#include "libconstrain/model.hpp"
+#include "libconstrain/model_lookup.hpp"
+#include "libconstrain/parse.hpp"
+
+class softsusy_driver
+{
+public:
+	softsusy_driver(const softsusy_opts * const _sugra);
+
+#if 0
+	// this member function will ignore any differences between
+	// _sugra and sugra when it comes to alpha_s, alpha_em, mb(mb)
+	// and m_top(pole) -- it only changes the pars DoubleVector, 
+	// tan(beta) and sgnmu.
+	void replace_soft_terms(const softsusy_opts * const _sugra);
+#endif
+
+	model operator() (bool gauge_unification = true);
+
+private:
+
+	void init_qedqcd();
+	double run();
+
+	model slha_to_model(const double &mGUT);
+
+	const softsusy_opts *sugra;
+	QedQcd oneset;
+	MssmSoftsusy rge;
+};
 
 #endif
 

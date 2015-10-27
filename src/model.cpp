@@ -22,7 +22,7 @@
 */
 
 
-#include "model.hpp"
+#include "libconstrain/model.hpp"
 #include <sstream>
 #include <iterator>
 
@@ -44,6 +44,7 @@ model::model(string _model_name, map<string,double> _slha_data, susy_model _mode
 	build_spectrum();
 	build_hierarchy();
 	fix_minpar_keys();
+	blank_observables();
 }
 
 model::model(string _model_name, map<string,double> _slha_data, susy_model _model_type, const string &obs_dat_line)
@@ -205,13 +206,13 @@ void model::set_observables(const std::string &obs_dat_line)
 	int valid_bit;
 	if (iss >> valid_bit)
 	{
-		streampos data_start = iss.tellg();
 		unsigned int num_data = distance(istream_iterator<double>(iss), 
 					istream_iterator<double>());
 		if (1 != valid_bit)
 		{
 			cerr << "valid bit=" << valid_bit << " was not set!!" << endl;
 			obs_type = obs_invalid;
+			blank_observables();
 			return;
 		}
 		set_observable(observable::micro_valid_bit,1);
@@ -221,15 +222,16 @@ void model::set_observables(const std::string &obs_dat_line)
 			     << num_data << " doubles provided" 
 			     << endl;
 			obs_type = obs_invalid;
+			blank_observables();
 		}
 		else
 		{
 			iss.clear();
-			iss.seekg(data_start);
+			iss.seekg(ios_base::beg);
 
 			transform (	istream_iterator<double> (iss),
 					istream_iterator<double> (),
-					++observable::observe_row.begin(),
+					observable::observe_row.begin(),
 					inserter(observables, observables.begin()),
 					make_obs_pair()
 			);
@@ -240,6 +242,7 @@ void model::set_observables(const std::string &obs_dat_line)
 	{
 		cerr << "Couldn't even check valid bit!" << endl;
 		obs_type = obs_invalid;
+		blank_observables();
 	}
 
 }
@@ -267,4 +270,9 @@ ostream& operator<< (ostream &o, const pair<double,string> &p)
 	return o;
 }
 
+void model::blank_observables()
+{
+	for (const auto &observable_key : observable::observe_row)
+		observables[observable_key] = 0.0;
+}
 

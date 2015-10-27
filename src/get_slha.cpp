@@ -24,8 +24,8 @@
 
 #include <sstream>
 #include <iomanip>
-#include "dict.hpp"
-#include "get_slha.hpp"
+#include "libconstrain/dict.hpp"
+#include "libconstrain/get_slha.hpp"
 
 using namespace std;
 using namespace susy_dict;

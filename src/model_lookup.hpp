@@ -28,7 +28,7 @@
 #define MODEL_LOOKUP_H
 
 #include <string>
-#include "model.hpp"
+#include "libconstrain/model.hpp"
 
 typedef double (model::*ModelLookup)(const std::string&) const;
 

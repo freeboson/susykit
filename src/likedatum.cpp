@@ -22,7 +22,7 @@
 */
 
 
-#include "hepstats.hpp"
+#include "libconstrain/hepstats.hpp"
 
 double hepstats::likedatum::operator()(const model &m, bool *unlikely) const
 {

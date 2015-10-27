@@ -25,8 +25,14 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "libconstrain.hpp"
-#include "hepstats.hpp"
+
+#include "libconstrain/dict.hpp"
+#include "libconstrain/model.hpp"
+#include "libconstrain/parse.hpp"
+#include "libconstrain/get_slha.hpp"
+#include "libconstrain/special_lookups.hpp"
+
+#include "libconstrain/hepstats.hpp"
 
 using namespace std;
 
