@@ -37,4 +37,46 @@ from prior distributions.
 ``SusyKit`` also provides several useful command line utilities for
 investigating the parameter space: ``qpoint``, ``constrain`` and ``qparse``.
 
+``qpoint``
+----------
+The ``qpoint`` utility allows you to process a parameter point through the
+toolchain to compute the sparticle spectrum and physical observables. The output
+is not intended to be human readable, but instead should be piped into
+``qparse``. The help output for the utility is as follows::
+
+  General command:
+  qpoint [options] -- <m0> [MH1 MH2] [mq ml] [m3rd] <MG1 MG2 MG3 | mhf> <At Ab Atau | A0> <tb> <sgn(mu)>
+  
+  The following options are available:
+    -H, --help                 print this message
+    -s, --slha                 output SLHA to stderr
+  
+  Non-universality flags:
+    -h, --higgs                seperate masses for Higgs fields, requires MH1 and MH2
+    -g, --gaugino                 ... for gaugino fields, requires MG1, MG2, and MG3 instead of mhf
+    -t, --trilinear               ... for trilinear couplings, requires At, Ab, and Atau instead of A0
+    -3, --3rd-gen                 ... for 3rd gen sfermions, requires m3rd
+    -f, --mq-ml                   ... for squarks and sleptons, requires mq and ml
+    -F, --full-sugra           all masses and couplings are specified
+  
+  Optional nuisance parameters:
+        --alpha-s=VAL          alpha(strong), at scale MZ, by default:0.1184
+        --alpha-em-inv=VAL     1/alpha(EM), at scale MZ, by default:127.933
+        --mtop=VAL             top quark pole mass, by default:173.07
+        --mbmb=VAL             running bottom quark mass mb(mb), by default:4.18
+
+(Masses are specified in GeV.)
+
+This lets you specify a sugra point with a few different types of boundary
+conditions. For example, for a plain mSUGRA scenario the format to follow would
+be::
+
+  qpoint [options] -- <m0> <mhf> <A0> <tan beta> <sgn(mu)>
+
+For example, we could With the top quark mass set to ``175 GeV``, ``m0 = 200
+GeV``, ``mhf = 100 GeV``, ``A0 = 0``, ``tanβ = 15``, ``sgn(μ) = 1``::
+
+  qpoint --mtop=175 -- 200 100 0 15 1
+
+
 
