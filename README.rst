@@ -42,7 +42,10 @@ investigating the parameter space: ``qpoint``, ``constrain`` and ``qparse``.
 The ``qpoint`` utility allows you to process a parameter point through the
 toolchain to compute the sparticle spectrum and physical observables. The output
 is not intended to be human readable, but instead should be piped into
-``qparse``. The help output for the utility is as follows::
+``qparse``. If you only want to see the SOFTSUSY SLHA output, you can use the
+``-s`` or ``--slha`` flag. (Note, it will go to stderr, not stdout.) Currently
+the SLHA output will not include any of the observables, as in FLHA files. The
+help output for the utility is as follows::
 
   General command:
   qpoint [options] -- <m0> [MH1 MH2] [mq ml] [m3rd] <MG1 MG2 MG3 | mhf> <At Ab Atau | A0> <tb> <sgn(mu)>
@@ -78,5 +81,10 @@ GeV``, ``mhf = 100 GeV``, ``A0 = 0``, ``tanβ = 15``, ``sgn(μ) = 1``::
 
   qpoint --mtop=175 -- 200 100 0 15 1
 
+As a more complicated example, we could also adjust the bottom quark mass,
+specify different masses for the 3rd generation sfermions, and for the gauginos,
+while requesting SLHA output as such::
+
+  qpoint -s3g --mtop=<mt> --mbmb=<mb> -- <m0> <m3rd> <MG1> <MG2> <MG3> <A0> <tb> <sgn(mu)>
 
 
