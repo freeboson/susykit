@@ -7,39 +7,40 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-#set(SOFTSUSY_VERSION "3.6.2")
-#ExternalProject_Add(
-#  SoftSusy
-#  #URL "http://www.hepforge.org/archive/softsusy/softsusy-${SOFTSUSY_VERSION}.tar.gz"
-#  URL "/home/sujeet/softsusy-${SOFTSUSY_VERSION}.tar.gz"
-#  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy"
-#  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/.download"
-#  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/source/"
-#  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/source/configure CXX=clang++ --enable-static --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy
-#  BUILD_COMMAND make
-#)
-#include_directories(${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/include)
-#link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/lib")
-#
-#set(FEYNHIGGS_VERSION "2.11.2")
-#ExternalProject_Add(
-#  FeynHiggs
-#  #URL "http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-${FEYNHIGGS_VERSION}.tar.gz"
-#  URL "/home/sujeet/FeynHiggs-${FEYNHIGGS_VERSION}.tar.gz"
-#  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs"
-#  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/.download"
-#  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/source/"
-#  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/source/configure --static --64 --enable-full-g-2 --disable-vt100 CC=clang --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds
-#  BUILD_COMMAND make
-#)
-#include_directories(${CMAKE_CURRENT_BINARY_DIR}ext/feynhiggs/ds/include)
-#link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds/lib64")
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
+set(SOFTSUSY_VERSION "3.6.2")
+set(FEYNHIGGS_VERSION "2.11.2")
 set(HIGGSBOUNDS_VERSION "4.2.1")
+set(SUPERISO_RELIC_VERSION "3.4")
+
+ExternalProject_Add(
+  SoftSusy
+  URL "http://www.hepforge.org/archive/softsusy/softsusy-${SOFTSUSY_VERSION}.tar.gz"
+  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy"
+  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/.download"
+  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/source/"
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/source/configure CXX=clang++ --enable-static --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy
+  BUILD_COMMAND make
+)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/include)
+link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/lib")
+
+ExternalProject_Add(
+  FeynHiggs
+  URL "http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-${FEYNHIGGS_VERSION}.tar.gz"
+  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs"
+  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/.download"
+  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/source/"
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/source/configure --static --64 --enable-full-g-2 --disable-vt100 CC=clang --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds
+  BUILD_COMMAND make
+)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}ext/feynhiggs/ds/include)
+link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds/lib64")
+
 ExternalProject_Add(
   HiggsBounds
-  #URL "http://www.hepforge.org/archive/higgsbounds/HiggsBounds-${HIGGSBOUNDS_VERSION}.tar.gz"
-  URL "/home/sujeet/HiggsBounds-${HIGGSBOUNDS_VERSION}.tar.gz"
+  URL "http://www.hepforge.org/archive/higgsbounds/HiggsBounds-${HIGGSBOUNDS_VERSION}.tar.gz"
   PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds"
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/.download"
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/source/"
@@ -50,7 +51,19 @@ ExternalProject_Add(
 )
 link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib")
 
-include_directories(include)
+ExternalProject_Add(
+  SuperIso_Relic
+  URL "http://superiso.in2p3.fr/download/superiso_relic_v${SUPERISO_RELIC_VERSION}.tar.bz2"
+  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic"
+  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/.download"
+  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/"
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/configure --with-cc=clang --with-fc=gfortran
+  BUILD_COMMAND make static COMMAND make libisospin.a INSTALL_COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib COMMAND install -t ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/libisospin.a COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include COMMAND install -t ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/include.h COMMAND install -t ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/omega.h
+)
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include")
+link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib")
+
 
 set(SOURCES_LCONS 
   src/parseutils.cpp src/parse.cpp src/model.cpp src/model_lookup.cpp
