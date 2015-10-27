@@ -215,6 +215,7 @@ void model::set_observables(const std::string &obs_dat_line)
 			blank_observables();
 			return;
 		}
+		set_observable(observable::micro_valid_bit,1);
 		if ((num_data + 1) != observable::observe_row.size() || num_data < 1) // +1 to account for the "valid_bit"
 		{
 			cerr << "Error: malformed observables data line: " 

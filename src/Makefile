@@ -26,7 +26,7 @@ SUPERISO_NO_RELIC=1
 ################################################################
 
 
-CXX		= g++
+CXX		= clang++
 LCONSFILES	= parseutils.cpp parse.cpp model.cpp model_lookup.cpp special_lookups.cpp get_slha.cpp likeconfig.cpp likedatum.cpp loglike.cpp 
 CONFILES	= constraint.cpp constrain.cpp constrain_opts.cpp
 QPARSEFILES	= qparse.cpp
