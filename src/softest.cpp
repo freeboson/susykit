@@ -32,12 +32,15 @@ int main(int argc, char** argv)
 	}
 
 	model m;
+	get_slha slha;
 
 	softsusy_driver softsusy(sugra);
 
 	try { 
 		m = softsusy(); // need to check for displayProblem().test() and neutralino LSP 
 	} catch (const string &s) { cerr << "SOFTSUSY exception: " << s << endl; return 1;}
+
+  cout << slha(m) << endl;
 
 	delete sugra;
 
