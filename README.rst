@@ -1,6 +1,21 @@
-===========
-``SusyKit``
-===========
+::
+
+          ,gg,                                ,ggg,        gg              
+         i8""8i                              dP""Y8b       dP         I8   
+         `8,,8'                              Yb, `88      d8'         I8   
+          `88'                                `"  88    ,dP'    gg 88888888
+          dP"8,                                   88aaad8"      ""    I8   
+         dP' `8a  gg      gg    ,g,     gg     gg 88""""Yb,     gg    I8   
+        dP'   `Yb I8      8I   ,8'8,    I8     8I 88     "8b    88    I8   
+    _ ,dP'     I8 I8,    ,8I  ,8'  Yb   I8,   ,8I 88      `8i   88   ,I8,  
+    "888,,____,dP,d8b,  ,d8b,,8'_   8) ,d8b, ,d8I 88       Yb,_,88,_,d88b, 
+    a8P"Y88888P" 8P'"Y88P"`Y8P' "YY8P8PP""Y88P"88888        Y88P""Y88P""Y8 
+                                             ,d8I'                         
+                                           ,dP'8I                          
+                                          ,8"  8I                          
+                                          I8   8I                          
+                                          `8, ,8I                          
+                                           `Y8P"                           
 
 What is ``SusyKit``?
 --------------------
