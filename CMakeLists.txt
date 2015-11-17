@@ -19,8 +19,9 @@ ExternalProject_Add(
   URL "http://www.hepforge.org/archive/softsusy/softsusy-${SOFTSUSY_VERSION}.tar.gz"
   PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy"
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/.download"
+  DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/source/"
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/source/configure CXX=clang++ --enable-static --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/source/configure CXX=${CMAKE_CXX_COMPILER} --enable-static --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy
   BUILD_COMMAND make
 )
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/include)
@@ -31,8 +32,9 @@ ExternalProject_Add(
   URL "http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-${FEYNHIGGS_VERSION}.tar.gz"
   PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs"
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/.download"
+  DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/source/"
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/source/configure --static --64 --enable-full-g-2 --disable-vt100 CC=clang --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/source/configure --static --64 --enable-full-g-2 --disable-vt100 CC=${CMAKE_C_COMPILER} --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds
   BUILD_COMMAND make
 )
 include_directories(${CMAKE_CURRENT_BINARY_DIR}ext/feynhiggs/ds/include)
@@ -43,11 +45,12 @@ ExternalProject_Add(
   URL "http://www.hepforge.org/archive/higgsbounds/HiggsBounds-${HIGGSBOUNDS_VERSION}.tar.gz"
   PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds"
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/.download"
+  DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/source/"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/source/"
   CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/source/configure 
   BUILD_COMMAND make libHB
-  INSTALL_COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib COMMAND install -t ${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib libHB.a
+  INSTALL_COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib COMMAND install libHB.a ${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib
 )
 link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib")
 
@@ -56,10 +59,11 @@ ExternalProject_Add(
   URL "http://superiso.in2p3.fr/download/superiso_relic_v${SUPERISO_RELIC_VERSION}.tar.bz2"
   PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic"
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/.download"
+  DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/"
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/configure --with-cc=clang --with-fc=gfortran
-  BUILD_COMMAND make static COMMAND make libisospin.a INSTALL_COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib COMMAND install -t ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/libisospin.a COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include COMMAND install -t ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/include.h COMMAND install -t ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/omega.h
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/configure --with-cc=${CMAKE_C_COMPILER} --with-fc=gfortran
+  BUILD_COMMAND make static COMMAND make libisospin.a INSTALL_COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/libisospin.a ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/include.h ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/omega.h ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include
 )
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include")
 link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib")
@@ -86,9 +90,11 @@ set(SOURCES_SDB2SLHA src/sdb2slha.cpp)
 
 add_library(constrain STATIC ${SOURCES_LCONS})
 target_compile_features(constrain PRIVATE cxx_range_for)
+target_compile_features(constrain PRIVATE cxx_generalized_initializers)
 
 add_library(susykit STATIC ${SOURCES_LSKIT})
 target_compile_features(susykit PRIVATE cxx_range_for)
+target_compile_features(susykit PRIVATE cxx_generalized_initializers)
 
 add_executable(qparse ${SOURCES_QPARSE})
 target_compile_features(qparse PRIVATE cxx_range_for)
