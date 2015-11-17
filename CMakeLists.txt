@@ -87,6 +87,9 @@ set(SOURCES_SDB2SLHA src/sdb2slha.cpp)
 add_library(constrain STATIC ${SOURCES_LCONS})
 target_compile_features(constrain PRIVATE cxx_range_for)
 
+add_library(susykit STATIC ${SOURCES_LSKIT})
+target_compile_features(susykit PRIVATE cxx_range_for)
+
 add_executable(qparse ${SOURCES_QPARSE})
 target_compile_features(qparse PRIVATE cxx_range_for)
 target_link_libraries(qparse constrain)
