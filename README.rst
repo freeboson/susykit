@@ -52,6 +52,32 @@ from prior distributions.
 ``SusyKit`` also provides several useful command line utilities for
 investigating the parameter space: ``qpoint``, ``constrain`` and ``qparse``.
 
+Installation
+------------
+``SusyKit`` is *meant* to be simple to install, but as you can probably expect
+from a package with inter-language libraries, it gets tricky. The basic
+instructions are as follows::
+
+$ git clone git@github.com:freeboson/susykit.git
+$ cd susykit
+$ cmake .
+$ make
+
+That should fetch/unpack/compile/install all of the external libs *and* build
+the basic targets: ``qpoint``, ``constrain`` and ``qparse``.
+
+On OS X, it's a bit tricky. To get the proper C++11 support, you have
+``clang++`` which is great. However, on OS X 10.8.5 and below, the default is to
+use ``libstdc++`` and not ``libc++``, and unfortunately ``cmake`` cannot figure
+that out for you. In this case, you will want to use GNU GCC via homebrew. Then
+you can run cmake this way::
+
+$ CC=gcc-5 CXX=g++-5
+
+Then, ``cmake`` will use GNU's ``gcc`` and ``g++``. (The ones in ``/usr/bin``
+are just symlinks to Apple LLVM.) Note that if you are on **OS X 10.9 or newer**
+you do not have to worry about this at all.
+
 ``qpoint``
 ----------
 The ``qpoint`` utility allows you to process a parameter point through the
