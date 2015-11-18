@@ -26,7 +26,10 @@
 #define SUJISO_HPP
 
 
-#include "libconstrain.hpp"
+#include "libconstrain/dict.hpp"
+#include "libconstrain/model.hpp"
+#include "libconstrain/model_lookup.hpp"
+#include "libconstrain/parse.hpp"
 #include <memory>
 
 struct parameters;

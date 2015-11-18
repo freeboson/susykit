@@ -26,7 +26,10 @@
 #ifndef SUJFEYN_HPP
 #define SUJFEYN_HPP
 
-#include "libconstrain.hpp"
+#include "libconstrain/dict.hpp"
+#include "libconstrain/model.hpp"
+#include "libconstrain/model_lookup.hpp"
+#include "libconstrain/parse.hpp"
 #include "src/include/ftypes.h"
 
 // this class will implement thread-local

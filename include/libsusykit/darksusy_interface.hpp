@@ -26,7 +26,10 @@
 #ifndef DARKSUSY_INTERFACE_HPP
 #define DARKSUSY_INTERFACE_HPP
 
-#include "libconstrain.hpp"
+#include "libconstrain/dict.hpp"
+#include "libconstrain/model.hpp"
+#include "libconstrain/model_lookup.hpp"
+#include "libconstrain/parse.hpp"
 
 class darksusy_driver
 {
