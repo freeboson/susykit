@@ -80,7 +80,7 @@ void superiso_driver::pass_superiso_slha_data(const model &m)
 	superiso_params->mass_Z = m.get_datum(m_z);
 	superiso_params->mass_b = m.get_datum(m_b);
 	superiso_params->mass_top_pole = m.get_datum(m_top);
-	superiso_params->mass_tau_pole  = m.get_datum(m_tau);
+	superiso_params->mass_tau  = m.get_datum(m_tau);
 
 	// minpar
 
