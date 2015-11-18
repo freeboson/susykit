@@ -24,6 +24,7 @@
 
 
 #include "constraint.hpp"
+#include <stdexcept>
 
 using namespace std;
 
@@ -52,31 +53,36 @@ constraint::constraint(const hepstats::loglike &_loglike, const std::string &lim
 
 void constraint::process_limit(std::stringstream &ss)
 {
-	string dummy;
-	for (int i = 0; ss >> dummy; i++)
+	string limit_token;
+	for (int i = 0; ss >> limit_token; i++)
 	{
-		stringstream fmt;
 		switch (i)
 		{
 			case 0:
-				if (string::npos != dummy.find("x"))
+				if (string::npos != limit_token.find("x"))
 				{
 					i--; // optional exclusion parameter
 					xset = true;
 				}
-				else if (string::npos == dummy.find("*"))
+				else if (string::npos == limit_token.find("*"))
 				{
-					fmt.str(dummy);
-					lset = (fmt >> lower);
-//					cout << "lset:" << lset << " dummy=" << dummy << " lower=" << lower << endl;
+					lset = true;
+					try {
+						lower = stod(limit_token);
+					} catch (const std::logic_error&) {
+						lset = false;
+					}
 				}
 				break;
 			case 1:
-				if (string::npos == dummy.find("*"))
+				if (string::npos == limit_token.find("*"))
 				{
-					fmt.str(dummy);
-					uset = (fmt >> upper);
-//					cout << "uset:" << uset << " dummy=" << dummy << " upper=" << upper << endl;
+					uset = true;
+					try {
+						upper = stod(limit_token);
+					} catch (const std::logic_error&) {
+						uset = false;
+					}
 				}
 				break;
 			default:
