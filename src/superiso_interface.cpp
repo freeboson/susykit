@@ -338,14 +338,18 @@ void superiso_driver::slha_adjust()
 
 double superiso_driver::bsgamma()
 {
-	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11];
+	double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+	double complex CQpb[3];
 	
 	double mu_W=2.* superiso_params->mass_W;
-	double mu_b=superiso_params->mass_b_1S/2.;
+	double mu_b=superiso_params->mass_b_pole/2.;
 
 	CW_calculator(C0w,C1w,C2w,mu_W,superiso_params.get());
 	C_calculator_base1(C0w,C1w,C2w,mu_W,C0b,C1b,C2b,mu_b,superiso_params.get());
-	return ::bsgamma(C0b,C1b,C2b,mu_b,mu_W,superiso_params.get());
+	Cprime_calculator(Cpb,CQpb,mu_W,mu_b,superiso_params.get());
+
+	return ::bsgamma(C0b,C1b,C2b,Cpb,mu_b,mu_W,superiso_params.get());
+
 }
 
 double superiso_driver::bsmumu()
