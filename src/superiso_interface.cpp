@@ -353,19 +353,19 @@ double superiso_driver::bsgamma()
 }
 
 double superiso_driver::bsmumu()
-{	
-	double C0b[11],C1b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
+{
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
 	double complex CQ0b[3],CQ1b[3],CQpb[3];
-	
+
 	double mu_W=2.*superiso_params->mass_W;
-	double mu_b=superiso_params->mass_b;
-				
+	double mu_b=superiso_params->mass_b_pole;
+
 	CW_calculator(C0w,C1w,C2w,mu_W,superiso_params.get());
-	C_calculator_base2(C0w,C1w,mu_W,C0b,C1b,mu_b,superiso_params.get());
+	C_calculator_base1(C0w,C1w,C2w,mu_W,C0b,C1b,C2b,mu_b,superiso_params.get());
 	CQ_calculator(CQ0b,CQ1b,mu_W,mu_b,superiso_params.get());
 	Cprime_calculator(Cpb,CQpb,mu_W,mu_b,superiso_params.get());
 
-	return Bsmumu(C0b,C1b,CQ0b,CQ1b,Cpb,CQpb,superiso_params.get(),mu_b);
+	return Bsmumu(C0b,C1b,C2b,CQ0b,CQ1b,Cpb,CQpb,superiso_params.get(),mu_b);
 }
 
 double superiso_driver::btaunu()
