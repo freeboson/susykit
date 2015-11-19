@@ -13,6 +13,7 @@ set(SOFTSUSY_VERSION "3.6.2")
 set(FEYNHIGGS_VERSION "2.11.2")
 set(HIGGSBOUNDS_VERSION "4.2.1")
 set(SUPERISO_RELIC_VERSION "3.4")
+set(MICROMEGAS_VERSION "2.4.5")
 
 ExternalProject_Add(
   SoftSusy
@@ -37,7 +38,7 @@ ExternalProject_Add(
   CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/source/configure --static --64 --enable-full-g-2 --disable-vt100 CC=${CMAKE_C_COMPILER} --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds
   BUILD_COMMAND make
 )
-include_directories(${CMAKE_CURRENT_BINARY_DIR}ext/feynhiggs/ds/include)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds/include)
 link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds/lib64")
 
 ExternalProject_Add(
@@ -68,6 +69,18 @@ ExternalProject_Add(
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include")
 link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib")
 
+ExternalProject_Add(
+  MicrOMEGAs
+  URL "https://lapth.cnrs.fr/micromegas/downloadarea/code/micromegas_${MICROMEGAS_VERSION}.tgz"
+  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas"
+  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/.download"
+  DOWNLOAD_NO_PROGRESS 1
+  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/"
+  CONFIGURE_COMMAND make
+  BUILD_COMMAND make -C MSSM
+)
+#link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib")
 
 set(SOURCES_LCONS 
   src/parseutils.cpp src/parse.cpp src/model.cpp src/model_lookup.cpp
@@ -75,9 +88,10 @@ set(SOURCES_LCONS
   src/loglike.cpp
 )
 
+# need to leave our micromegas for a bit 
 set(SOURCES_LSKIT 
-  src/superiso_interface.cpp  src/micromegas_interface.cpp
-  src/softsusy_interface.cpp src/feynhiggs_interface.cpp src/softsusy_opts.cpp
+  src/superiso_interface.cpp src/softsusy_interface.cpp
+  src/feynhiggs_interface.cpp src/softsusy_opts.cpp
 )
 
 set(SOURCES_CONSTRAIN 
