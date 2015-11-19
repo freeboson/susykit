@@ -8,11 +8,9 @@
 
 #include <stdexcept>
 
-//#include "src/include/ftypes.h"
-#include "src/include/RecordIndices.h"
-#include "src/include/CFeynHiggs.h.in"
-#include "src/include/FHCouplings.h"
-#include "src/include/SLHADefs.h"
+//#include "FHRecord.h"
+#include "FHCouplings.h"
+#include "SLHADefs.h"
 
 #if defined(nslhadata)
   #if nslhadata != FH_SLHAData_len

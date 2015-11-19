@@ -30,7 +30,7 @@
 #include "libconstrain/model.hpp"
 #include "libconstrain/model_lookup.hpp"
 #include "libconstrain/parse.hpp"
-#include "src/include/ftypes.h"
+#include "CFeynHiggs.h"
 
 // this class will implement thread-local
 // storage to allow parallel calls to FeynHiggs
