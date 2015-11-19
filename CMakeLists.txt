@@ -39,7 +39,8 @@ ExternalProject_Add(
   BUILD_COMMAND make
 )
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds/include)
-link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds/lib64")
+file(GLOB FH_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds/lib*)
+link_directories(${FH_LIB_DIR})
 
 ExternalProject_Add(
   HiggsBounds
@@ -79,7 +80,9 @@ ExternalProject_Add(
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/"
   CONFIGURE_COMMAND make
   BUILD_COMMAND make -C MSSM
+  INSTALL_COMMAND ""
 )
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source")
 #link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib")
 
 set(SOURCES_LCONS 
@@ -88,10 +91,10 @@ set(SOURCES_LCONS
   src/loglike.cpp
 )
 
-# need to leave our micromegas for a bit 
 set(SOURCES_LSKIT 
   src/superiso_interface.cpp src/softsusy_interface.cpp
   src/feynhiggs_interface.cpp src/softsusy_opts.cpp
+  src/micromegas_interface.cpp
 )
 
 set(SOURCES_CONSTRAIN 
@@ -101,6 +104,8 @@ set(SOURCES_CONSTRAIN
 set(SOURCES_QPARSE src/qparse.cpp)
 
 set(SOURCES_SDB2SLHA src/sdb2slha.cpp)
+
+set(SOURCES_QPOINT src/qpoint_softsusy_opts.cpp src/qpoint.cpp)
 
 add_library(constrain STATIC ${SOURCES_LCONS})
 target_compile_features(constrain PRIVATE cxx_range_for)
@@ -131,5 +136,7 @@ add_executable(softest ${SOURCES_SOFTEST})
 target_compile_features(softest PRIVATE cxx_range_for)
 target_link_libraries(softest constrain soft)
 
-
+add_executable(qpoint ${SOURCES_QPOINT})
+target_compile_features(qpoint PRIVATE cxx_range_for)
+target_link_libraries(qpoint constrain susykit FH)
 
