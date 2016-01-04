@@ -17,11 +17,13 @@ set(FEYNHIGGS_VERSION "2.11.2")
 set(HIGGSBOUNDS_VERSION "4.2.1")
 set(SUPERISO_RELIC_VERSION "3.4")
 set(MICROMEGAS_VERSION "2.4.5")
+set(DARKSUSY_VERSION "5.1.2")
 set(FEYNHIGGS_MD5 "edb73eafa6dab291bd8827242c16ac0a")
 set(HIGGSBOUNDS_MD5 "47b93330d4e0fddcc23b381548db355b")
 set(SOFTSUSY_MD5 "b7f7b76424b168d23e0afd6fbd063da2")
 set(SUPERISO_RELIC_MD5 "97cf83c8bd90f2a9993c2209337f9e72")
 set(MICROMEGAS_MD5 "322856e02ddf06c76077b65f3a64de5d")
+set(DARKSUSY_MD5 "ee9d47aeb88980e2777a1c61b7d495d0")
 
 ExternalProject_Add(
   SoftSusy
@@ -115,7 +117,7 @@ set_target_properties(isospin PROPERTIES
 ExternalProject_Add(
   MicrOMEGAs
   URL "https://lapth.cnrs.fr/micromegas/downloadarea/code/micromegas_${MICROMEGAS_VERSION}.tgz"
-  #  URL_HASH MD5=${SUPERISO_RELIC_MD5}
+  URL_HASH MD5=${MICROMEGAS_MD5}
   PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas"
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/distfiles"
   DOWNLOAD_NO_PROGRESS 1
@@ -128,6 +130,30 @@ ExternalProject_Add(
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source")
 #link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib")
 
+if("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Intel")
+  set(DS_FCFLAGS "-O -extend_source")
+elseif("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
+  set(DS_FCFLAGS "-O -ffixed-line-length-none")
+endif()
+
+ExternalProject_Add(
+  DarkSUSY
+  URL "http://www.fysik.su.se/~edsjo/darksusy/tars/darksusy-${DARKSUSY_VERSION}.tar.gz"
+  URL_HASH MD5=${DARKSUSY_MD5}
+  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/darksusy"
+  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/distfiles"
+  DOWNLOAD_NO_PROGRESS 1
+  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/darksusy/source/"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/darksusy/source/"
+  PATCH_COMMAND patch src/ini/dsinit.f ${CMAKE_CURRENT_BINARY_DIR}/patches/darksusy/dsinit.patch
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/darksusy/source/configure
+    CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
+    FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${DS_FCFLAGS}
+    --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/darksusy
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+)
+
 set(SOURCES_LCONS 
   src/parseutils.cpp src/parse.cpp src/model.cpp src/model_lookup.cpp
   src/special_lookups.cpp src/get_slha.cpp src/likeconfig.cpp src/likedatum.cpp
@@ -137,7 +163,8 @@ set(SOURCES_LCONS
 set(SOURCES_LSKIT 
   src/superiso_interface.cpp src/softsusy_interface.cpp
   src/feynhiggs_interface.cpp src/softsusy_opts.cpp
-  src/micromegas_interface.cpp
+  src/darksusy_interface.cpp
+  #  src/micromegas_interface.cpp
 )
 
 set(SOURCES_CONSTRAIN 
