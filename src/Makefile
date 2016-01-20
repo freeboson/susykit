@@ -45,9 +45,9 @@ TEST		= hepstats_test darktest
 LIBS   		= libconstrain.a libsusykit.a 
 CXXFLAGS	= -std=c++0x -O3 -march=native -funroll-loops
 CXXINCL		= -I../include -I$(MICROMEGAS) -I$(SOFTSUSY) $(BOOST_INCL) -I$(FEYNHIGGS) -I$(FEYNHIGGS)/src/include -I$(SUPERISO)/src
-LDDIRS		= -L../lib -L$(SOFTSUSY)/.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src -L$(SUPERISO)/src/relic -L$(FEYNHIGGS)/build
+LDDIRS		= -L../lib -L$(SOFTSUSY)/../.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src -L$(SUPERISO)/src/relic -L$(FEYNHIGGS)/build
 LDFLAGS=-lgfortran #-lifcore
-LDFLAGS+=-lifcore -limf -lsvml -lc -lifport
+#LDFLAGS+=-lifcore -limf -lsvml -lc -lifport
 
 
 all: $(LIBS) $(MAIN)
