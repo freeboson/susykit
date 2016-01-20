@@ -26,14 +26,14 @@ SUPERISO_NO_RELIC=1
 ################################################################
 
 
-CXX		= mpiCC
+CXX		= mpicxx
 FILES		= seedgen.cpp mpiscan.cpp
 OBJS		= $(FILES:.cpp=.o)
 CXXINCL		= -I../include -I$(MICROMEGAS) -I$(SOFTSUSY) $(BOOST_INCL) -I$(FEYNHIGGS) -I$(FEYNHIGGS)/src/include -I$(SUPERISO)/src
 CXXFLAGS	= -std=c++0x -fpermissive -Wno-deprecated
-LDDIRS		= -L../lib -L$(SOFTSUSY)/.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src -L$(FEYNHIGGS)/build 
+LDDIRS		= -L../lib -L$(SOFTSUSY)/../.libs -L$(DARKSUSY)/lib -L$(SUPERISO)/src -L$(SUPERISO)/src/relic -L$(FEYNHIGGS)/build
 LDFLAGS=-lgfortran #-lifcore
-LDFLAGS+=-lifcore -limf -lsvml -lc -lifport 
+#LDFLAGS+=-lifcore -limf -lsvml -lc -lifport
 
 ifeq ($(SOFTSUSY_VERSION_POST_340),1)
 	CXXFLAGS += -DSOFTSUSY_POST34
