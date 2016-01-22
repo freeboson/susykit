@@ -26,7 +26,7 @@ SUPERISO_NO_RELIC=1
 ################################################################
 
 
-CXX		= mpicxx
+CXX		= mpiCC
 FILES		= seedgen.cpp mpiscan.cpp
 OBJS		= $(FILES:.cpp=.o)
 CXXINCL		= -I../include -I$(MICROMEGAS) -I$(SOFTSUSY) $(BOOST_INCL) -I$(FEYNHIGGS) -I$(FEYNHIGGS)/src/include -I$(SUPERISO)/src
