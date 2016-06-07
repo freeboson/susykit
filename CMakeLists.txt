@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
+enable_language(Fortran)
+
 project(SusyKit)
 include(ExternalProject)
 
@@ -64,8 +66,9 @@ ExternalProject_Add(
   DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/"
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/configure --with-cc=${CMAKE_C_COMPILER} --with-fc=gfortran
-  BUILD_COMMAND make static COMMAND make libisospin.a INSTALL_COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/libisospin.a ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/include.h ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/omega.h ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/configure --with-cc=${CMAKE_C_COMPILER} --with-fc=${CMAKE_Fortran_COMPILER} COMMAND make static
+  BUILD_COMMAND make libisospin.a librelic.a
+  INSTALL_COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/libisospin.a ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/include.h ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/omega.h ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include
 )
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include")
 link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib")
@@ -83,7 +86,17 @@ ExternalProject_Add(
   INSTALL_COMMAND ""
 )
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source")
-#link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib")
+link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/lib")
+set(MICRO_LIBS
+  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/sources/micromegas.a
+  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/MSSM/work/work_aux.a
+  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/MSSM/lib/aLib.a
+  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/dynamic_me.a
+  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/libSLHAplus.a
+  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/num_c.a
+  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/serv.a
+  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib//sqme_aux.so
+)
 
 set(SOURCES_LCONS 
   src/parseutils.cpp src/parse.cpp src/model.cpp src/model_lookup.cpp
@@ -138,5 +151,5 @@ target_link_libraries(softest constrain soft)
 
 add_executable(qpoint ${SOURCES_QPOINT})
 target_compile_features(qpoint PRIVATE cxx_range_for)
-target_link_libraries(qpoint constrain susykit FH)
+target_link_libraries(qpoint constrain susykit FH isospin soft ${MICRO_LIBS})
 
