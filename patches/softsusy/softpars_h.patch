@@ -1,0 +1,12 @@
+--- ../../ext/softsusy/include/softsusy/softpars.h	2015-12-17 10:45:17.575874444 -0500
++++ softpars.h	2015-12-17 11:05:32.143424044 -0500
+@@ -17,7 +17,9 @@
+ #include "linalg.h"
+ #include "utils.h"
+ #include "numerics.h"
++#ifdef HAVE_CONFIG_H
+ #include <config.h>
++#endif
+ 
+ namespace softsusy {
+   
