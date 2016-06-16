@@ -14,15 +14,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-set(SOFTSUSY_VERSION "3.6.2")
-set(FEYNHIGGS_VERSION "2.11.2")
-set(HIGGSBOUNDS_VERSION "4.2.1")
-set(SUPERISO_RELIC_VERSION "3.4")
-set(MICROMEGAS_VERSION "2.4.5")
-set(DARKSUSY_VERSION "5.1.2")
+set(SOFTSUSY_VERSION "3.7.2")     #latest
+set(FEYNHIGGS_VERSION "2.11.2")   #update
+set(HIGGSBOUNDS_VERSION "4.2.1")  #update
+set(SUPERISO_RELIC_VERSION "3.4") #latest
+set(MICROMEGAS_VERSION "2.4.5")   #abandon
+set(DARKSUSY_VERSION "5.1.2")     #update
 set(FEYNHIGGS_MD5 "edb73eafa6dab291bd8827242c16ac0a")
 set(HIGGSBOUNDS_MD5 "47b93330d4e0fddcc23b381548db355b")
-set(SOFTSUSY_MD5 "b7f7b76424b168d23e0afd6fbd063da2")
+set(SOFTSUSY_MD5 "5efdbf71e43cfdb9c3ef619fe5abff8a")
 set(SUPERISO_RELIC_MD5 "97cf83c8bd90f2a9993c2209337f9e72")
 set(MICROMEGAS_MD5 "322856e02ddf06c76077b65f3a64de5d")
 set(DARKSUSY_MD5 "ee9d47aeb88980e2777a1c61b7d495d0")
@@ -31,21 +31,22 @@ ExternalProject_Add(
   SoftSusy
   URL "http://www.hepforge.org/archive/softsusy/softsusy-${SOFTSUSY_VERSION}.tar.gz"
   URL_HASH MD5=${SOFTSUSY_MD5}
-  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy"
-  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/distfiles"
+  PREFIX "${CMAKE_BINARY_DIR}/work/softsusy"
+  DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/ext/distfiles"
   DOWNLOAD_NO_PROGRESS 1
-  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/source/"
+  SOURCE_DIR "${CMAKE_BINARY_DIR}/work/softsusy/extract"
   # patch not needed after 3.6.2
-  PATCH_COMMAND patch src/softpars.h ${CMAKE_CURRENT_BINARY_DIR}/patches/softsusy/softpars_h.patch
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/source/configure
-    CXX=${CMAKE_CXX_COMPILER} --enable-static
-    --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy
+  # PATCH_COMMAND patch src/softpars.h ${PROJECT_SOURCE_DIR}/patches/softsusy/softpars_h.patch
+  CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/softsusy/extract/configure
+    CXX=${CMAKE_CXX_COMPILER} --enable-static --with-pic
+    --prefix=${CMAKE_BINARY_DIR} --includedir=${PROJECT_SOURCE_DIR}/include
   BUILD_COMMAND make
+  INSTALL_COMMAND make install
 )
 add_library(soft STATIC IMPORTED)
 set_target_properties(soft PROPERTIES
-  IMPORTED_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/lib/libsoft.a"
-  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/ext/softsusy/include"
+  IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/lib/libsoft.a"
+#  INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;CXX;Fortran"
 )
 
@@ -54,8 +55,8 @@ ExternalProject_Add(
   FeynHiggs
   URL "http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-${FEYNHIGGS_VERSION}.tar.gz"
   URL_HASH MD5=${FEYNHIGGS_MD5}
-  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs"
-  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/distfiles"
+  PREFIX "${CMAKE_BINARY_DIR}/work/feynhiggs"
+  DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/ext/distfiles"
   DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/source/"
   CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/source/configure
@@ -66,7 +67,7 @@ file(GLOB FH_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds/lib*)
 add_library(FH STATIC IMPORTED)
 set_target_properties(FH PROPERTIES
   IMPORTED_LOCATION "${FH_LIB_DIR}/libFH.a"
-  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;Fortran"
 )
 
@@ -79,7 +80,7 @@ ExternalProject_Add(
   DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/source/"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/source/"
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/source/configure 
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/source/configure
   BUILD_COMMAND make libHB
   INSTALL_COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib
     COMMAND install libHB.a ${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib
@@ -90,29 +91,28 @@ ExternalProject_Add(
   SuperIso_Relic
   URL "http://superiso.in2p3.fr/download/superiso_relic_v${SUPERISO_RELIC_VERSION}.tar.bz2"
   URL_HASH MD5=${SUPERISO_RELIC_MD5}
-  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic"
-  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/distfiles"
+  PREFIX "${CMAKE_BINARY_DIR}/work/superiso_relic"
+  DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/ext/distfiles"
   DOWNLOAD_NO_PROGRESS 1
-  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/"
-  PATCH_COMMAND patch src/include.h ${CMAKE_CURRENT_BINARY_DIR}/patches/superiso/include_h.patch
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/configure
+  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract"
+  PATCH_COMMAND patch src/include.h ${PROJECT_SOURCE_DIR}/patches/superiso/include_h.patch
+  CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/ext/superiso_relic/source/configure
     --with-cc=${CMAKE_C_COMPILER} --with-fc=${CMAKE_Fortran_COMPILER}
   BUILD_COMMAND make static
     COMMAND make libisospin.a
-  INSTALL_COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib
-    COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/libisospin.a
-      ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib
-    COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include
-    COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/include.h
-      ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include
-    COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/source/src/omega.h
-      ${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include
+  INSTALL_COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/libisospin.a
+      ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+    COMMAND install -d ${PROJECT_SOURCE_DIR}/include/superiso_relic
+    COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/include.h
+      ${PROJECT_SOURCE_DIR}/include/superiso_relic
+    COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/omega.h
+      ${PROJECT_SOURCE_DIR}/include/superiso_relic
 )
 add_library(isospin STATIC IMPORTED)
 set_target_properties(isospin PROPERTIES
-  IMPORTED_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/lib/libisospin.a"
-  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/ext/superiso_relic/include"
+  IMPORTED_LOCATION "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libisospin.a"
+#  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;Fortran"
 )
 
@@ -166,20 +166,20 @@ ExternalProject_Add(
   INSTALL_COMMAND ""
 )
 
-set(SOURCES_LCONS 
+set(SOURCES_LCONS
   src/parseutils.cpp src/parse.cpp src/model.cpp src/model_lookup.cpp
   src/special_lookups.cpp src/get_slha.cpp src/likeconfig.cpp src/likedatum.cpp
   src/loglike.cpp
 )
 
-set(SOURCES_LSKIT 
+set(SOURCES_LSKIT
   src/superiso_interface.cpp src/softsusy_interface.cpp
   src/feynhiggs_interface.cpp src/softsusy_opts.cpp
   src/darksusy_interface.cpp
   #  src/micromegas_interface.cpp
 )
 
-set(SOURCES_CONSTRAIN 
+set(SOURCES_CONSTRAIN
   src/constraint.cpp src/constrain.cpp src/constrain_opts.cpp
 )
 
@@ -194,6 +194,7 @@ target_compile_features(constrain PRIVATE cxx_range_for)
 target_compile_features(constrain PRIVATE cxx_generalized_initializers)
 
 add_library(susykit STATIC ${SOURCES_LSKIT})
+add_dependencies(susykit SoftSusy SuperIso_Relic)
 target_compile_features(susykit PRIVATE cxx_range_for)
 target_compile_features(susykit PRIVATE cxx_generalized_initializers)
 target_link_libraries(susykit soft FH isospin)
@@ -216,6 +217,7 @@ set(SOURCES_SOFTEST
   src/softest.cpp
 )
 add_executable(softest ${SOURCES_SOFTEST})
+add_dependencies(softest constrain SoftSusy)
 target_compile_features(softest PRIVATE cxx_range_for)
 target_link_libraries(softest constrain soft)
 
