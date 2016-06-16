@@ -15,12 +15,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 set(SOFTSUSY_VERSION "3.7.2")     #latest
-set(FEYNHIGGS_VERSION "2.11.2")   #update
+set(FEYNHIGGS_VERSION "2.11.3")   #latest
 set(HIGGSBOUNDS_VERSION "4.2.1")  #update
 set(SUPERISO_RELIC_VERSION "3.4") #latest
 set(MICROMEGAS_VERSION "2.4.5")   #abandon
 set(DARKSUSY_VERSION "5.1.2")     #update
-set(FEYNHIGGS_MD5 "edb73eafa6dab291bd8827242c16ac0a")
+set(FEYNHIGGS_MD5 "49f5ea1838cb233baffd85bbc1b0d87d")
 set(HIGGSBOUNDS_MD5 "47b93330d4e0fddcc23b381548db355b")
 set(SOFTSUSY_MD5 "5efdbf71e43cfdb9c3ef619fe5abff8a")
 set(SUPERISO_RELIC_MD5 "97cf83c8bd90f2a9993c2209337f9e72")
@@ -41,7 +41,6 @@ ExternalProject_Add(
     CXX=${CMAKE_CXX_COMPILER} --enable-static --with-pic
     --prefix=${CMAKE_BINARY_DIR} --includedir=${PROJECT_SOURCE_DIR}/include
   BUILD_COMMAND make
-  INSTALL_COMMAND make install
 )
 add_library(soft STATIC IMPORTED)
 set_target_properties(soft PROPERTIES
@@ -58,16 +57,23 @@ ExternalProject_Add(
   PREFIX "${CMAKE_BINARY_DIR}/work/feynhiggs"
   DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/ext/distfiles"
   DOWNLOAD_NO_PROGRESS 1
-  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/source/"
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/source/configure
+  SOURCE_DIR "${CMAKE_BINARY_DIR}/work/feynhiggs/extract"
+  CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/feynhiggs/extract/configure
     --static --64 --enable-full-g-2 --disable-vt100 CC=${CMAKE_C_COMPILER}
-    --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds BUILD_COMMAND make
+    FC=${CMAKE_Fortran_COMPILER} --prefix=${CMAKE_BINARY_DIR}/work/feynhiggs/installed
+  BUILD_COMMAND make
+  INSTALL_COMMAND make install
+    COMMAND install -d ${PROJECT_SOURCE_DIR}/include/feynhiggs
+    COMMAND install
+    COMMAND
+    COMMAND
+    COMMAND
 )
 file(GLOB FH_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds/lib*)
 add_library(FH STATIC IMPORTED)
 set_target_properties(FH PROPERTIES
   IMPORTED_LOCATION "${FH_LIB_DIR}/libFH.a"
-  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/include"
+#  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;Fortran"
 )
 
@@ -217,7 +223,7 @@ set(SOURCES_SOFTEST
   src/softest.cpp
 )
 add_executable(softest ${SOURCES_SOFTEST})
-add_dependencies(softest constrain SoftSusy)
+add_dependencies(softest constrain SoftSusy FeynHiggs)
 target_compile_features(softest PRIVATE cxx_range_for)
 target_link_libraries(softest constrain soft)
 
