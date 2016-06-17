@@ -30,10 +30,10 @@
 
 #include "constraint.hpp"
 #include "constrain_opts.hpp"
-#include "libconstrain/model.hpp"
-#include "libconstrain/parse.hpp"
+#include "constrain/model.hpp"
+#include "constrain/parse.hpp"
 
-#include "libconstrain/hepstats.hpp"
+#include "constrain/hepstats.hpp"
 
 //#include "suj_dbg.h"
 

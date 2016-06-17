@@ -22,7 +22,7 @@
 */
 
 
-#include "libconstrain/special_lookups.hpp"
+#include "constrain/special_lookups.hpp"
 
 #include <cmath>
 

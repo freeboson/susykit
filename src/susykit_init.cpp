@@ -20,15 +20,15 @@
 
 #include <iostream>
 
-#include "libconstrain/dict.hpp"
-#include "libconstrain/model.hpp"
-#include "libconstrain/parse.hpp"
-#include "libconstrain/get_slha.hpp"
-#include "libconstrain/special_lookups.hpp"
+#include "constrain/dict.hpp"
+#include "constrain/model.hpp"
+#include "constrain/parse.hpp"
+#include "constrain/get_slha.hpp"
+#include "constrain/special_lookups.hpp"
 
-#include "libsusykit/softsusy_interface.hpp"
-#include "libsusykit/micromegas_interface.hpp"
-#include "libsusykit/feynhiggs_interface.hpp"
+#include "susykit/softsusy_interface.hpp"
+#include "susykit/micromegas_interface.hpp"
+#include "susykit/feynhiggs_interface.hpp"
 
 #include <string>
 

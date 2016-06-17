@@ -26,13 +26,13 @@
 #include <fstream>
 #include <string>
 
-#include "libconstrain/dict.hpp"
-#include "libconstrain/model.hpp"
-#include "libconstrain/parse.hpp"
-#include "libconstrain/get_slha.hpp"
-#include "libconstrain/special_lookups.hpp"
+#include "constrain/dict.hpp"
+#include "constrain/model.hpp"
+#include "constrain/parse.hpp"
+#include "constrain/get_slha.hpp"
+#include "constrain/special_lookups.hpp"
 
-#include "libconstrain/hepstats.hpp"
+#include "constrain/hepstats.hpp"
 
 using namespace std;
 

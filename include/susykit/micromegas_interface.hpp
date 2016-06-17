@@ -21,10 +21,10 @@
 
 */
 
-#include "libconstrain/dict.hpp"
-#include "libconstrain/model.hpp"
-#include "libconstrain/model_lookup.hpp"
-#include "libconstrain/parse.hpp"
+#include "constrain/dict.hpp"
+#include "constrain/model.hpp"
+#include "constrain/model_lookup.hpp"
+#include "constrain/parse.hpp"
 
 // this class will implement thread-local
 // storage to allow parallel calls to micrOMEGAs

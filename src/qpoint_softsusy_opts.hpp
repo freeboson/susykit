@@ -4,7 +4,7 @@
 #ifndef QPOINT_SOFTSUSY_OPTS_HPP
 #define QPOINT_SOFTSUSY_OPTS_HPP
 
-#include "libsusykit/softsusy_opts.hpp"
+#include "susykit/softsusy_opts.hpp"
 
 
 class qpoint_opts : public softsusy_opts

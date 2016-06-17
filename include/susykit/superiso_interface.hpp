@@ -21,52 +21,43 @@
 
 */
 
-
 #pragma once
-#ifndef SUJFEYN_HPP
-#define SUJFEYN_HPP
+#ifndef SUJISO_HPP
+#define SUJISO_HPP
 
-#include "libconstrain/dict.hpp"
-#include "libconstrain/model.hpp"
-#include "libconstrain/model_lookup.hpp"
-#include "libconstrain/parse.hpp"
-#include "CFeynHiggs.h"
 
-// this class will implement thread-local
-// storage to allow parallel calls to FeynHiggs
-// ... in the future
+#include "constrain/dict.hpp"
+#include "constrain/model.hpp"
+#include "constrain/model_lookup.hpp"
+#include "constrain/parse.hpp"
+#include <memory>
 
-#define FH_SLHAData_len 5558
+struct parameters;
 
-class feynhiggs_driver
+class superiso_driver
 {
 public:
-	feynhiggs_driver();
+	superiso_driver();
 
 	void operator() (model *m);
 
-//	~feynhiggs_driver();
-
-	static constexpr unsigned int slhadata_len = FH_SLHAData_len;
 private:
-	int mssm_scope; 
-	int field_renorm; 
-	int tanbeta_renorm;
-	int higgs_mixing;
-	int p2_approx;
-	int loop_level;
-	int run_mt;
-	int bottom_resum;
-	int two_loop_complex_approx;
-	int debug_level;
 
-	int fh_error_state;
-
-	COMPLEX slha[slhadata_len]; 	// COMPLEX is defined in ftypes.h
-
+	void pass_superiso_slha_data(const model &m);
 	void calc_observables(model *m);
 
-	void pass_feynhiggs_slha_data(const model *m);
+	void init_params();
+	void slha_adjust();
+
+	double bsgamma();
+	double bsmumu();
+	double btaunu();
+	double gmuon();
+#ifndef SUPERISO_NO_RELIC
+	double relic_density();
+#endif
+
+	std::shared_ptr<parameters> superiso_params;
 };
 
 #endif

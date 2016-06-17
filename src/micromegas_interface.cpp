@@ -1,5 +1,5 @@
 
-#include "libsusykit/micromegas_interface.hpp"
+#include "susykit/micromegas_interface.hpp"
 
 #include <iostream>
 #include <iomanip>

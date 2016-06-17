@@ -22,7 +22,7 @@
 */
 
 
-#include "libconstrain/parse.hpp"
+#include "constrain/parse.hpp"
 
 #include <fstream>
 #include <map>

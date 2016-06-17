@@ -33,7 +33,7 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#include "libconstrain/model_lookup.hpp"
+#include "constrain/model_lookup.hpp"
 #include "constraint.hpp"
 
 #define SUJ_DEFAULT_VERSION 3

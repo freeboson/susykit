@@ -29,7 +29,7 @@
 #include <vector>
 #include <iomanip>
 
-#include "libconstrain/model.hpp"
+#include "constrain/model.hpp"
 
 #define DEFAULT_COL_WIDTH 12
 

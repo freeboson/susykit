@@ -1,5 +1,5 @@
 
-#include "libsusykit/feynhiggs_interface.hpp"
+#include "susykit/feynhiggs_interface.hpp"
 
 #include <iostream>
 #include <iomanip>

@@ -29,7 +29,7 @@
 #include <string>
 #include <istream>
 
-#include "libconstrain/model.hpp"
+#include "model.hpp"
 
 class hepstats::likeconfig
 {

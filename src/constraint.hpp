@@ -31,10 +31,10 @@
 #include <string>
 #include <sstream>
 
-#include "libconstrain/model.hpp"
-#include "libconstrain/model_lookup.hpp"
+#include "constrain/model.hpp"
+#include "constrain/model_lookup.hpp"
 
-#include "libconstrain/hepstats.hpp"
+#include "constrain/hepstats.hpp"
 
 class constraint
 {

@@ -22,7 +22,7 @@
 */
 
 
-#include "libconstrain/model.hpp"
+#include "constrain/model.hpp"
 #include <sstream>
 #include <iterator>
 

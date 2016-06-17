@@ -1,5 +1,5 @@
 
-#include "libsusykit/superiso_interface.hpp"
+#include "susykit/superiso_interface.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>

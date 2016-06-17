@@ -22,42 +22,40 @@
 */
 
 #pragma once
-#ifndef SUJISO_HPP
-#define SUJISO_HPP
+#ifndef SUJSOFT_HPP
+#define SUJSOFT_HPP
 
+#include "softsusy_opts.hpp"
+#include "constrain/dict.hpp"
+#include "constrain/model.hpp"
+#include "constrain/model_lookup.hpp"
+#include "constrain/parse.hpp"
 
-#include "libconstrain/dict.hpp"
-#include "libconstrain/model.hpp"
-#include "libconstrain/model_lookup.hpp"
-#include "libconstrain/parse.hpp"
-#include <memory>
-
-struct parameters;
-
-class superiso_driver
+class softsusy_driver
 {
 public:
-	superiso_driver();
+	softsusy_driver(const softsusy_opts * const _sugra);
 
-	void operator() (model *m);
+#if 0
+	// this member function will ignore any differences between
+	// _sugra and sugra when it comes to alpha_s, alpha_em, mb(mb)
+	// and m_top(pole) -- it only changes the pars DoubleVector, 
+	// tan(beta) and sgnmu.
+	void replace_soft_terms(const softsusy_opts * const _sugra);
+#endif
+
+	model operator() (bool gauge_unification = true);
 
 private:
 
-	void pass_superiso_slha_data(const model &m);
-	void calc_observables(model *m);
+	void init_qedqcd();
+	double run();
 
-	void init_params();
-	void slha_adjust();
+	model slha_to_model(const double &mGUT);
 
-	double bsgamma();
-	double bsmumu();
-	double btaunu();
-	double gmuon();
-#ifndef SUPERISO_NO_RELIC
-	double relic_density();
-#endif
-
-	std::shared_ptr<parameters> superiso_params;
+	const softsusy_opts *sugra;
+	QedQcd oneset;
+	MssmSoftsusy rge;
 };
 
 #endif

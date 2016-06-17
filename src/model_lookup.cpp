@@ -22,9 +22,9 @@
 */
 
 
-#include "libconstrain/model_lookup.hpp"
-#include "libconstrain/dict.hpp"
-#include "libconstrain/special_lookups.hpp"
+#include "constrain/model_lookup.hpp"
+#include "constrain/dict.hpp"
+#include "constrain/special_lookups.hpp"
 
 #include "parseutils.hpp"
 
