@@ -153,7 +153,7 @@ set(MICRO_LIBS
   ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/libSLHAplus.a
   ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/num_c.a
   ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/serv.a
-  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib//sqme_aux.so
+  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/sqme_aux.so
 )
 
 if("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Intel")
@@ -172,13 +172,17 @@ ExternalProject_Add(
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract"
   PATCH_COMMAND patch src/ini/dsinit.f ${CMAKE_CURRENT_BINARY_DIR}/patches/darksusy/dsinit.patch
+    COMMAND install ${PROJECT_SOURCE_DIR}/include/feynhiggs/SLHA.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
+    COMMAND install ${PROJECT_SOURCE_DIR}/include/feynhiggs/SLHADefs.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
+    COMMAND install ${PROJECT_SOURCE_DIR}/include/feynhiggs/FHCouplings.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
+    COMMAND install ${PROJECT_SOURCE_DIR}/include/feynhiggs/PDG.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
   CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/configure
     CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
     FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${DS_FCFLAGS}
-    --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/darksusy
-  BUILD_COMMAND ""
-  INSTALL_COMMAND ""
+    --prefix=${CMAKE_CURRENT_BINARY_DIR}
+  BUILD_COMMAND "make darksusy"
 )
+add_dependencies(DarkSUSY HiggsBounds FeynHiggs)
 
 set(SOURCES_LCONS
   src/parseutils.cpp src/parse.cpp src/model.cpp src/model_lookup.cpp
