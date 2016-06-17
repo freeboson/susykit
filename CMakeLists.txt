@@ -39,13 +39,13 @@ ExternalProject_Add(
   # PATCH_COMMAND patch src/softpars.h ${PROJECT_SOURCE_DIR}/patches/softsusy/softpars_h.patch
   CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/softsusy/extract/configure
     CXX=${CMAKE_CXX_COMPILER} --enable-static --with-pic
-    --prefix=${CMAKE_BINARY_DIR} --includedir=${PROJECT_SOURCE_DIR}/include
+    --prefix=${CMAKE_BINARY_DIR} --includedir=${PROJECT_SOURCE_DIR}/ext/include
   BUILD_COMMAND make
 )
 add_library(soft STATIC IMPORTED)
 set_target_properties(soft PROPERTIES
   IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/lib/libsoft.a"
-#  INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/ext/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;CXX;Fortran"
 )
 
@@ -65,20 +65,20 @@ ExternalProject_Add(
     --prefix=${CMAKE_BINARY_DIR}/work/feynhiggs/installed
   BUILD_COMMAND make
   INSTALL_COMMAND make install
-    COMMAND install -d ${PROJECT_SOURCE_DIR}/include/feynhiggs
-    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/CFeynHiggs.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
-    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/CSLHA.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
-    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/FHCouplings.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
-    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/FHRecord.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
-    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/PDG.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
-    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/SLHA.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
-    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/SLHADefs.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
+    COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/CFeynHiggs.h ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/CSLHA.h ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/FHCouplings.h ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/FHRecord.h ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/PDG.h ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/SLHA.h ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/SLHADefs.h ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
     COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/lib/libFH.a ${CMAKE_BINARY_DIR}/lib
 )
 add_library(FH STATIC IMPORTED)
 set_target_properties(FH PROPERTIES
   IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/lib/libFH.a"
-#  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/ext/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;CXX;Fortran"
 )
 
@@ -111,13 +111,13 @@ ExternalProject_Add(
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract"
   PATCH_COMMAND patch -N src/include.h ${PROJECT_SOURCE_DIR}/patches/superiso/include_h.patch
-  CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/ext/superiso_relic/source/configure
+  CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/superiso_relic/extract/configure
     --with-cc=${CMAKE_C_COMPILER} --with-fc=${CMAKE_Fortran_COMPILER}
   BUILD_COMMAND make static
     COMMAND make libisospin.a
   INSTALL_COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/libisospin.a
       ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
-    COMMAND install -d ${PROJECT_SOURCE_DIR}/include/superiso_relic
+    COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/include.h
       ${PROJECT_SOURCE_DIR}/include/superiso_relic
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/omega.h
@@ -126,7 +126,7 @@ ExternalProject_Add(
 add_library(isospin STATIC IMPORTED)
 set_target_properties(isospin PROPERTIES
   IMPORTED_LOCATION "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libisospin.a"
-#  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/ext/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;Fortran"
 )
 
@@ -181,8 +181,16 @@ ExternalProject_Add(
     FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${DS_FCFLAGS}
     --prefix=${CMAKE_CURRENT_BINARY_DIR}
   BUILD_COMMAND make darksusy
+  INSTALL_COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/darksusy
+    COMMAND sh cp -pr ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include/ds* ${PROJECT_SOURCE_DIR}/ext/include/darksusy
 )
 add_dependencies(DarkSUSY HiggsBounds FeynHiggs)
+add_library(DS STATIC IMPORTED)
+set_target_properties(DS PROPERTIES
+  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/lib/libdarksusy.a"
+  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/ext/include"
+  IMPORTED_LINK_INTERFACE_LANGUAGES "C;CXX;Fortran"
+)
 
 set(SOURCES_LCONS
   src/parseutils.cpp src/parse.cpp src/model.cpp src/model_lookup.cpp
