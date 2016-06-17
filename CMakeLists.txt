@@ -172,10 +172,10 @@ ExternalProject_Add(
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract"
   PATCH_COMMAND patch -N src/ini/dsinit.f ${CMAKE_CURRENT_BINARY_DIR}/patches/darksusy/dsinit.patch
-    COMMAND install ${PROJECT_SOURCE_DIR}/include/feynhiggs/SLHA.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
-    COMMAND install ${PROJECT_SOURCE_DIR}/include/feynhiggs/SLHADefs.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
-    COMMAND install ${PROJECT_SOURCE_DIR}/include/feynhiggs/FHCouplings.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
-    COMMAND install ${PROJECT_SOURCE_DIR}/include/feynhiggs/PDG.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
+    COMMAND install ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs/SLHA.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
+    COMMAND install ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs/SLHADefs.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
+    COMMAND install ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs/FHCouplings.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
+    COMMAND install ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs/PDG.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
   CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/configure
     CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
     FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${DS_FCFLAGS}
