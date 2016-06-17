@@ -64,15 +64,19 @@ ExternalProject_Add(
   BUILD_COMMAND make
   INSTALL_COMMAND make install
     COMMAND install -d ${PROJECT_SOURCE_DIR}/include/feynhiggs
-    COMMAND install
-    COMMAND
-    COMMAND
-    COMMAND
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/CFeynHiggs.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/CSLHA.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/FHCouplings.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/FHRecord.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/PDG.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/SLHA.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
+    COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/SLHADefs.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
+    COMMAND sh install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/lib*/libFH.a ${CMAKE_BINARY_DIR}/lib
 )
 file(GLOB FH_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds/lib*)
 add_library(FH STATIC IMPORTED)
 set_target_properties(FH PROPERTIES
-  IMPORTED_LOCATION "${FH_LIB_DIR}/libFH.a"
+  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/lib/libFH.a"
 #  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;Fortran"
 )
