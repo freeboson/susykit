@@ -119,9 +119,9 @@ ExternalProject_Add(
       ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/include.h
-      ${PROJECT_SOURCE_DIR}/include/superiso_relic
+      ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/omega.h
-      ${PROJECT_SOURCE_DIR}/include/superiso_relic
+      ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
 )
 add_library(isospin STATIC IMPORTED)
 set_target_properties(isospin PROPERTIES
