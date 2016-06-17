@@ -58,7 +58,7 @@ ExternalProject_Add(
   DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/ext/distfiles"
   DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_BINARY_DIR}/work/feynhiggs/extract"
-  PATCH_COMMAND perl -i -pe 's/^LIBDIRSUFFIX = .*/LIBDIRSUFFIX = /' ${CMAKE_BINARY_DIR}/work/feynhiggs/extract/configure
+  PATCH_COMMAND perl -pi -e 's/^LIBDIRSUFFIX = .*/LIBDIRSUFFIX = /' ${CMAKE_BINARY_DIR}/work/feynhiggs/extract/configure
   CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/feynhiggs/extract/configure
     --static --64 --enable-full-g-2 --disable-vt100 CC=${CMAKE_C_COMPILER}
     FC=${CMAKE_Fortran_COMPILER} CXX=${CMAKE_CXX_COMPILER}
