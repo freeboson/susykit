@@ -110,7 +110,7 @@ ExternalProject_Add(
   DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract"
-  PATCH_COMMAND patch src/include.h ${PROJECT_SOURCE_DIR}/patches/superiso/include_h.patch
+  PATCH_COMMAND patch -N src/include.h ${PROJECT_SOURCE_DIR}/patches/superiso/include_h.patch
   CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/ext/superiso_relic/source/configure
     --with-cc=${CMAKE_C_COMPILER} --with-fc=${CMAKE_Fortran_COMPILER}
   BUILD_COMMAND make static
@@ -171,7 +171,7 @@ ExternalProject_Add(
   DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract"
-  PATCH_COMMAND patch src/ini/dsinit.f ${CMAKE_CURRENT_BINARY_DIR}/patches/darksusy/dsinit.patch
+  PATCH_COMMAND patch -N src/ini/dsinit.f ${CMAKE_CURRENT_BINARY_DIR}/patches/darksusy/dsinit.patch
     COMMAND install ${PROJECT_SOURCE_DIR}/include/feynhiggs/SLHA.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
     COMMAND install ${PROJECT_SOURCE_DIR}/include/feynhiggs/SLHADefs.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
     COMMAND install ${PROJECT_SOURCE_DIR}/include/feynhiggs/FHCouplings.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
@@ -180,7 +180,7 @@ ExternalProject_Add(
     CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
     FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${DS_FCFLAGS}
     --prefix=${CMAKE_CURRENT_BINARY_DIR}
-  BUILD_COMMAND "make darksusy"
+  BUILD_COMMAND make darksusy
 )
 add_dependencies(DarkSUSY HiggsBounds FeynHiggs)
 
