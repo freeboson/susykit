@@ -60,7 +60,8 @@ ExternalProject_Add(
   SOURCE_DIR "${CMAKE_BINARY_DIR}/work/feynhiggs/extract"
   CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/feynhiggs/extract/configure
     --static --64 --enable-full-g-2 --disable-vt100 CC=${CMAKE_C_COMPILER}
-    FC=${CMAKE_Fortran_COMPILER} --prefix=${CMAKE_BINARY_DIR}/work/feynhiggs/installed
+    FC=${CMAKE_Fortran_COMPILER} CXX=${CMAKE_CXX_COMPILER}
+    --prefix=${CMAKE_BINARY_DIR}/work/feynhiggs/installed
   BUILD_COMMAND make
   INSTALL_COMMAND make install
     COMMAND install -d ${PROJECT_SOURCE_DIR}/include/feynhiggs
@@ -73,12 +74,11 @@ ExternalProject_Add(
     COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/SLHADefs.h ${PROJECT_SOURCE_DIR}/include/feynhiggs
     COMMAND sh install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/lib*/libFH.a ${CMAKE_BINARY_DIR}/lib
 )
-file(GLOB FH_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/ext/feynhiggs/ds/lib*)
 add_library(FH STATIC IMPORTED)
 set_target_properties(FH PROPERTIES
   IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/lib/libFH.a"
 #  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/include"
-  IMPORTED_LINK_INTERFACE_LANGUAGES "C;Fortran"
+  IMPORTED_LINK_INTERFACE_LANGUAGES "C;CXX;Fortran"
 )
 
 ExternalProject_Add(
