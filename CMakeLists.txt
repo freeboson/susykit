@@ -220,7 +220,7 @@ target_compile_features(constrain PRIVATE cxx_range_for)
 target_compile_features(constrain PRIVATE cxx_generalized_initializers)
 
 add_library(susykit STATIC ${SOURCES_LSKIT})
-add_dependencies(susykit SoftSusy SuperIso_Relic DarkSUSY HiggsBounds FeynHiggs)
+add_dependencies(susykit SoftSusy SuperIso_Relic DarkSUSY FeynHiggs)
 target_compile_features(susykit PRIVATE cxx_range_for)
 target_compile_features(susykit PRIVATE cxx_generalized_initializers)
 
