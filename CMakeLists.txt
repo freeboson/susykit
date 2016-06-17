@@ -182,7 +182,7 @@ ExternalProject_Add(
     --prefix=${CMAKE_CURRENT_BINARY_DIR}
   BUILD_COMMAND make darksusy
   INSTALL_COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/darksusy
-    COMMAND sh cp -pr ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include/ds* ${PROJECT_SOURCE_DIR}/ext/include/darksusy
+    COMMAND sh -c "cp -pr ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include/ds*.h ${PROJECT_SOURCE_DIR}/ext/include/darksusy"
 )
 add_dependencies(DarkSUSY HiggsBounds FeynHiggs)
 add_library(DS STATIC IMPORTED)
