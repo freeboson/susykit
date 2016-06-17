@@ -86,17 +86,20 @@ ExternalProject_Add(
   HiggsBounds
   URL "http://www.hepforge.org/archive/higgsbounds/HiggsBounds-${HIGGSBOUNDS_VERSION}.tar.gz"
   URL_HASH MD5=${HIGGSBOUNDS_MD5}
-  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds"
-  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/distfiles"
+  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/work/higgsbounds"
+  DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/ext/distfiles"
   DOWNLOAD_NO_PROGRESS 1
-  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/source/"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/source/"
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/source/configure
+  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/higgsbounds/extract"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/higgsbounds/extract"
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/work/higgsbounds/extract/configure
   BUILD_COMMAND make libHB
-  INSTALL_COMMAND install -d ${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib
-    COMMAND install libHB.a ${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib
+  INSTALL_COMMAND install libHB.a ${CMAKE_CURRENT_BINARY_DIR}/lib
 )
-link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/higgsbounds/lib")
+add_library(HB STATIC IMPORTED)
+set_target_properties(HB PROPERTIES
+  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/lib/libHB.a"
+  IMPORTED_LINK_INTERFACE_LANGUAGES "C;Fortran"
+)
 
 ExternalProject_Add(
   SuperIso_Relic
@@ -163,13 +166,13 @@ ExternalProject_Add(
   DarkSUSY
   URL "http://www.fysik.su.se/~edsjo/darksusy/tars/darksusy-${DARKSUSY_VERSION}.tar.gz"
   URL_HASH MD5=${DARKSUSY_MD5}
-  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/darksusy"
-  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/distfiles"
+  PREFIX "${CMAKE_BINARY_DIR}/work/darksusy"
+  DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/ext/distfiles"
   DOWNLOAD_NO_PROGRESS 1
-  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/darksusy/source/"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/darksusy/source/"
+  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract"
   PATCH_COMMAND patch src/ini/dsinit.f ${CMAKE_CURRENT_BINARY_DIR}/patches/darksusy/dsinit.patch
-  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ext/darksusy/source/configure
+  CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/configure
     CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
     FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${DS_FCFLAGS}
     --prefix=${CMAKE_CURRENT_BINARY_DIR}/ext/darksusy
@@ -205,10 +208,9 @@ target_compile_features(constrain PRIVATE cxx_range_for)
 target_compile_features(constrain PRIVATE cxx_generalized_initializers)
 
 add_library(susykit STATIC ${SOURCES_LSKIT})
-add_dependencies(susykit SoftSusy SuperIso_Relic)
+add_dependencies(susykit SoftSusy SuperIso_Relic DarkSUSY HiggsBounds FeynHiggs)
 target_compile_features(susykit PRIVATE cxx_range_for)
 target_compile_features(susykit PRIVATE cxx_generalized_initializers)
-target_link_libraries(susykit soft FH isospin)
 
 add_executable(qparse ${SOURCES_QPARSE})
 target_compile_features(qparse PRIVATE cxx_range_for)
