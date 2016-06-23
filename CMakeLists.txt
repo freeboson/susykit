@@ -172,7 +172,7 @@ ExternalProject_Add(
   DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract"
-  PATCH_COMMAND patch -N src/ini/dsinit.f ${CMAKE_CURRENT_BINARY_DIR}/patches/darksusy/dsinit.patch
+  PATCH_COMMAND patch -N src/ini/dsinit.f ${PROJECT_SOURCE_DIR}/patches/darksusy/dsinit.patch
     COMMAND install ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs/SLHA.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
     COMMAND install ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs/SLHADefs.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
     COMMAND install ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs/FHCouplings.h  ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include
