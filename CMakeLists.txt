@@ -39,7 +39,7 @@ ExternalProject_Add(
   # patch not needed after 3.6.2
   # PATCH_COMMAND patch src/softpars.h ${PROJECT_SOURCE_DIR}/patches/softsusy/softpars_h.patch
   CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/softsusy/extract/configure
-    CXX=${CMAKE_CXX_COMPILER} --enable-static --with-pic
+    CXX=${CMAKE_CXX_COMPILER} --enable-static --with-pic --enable-shared=no
     --prefix=${CMAKE_BINARY_DIR} --includedir=${PROJECT_SOURCE_DIR}/ext/include
   BUILD_COMMAND make
 )
