@@ -61,10 +61,10 @@ ExternalProject_Add(
   SOURCE_DIR "${CMAKE_BINARY_DIR}/work/feynhiggs/extract"
   PATCH_COMMAND perl -pi -e "s/^LIBDIRSUFFIX = .*/LIBDIRSUFFIX = /" ${CMAKE_BINARY_DIR}/work/feynhiggs/extract/configure
   CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/feynhiggs/extract/configure
-    --static --64 --enable-full-g-2 --disable-vt100 CC=${CMAKE_C_COMPILER}
+    --64 --enable-full-g-2 --disable-vt100 CC=${CMAKE_C_COMPILER}
     FC=${CMAKE_Fortran_COMPILER} CXX=${CMAKE_CXX_COMPILER}
     --prefix=${CMAKE_BINARY_DIR}/work/feynhiggs/installed
-  BUILD_COMMAND make
+    BUILD_COMMAND make lib
   INSTALL_COMMAND make install
     COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
     COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/CFeynHiggs.h ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
@@ -131,31 +131,32 @@ set_target_properties(isospin PROPERTIES
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;Fortran"
 )
 
-ExternalProject_Add(
-  MicrOMEGAs
-  URL "https://lapth.cnrs.fr/micromegas/downloadarea/code/micromegas_${MICROMEGAS_VERSION}.tgz"
-  URL_HASH MD5=${MICROMEGAS_MD5}
-  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas"
-  DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/ext/distfiles"
-  DOWNLOAD_NO_PROGRESS 1
-  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/"
-  CONFIGURE_COMMAND make
-  BUILD_COMMAND make -C MSSM
-  INSTALL_COMMAND ""
-)
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source")
-link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/lib")
-set(MICRO_LIBS
-  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/sources/micromegas.a
-  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/MSSM/work/work_aux.a
-  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/MSSM/lib/aLib.a
-  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/dynamic_me.a
-  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/libSLHAplus.a
-  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/num_c.a
-  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/serv.a
-  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/sqme_aux.so
-)
+#i just can't...
+#ExternalProject_Add(
+#  MicrOMEGAs
+#  URL "https://lapth.cnrs.fr/micromegas/downloadarea/code/micromegas_${MICROMEGAS_VERSION}.tgz"
+#  URL_HASH MD5=${MICROMEGAS_MD5}
+#  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas"
+#  DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/ext/distfiles"
+#  DOWNLOAD_NO_PROGRESS 1
+#  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/"
+#  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/"
+#  CONFIGURE_COMMAND make
+#  BUILD_COMMAND make -C MSSM
+#  INSTALL_COMMAND ""
+#)
+#include_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source")
+#link_directories("${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/lib")
+#set(MICRO_LIBS
+#  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/sources/micromegas.a
+#  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/MSSM/work/work_aux.a
+#  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/MSSM/lib/aLib.a
+#  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/dynamic_me.a
+#  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/libSLHAplus.a
+#  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/num_c.a
+#  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/serv.a
+#  ${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/CalcHEP_Src/lib/sqme_aux.so
+#)
 
 if("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Intel")
   set(DS_FCFLAGS "-O -extend_source")
