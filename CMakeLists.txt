@@ -136,7 +136,7 @@ ExternalProject_Add(
   URL "https://lapth.cnrs.fr/micromegas/downloadarea/code/micromegas_${MICROMEGAS_VERSION}.tgz"
   URL_HASH MD5=${MICROMEGAS_MD5}
   PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas"
-  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/distfiles"
+  DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/ext/distfiles"
   DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ext/micromegas/source/"
