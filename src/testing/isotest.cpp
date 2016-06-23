@@ -31,7 +31,7 @@
 #include "susykit/feynhiggs_interface.hpp"
 #include "susykit/superiso_interface.hpp"
 
-#include "qpoint_softsusy_opts.hpp"
+#include "../qpoint/qpoint_softsusy_opts.hpp"
 
 #include <string>
 #include <sstream>

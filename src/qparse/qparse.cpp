@@ -34,9 +34,9 @@
 #include <list>
 
 #include "constrain/model.hpp"
-#include "constrain/model_lookup.hpp"
+#include "../constrain/model_lookup.hpp"
 #include "constrain/parse.hpp"
-#include "parseutils.hpp"
+#include "../constrain/parseutils.hpp"
 
 using namespace std;
 

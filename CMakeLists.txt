@@ -194,27 +194,30 @@ set_target_properties(DS PROPERTIES
 )
 
 set(SOURCES_LCONS
-  src/parseutils.cpp src/parse.cpp src/model.cpp src/model_lookup.cpp
-  src/special_lookups.cpp src/get_slha.cpp src/likeconfig.cpp src/likedatum.cpp
-  src/loglike.cpp
+  src/constrain/parseutils.cpp src/constrain/parse.cpp
+  src/constrain/model.cpp src/constrain/model_lookup.cpp
+  src/constrain/special_lookups.cpp src/constrain/get_slha.cpp
+  src/constrain/likeconfig.cpp src/constrain/likedatum.cpp
+  src/constrain/loglike.cpp
 )
 
 set(SOURCES_LSKIT
-  src/superiso_interface.cpp src/softsusy_interface.cpp
-  src/feynhiggs_interface.cpp src/softsusy_opts.cpp
-  src/darksusy_interface.cpp
-  #  src/micromegas_interface.cpp
+  src/susykit/superiso_interface.cpp src/susykit/softsusy_interface.cpp
+  src/susykit/feynhiggs_interface.cpp src/susykit/softsusy_opts.cpp
+  src/susykit/darksusy_interface.cpp
+  #  src/susykit/micromegas_interface.cpp
 )
 
 set(SOURCES_CONSTRAIN
-  src/constraint.cpp src/constrain.cpp src/constrain_opts.cpp
+  src/constrain-bin/constraint.cpp src/constrain-bin/constrain.cpp
+  src/constrain-bin/constrain_opts.cpp
 )
 
-set(SOURCES_QPARSE src/qparse.cpp)
+set(SOURCES_QPARSE src/qparse/qparse.cpp)
 
-set(SOURCES_SDB2SLHA src/sdb2slha.cpp)
+set(SOURCES_SDB2SLHA src/sdb2slha/sdb2slha.cpp)
 
-set(SOURCES_QPOINT src/qpoint_softsusy_opts.cpp src/qpoint.cpp)
+set(SOURCES_QPOINT src/qpoint/qpoint_softsusy_opts.cpp src/qpoint/qpoint.cpp)
 
 add_library(constrain STATIC ${SOURCES_LCONS})
 target_compile_features(constrain PRIVATE cxx_range_for)
@@ -239,8 +242,8 @@ target_compile_features(constrain-bin PRIVATE cxx_range_for)
 target_link_libraries(constrain-bin constrain)
 
 set(SOURCES_SOFTEST
-  src/softsusy_interface.cpp src/softsusy_opts.cpp src/qpoint_softsusy_opts.cpp
-  src/softest.cpp
+  src/susykit/softsusy_interface.cpp src/susykit/softsusy_opts.cpp
+  src/qpoint/qpoint_softsusy_opts.cpp src/testing/softest.cpp
 )
 add_executable(softest ${SOURCES_SOFTEST})
 add_dependencies(softest constrain SoftSusy FeynHiggs)

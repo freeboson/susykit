@@ -14,7 +14,7 @@
 #include "constrain/special_lookups.hpp"
 
 #include "susykit/softsusy_interface.hpp"
-#include "qpoint_softsusy_opts.hpp"
+#include "../qpoint/qpoint_softsusy_opts.hpp"
 
 using namespace std;
 using namespace susy_dict;
