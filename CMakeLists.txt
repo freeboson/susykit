@@ -13,6 +13,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/ext/include)
 
 set(SOFTSUSY_VERSION "3.7.2")     #latest
 set(FEYNHIGGS_VERSION "2.11.3")   #latest
@@ -126,7 +127,7 @@ ExternalProject_Add(
 add_library(isospin STATIC IMPORTED)
 set_target_properties(isospin PROPERTIES
   IMPORTED_LOCATION "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libisospin.a"
-  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/ext/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/ext/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;Fortran"
 )
 
