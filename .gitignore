@@ -48,4 +48,4 @@ install_manifest.txt
 # output dir
 bin/
 ext/
-
+share/
