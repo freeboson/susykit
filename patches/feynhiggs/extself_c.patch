@@ -1,0 +1,16 @@
+--- ../../../extract/src/Util/extself.c	2016-06-23 02:05:25.602683798 -0400
++++ extself.c	2016-06-23 02:46:54.290515310 -0400
+@@ -14,7 +14,12 @@
+ #include <string.h>
+ #include <stdarg.h>
+ #include <unistd.h>
+-#include <linux/limits.h>
++#include <limits.h>
++#if defined(LLVM_ON_UNIX)
++#  if defined(__linux__)
++#    include <linux/limits.h>
++#  endif
++#endif
+ #include <signal.h>
+ #include <sys/wait.h>
+ #include <ftw.h>
