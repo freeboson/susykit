@@ -26,9 +26,8 @@
 
 #include "susykit/darksusy_interface.hpp"
 
-#include "src/include/ftypes.h"
-#include "src/include/RecordIndices.h"
-#include "src/include/SLHADefs.h"
+#include "feynhiggs/CFeynHiggs.h"
+#include "feynhiggs/SLHADefs.h"
 
 using namespace std;
 using namespace susy_dict;

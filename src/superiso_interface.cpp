@@ -19,7 +19,7 @@
 #define complex _Complex
 #define SUSYKIT_INCLUDED
 extern "C" {
-  #include "include.h" // terrible name
+  #include "superiso_relic/include.h" // terrible name
 }
 
 

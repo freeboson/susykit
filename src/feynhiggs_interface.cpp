@@ -9,8 +9,8 @@
 #include <stdexcept>
 
 //#include "FHRecord.h"
-#include "FHCouplings.h"
-#include "SLHADefs.h"
+#include "feynhiggs/FHCouplings.h"
+#include "feynhiggs/SLHADefs.h"
 
 #if defined(nslhadata)
   #if nslhadata != FH_SLHAData_len
