@@ -4,9 +4,9 @@
  #include <string.h>
  #include <stdarg.h>
  #include <unistd.h>
--#include <linux/limits.h>
+-#include <limits.h>
 +#include <limits.h>
-+#if defined(LLVM_ON_UNIX)
++#if defined(__clang__)
 +#  if defined(__linux__)
 +#    include <linux/limits.h>
 +#  endif
