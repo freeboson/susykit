@@ -118,8 +118,8 @@ ExternalProject_Add(
     --with-cc=${CMAKE_C_COMPILER} --with-fc=${CMAKE_Fortran_COMPILER}
   BUILD_COMMAND CC=${CMAKE_C_COMPILER} FC=${CMAKE_Fortran_COMPILER} make static
     COMMAND make libisospin.a librelic.a
-  INSTALL_COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/libisospin.a
-      ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+  INSTALL_COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/libisospin.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+    COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/relic/librelic.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/include.h
       ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
@@ -129,6 +129,12 @@ ExternalProject_Add(
 add_library(isospin STATIC IMPORTED)
 set_target_properties(isospin PROPERTIES
   IMPORTED_LOCATION "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libisospin.a"
+  INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/ext/include"
+  IMPORTED_LINK_INTERFACE_LANGUAGES "C;Fortran"
+)
+add_library(relic STATIC IMPORTED)
+set_target_properties(relic PROPERTIES
+  IMPORTED_LOCATION "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/librelic.a"
   INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/ext/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;Fortran"
 )
@@ -256,5 +262,5 @@ target_link_libraries(softest constrain soft)
 
 add_executable(qpoint ${SOURCES_QPOINT})
 target_compile_features(qpoint PRIVATE cxx_range_for)
-target_link_libraries(qpoint constrain susykit soft FH DS HB isospin)
+target_link_libraries(qpoint constrain susykit soft FH DS HB isospin relic)
 
