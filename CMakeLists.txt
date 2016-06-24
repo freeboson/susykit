@@ -45,7 +45,7 @@ ExternalProject_Add(
 )
 add_library(soft STATIC IMPORTED)
 set_target_properties(soft PROPERTIES
-  IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/lib/libsoft.a"
+  IMPORTED_LOCATION "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libsoft.a"
   INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/ext/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;CXX;Fortran"
 )
@@ -80,8 +80,8 @@ ExternalProject_Add(
 )
 add_library(FH STATIC IMPORTED)
 set_target_properties(FH PROPERTIES
-  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/lib/libFH.a"
-  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/ext/include"
+  IMPORTED_LOCATION "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libFH.a"
+  INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/ext/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;CXX;Fortran"
 )
 
@@ -100,7 +100,7 @@ ExternalProject_Add(
 )
 add_library(HB STATIC IMPORTED)
 set_target_properties(HB PROPERTIES
-  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/lib/libHB.a"
+  IMPORTED_LOCATION "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libHB.a"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;Fortran"
 )
 
@@ -117,7 +117,7 @@ ExternalProject_Add(
   CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/superiso_relic/extract/configure
     --with-cc=${CMAKE_C_COMPILER} --with-fc=${CMAKE_Fortran_COMPILER}
   BUILD_COMMAND CC=${CMAKE_C_COMPILER} FC=${CMAKE_Fortran_COMPILER} make static
-    COMMAND make libisospin.a
+    COMMAND make libisospin.a librelic.a
   INSTALL_COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/libisospin.a
       ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
@@ -187,12 +187,13 @@ ExternalProject_Add(
   BUILD_COMMAND make darksusy
   INSTALL_COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/darksusy
     COMMAND sh -c "cp -pr ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include/ds*.h ${PROJECT_SOURCE_DIR}/ext/include/darksusy"
+    COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/lib/libdarksusy.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
 )
 add_dependencies(DarkSUSY HiggsBounds FeynHiggs)
 add_library(DS STATIC IMPORTED)
 set_target_properties(DS PROPERTIES
-  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/lib/libdarksusy.a"
-  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/ext/include"
+  IMPORTED_LOCATION "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libdarksusy.a"
+  INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/ext/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;CXX;Fortran"
 )
 
@@ -255,5 +256,5 @@ target_link_libraries(softest constrain soft)
 
 add_executable(qpoint ${SOURCES_QPOINT})
 target_compile_features(qpoint PRIVATE cxx_range_for)
-target_link_libraries(qpoint constrain susykit)
+target_link_libraries(qpoint constrain susykit soft FH DS HB isospin)
 
