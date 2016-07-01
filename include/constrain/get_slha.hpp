@@ -23,8 +23,8 @@
 
 
 #pragma once
-#ifndef GET_SLHA_H
-#define GET_SLHA_H
+#ifndef GET_SLHA_HPP
+#define GET_SLHA_HPP
 
 #include <string>
 

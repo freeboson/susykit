@@ -22,8 +22,9 @@
 */
 
 
-#ifndef PARSE_H
-#define PARSE_H
+#pragma once
+#ifndef PARSE_HPP
+#define PARSE_HPP
 
 #include <istream>
 #include <ostream>

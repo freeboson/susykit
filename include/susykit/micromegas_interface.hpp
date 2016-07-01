@@ -21,6 +21,11 @@
 
 */
 
+
+#pragma once
+#ifndef MICROMEGAS_INTERFACE_HPP
+#define MICROMEGAS_INTERFACE_HPP
+
 #include "constrain/dict.hpp"
 #include "constrain/model.hpp"
 #include "constrain/model_lookup.hpp"
@@ -52,5 +57,7 @@ private:
 
 	relic_mode relic_mode_setting;
 };
+
+#endif
 
 

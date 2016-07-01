@@ -23,8 +23,8 @@
 
 
 #pragma once
-#ifndef SUJFEYN_HPP
-#define SUJFEYN_HPP
+#ifndef FEYNHIGGS_INTERFACE_HPP
+#define FEYNHIGGS_INTERFACE_HPP
 
 #include "constrain/dict.hpp"
 #include "constrain/model.hpp"

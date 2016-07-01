@@ -22,7 +22,6 @@
 */
 
 
-
 #pragma once
 #ifndef LIKEDATUM_HPP
 #define LIKEDATUM_HPP

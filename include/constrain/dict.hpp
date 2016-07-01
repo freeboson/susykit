@@ -23,8 +23,8 @@
 
 
 #pragma once
-#ifndef DICT_H
-#define DICT_H
+#ifndef DICT_HPP
+#define DICT_HPP
 
 #include <string>
 #include <list>

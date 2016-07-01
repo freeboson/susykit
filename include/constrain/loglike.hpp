@@ -22,11 +22,9 @@
 */
 
 
-
 #pragma once
-
-#ifndef LOGLIKE_H
-#define LOGLIKE_H
+#ifndef LOGLIKE_HPP
+#define LOGLIKE_HPP
 
 #include <list>
 #include "model.hpp"

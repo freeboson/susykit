@@ -23,9 +23,8 @@
 
 
 #pragma once
-
-#ifndef MODEL_LOOKUP_H
-#define MODEL_LOOKUP_H
+#ifndef MODEL_LOOKUP_HPP
+#define MODEL_LOOKUP_HPP
 
 #include <string>
 #include "model.hpp"

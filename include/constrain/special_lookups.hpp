@@ -22,8 +22,9 @@
 */
 
 
-#ifndef SPECIAL_LOOKUPS_H
-#define SPECIAL_LOOKUPS_H 
+#pragma once
+#ifndef SPECIAL_LOOKUPS_HPP
+#define SPECIAL_LOOKUPS_HPP
 
 #include <vector>
 #include <algorithm>

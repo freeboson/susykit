@@ -22,8 +22,9 @@
 */
 
 
-#ifndef MODEL_H
-#define MODEL_H
+#pragma once
+#ifndef MODEL_HPP
+#define MODEL_HPP
 
 #include <iostream>
 #include <string>

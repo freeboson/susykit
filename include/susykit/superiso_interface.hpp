@@ -22,8 +22,8 @@
 */
 
 #pragma once
-#ifndef SUJISO_HPP
-#define SUJISO_HPP
+#ifndef SUPERISO_INTERFACE_HPP
+#define SUPERISO_INTERFACE_HPP
 
 
 #include "constrain/dict.hpp"

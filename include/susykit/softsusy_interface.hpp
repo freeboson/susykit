@@ -22,8 +22,8 @@
 */
 
 #pragma once
-#ifndef SUJSOFT_HPP
-#define SUJSOFT_HPP
+#ifndef SOFTSUSY_INTERFACE_HPP
+#define SOFTSUSY_INTERFACE_HPP
 
 #include "softsusy_opts.hpp"
 #include "constrain/dict.hpp"
