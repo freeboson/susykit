@@ -1,5 +1,3 @@
-
-
 #pragma once
 #ifndef QPOINT_SOFTSUSY_OPTS_HPP
 #define QPOINT_SOFTSUSY_OPTS_HPP
@@ -7,28 +5,28 @@
 #include "susykit/softsusy_opts.hpp"
 
 
-class qpoint_opts : public softsusy_opts
-{
+class qpoint_opts : public softsusy_opts {
 public:
-	qpoint_opts(int argc, char**argv);
+    qpoint_opts(int argc, char **argv);
 
-	void usage() const;
+    void usage() const;
 
-	bool slha() const { return slha_format; }
+    bool slha() const { return slha_format; }
 
 private:
 
-	int opthandle(int argc, char** argv);
-	void make_pars(int argi, char** argv);
+    int opthandle(int argc, char **argv);
 
-	bool gaugino;
-	bool higgs;
-	bool trilinear;
-	bool thirdgen;
-	bool mq_ml;
-	bool full_sugra;
+    void make_pars(int argi, char **argv);
 
-	bool slha_format;
+    bool gaugino;
+    bool higgs;
+    bool trilinear;
+    bool thirdgen;
+    bool mq_ml;
+    bool full_sugra;
+
+    bool slha_format;
 };
 
 #endif

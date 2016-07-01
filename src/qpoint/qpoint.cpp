@@ -1,5 +1,3 @@
-
-
 /*
 
    **************************************************************
@@ -41,48 +39,50 @@
 
 using namespace std;
 
-int main(int argc, char** argv)
-{
-	/// Sets up exception handling
-	signal(SIGFPE, FPE_ExceptionHandler);
+int main(int argc, char **argv) {
+    /// Sets up exception handling
+    signal(SIGFPE, FPE_ExceptionHandler);
 
-	qpoint_opts *sugra;
-	try {
-		sugra = new qpoint_opts(argc,argv);
-	} catch (exception &e) {
-		if (sugra != nullptr)
-			delete sugra;
-		return 1;
-	}
+    qpoint_opts *sugra;
+    try {
+        sugra = new qpoint_opts(argc, argv);
+    } catch (exception &e) {
+        if (sugra != nullptr)
+            delete sugra;
+        return 1;
+    }
 
-	model m;
+    model m;
 
-	get_slha slha;
+    get_slha slha;
 
-	softsusy_driver softsusy(sugra);
-	micromegas_driver micro;
-	feynhiggs_driver feynhiggs;
+    softsusy_driver softsusy(sugra);
+    micromegas_driver micro;
+    feynhiggs_driver feynhiggs;
 //	darksusy_driver darksusy;
-	superiso_driver superiso;
+    superiso_driver superiso;
 
-	try { 
-		m = softsusy(); // need to check for displayProblem().test() and neutralino LSP 
-	} catch (const string &s) { cerr << "SOFTSUSY exception: " << s << endl; return 1;}
+    try {
+        m = softsusy(); // need to check for displayProblem().test() and neutralino LSP
+    } catch (const string &s) {
+        cerr << "SOFTSUSY exception: " << s << endl;
+        return 1;
+    }
 
 
-	feynhiggs(&m);
-	micro(&m);
+    feynhiggs(&m);
+    micro(&m);
 //	darksusy(&m);
 //	superiso(&m);
 
-	cout << m << endl;
+    cout << m << endl;
 
-	if (sugra->slha())
-		cerr << slha(m) << endl;
+    if (sugra->slha())
+        cerr << slha(m) << endl;
 
-	delete sugra;
+    delete sugra;
 
-	return 0;
+    return 0;
 }
 
 

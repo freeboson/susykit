@@ -1,5 +1,3 @@
-
-
 /*
 
    **************************************************************
@@ -37,13 +35,15 @@
 #include <boost/random/mersenne_twister.hpp>
 
 #if (BOOST_VERSION >= 104700)
-  #include <boost/random/uniform_int_distribution.hpp>
-  typedef boost::random::uniform_int_distribution<> uniform_int_dist;
-  typedef boost::random::mt19937 boost_mt19937;
+
+#include <boost/random/uniform_int_distribution.hpp>
+
+typedef boost::random::uniform_int_distribution<> uniform_int_dist;
+typedef boost::random::mt19937 boost_mt19937;
 #else
-  #include <boost/random/uniform_int.hpp>
-  typedef boost::uniform_int<> uniform_int_dist;
-  typedef boost::mt19937 boost_mt19937;
+#include <boost/random/uniform_int.hpp>
+typedef boost::uniform_int<> uniform_int_dist;
+typedef boost::mt19937 boost_mt19937;
 #endif
 
 #define NUM_REQ_ARGS 2
@@ -51,77 +51,71 @@
 
 using namespace std;
 
-class gen_seed
-{
+class gen_seed {
 public:
-	gen_seed(int seed)
-	:dist(100000,999999)
-	{
-		gen.seed(seed);
-	}
+    gen_seed(int seed)
+            : dist(100000, 999999) {
+        gen.seed(seed);
+    }
 
-	unsigned int operator()()
-	{
-		return dist(gen);
-	}
+    unsigned int operator()() {
+        return dist(gen);
+    }
+
 private:
-	boost_mt19937 gen;
-	uniform_int_dist dist;
+    boost_mt19937 gen;
+    uniform_int_dist dist;
 };
 
-class seed_printer
-{
+class seed_printer {
 public:
-	seed_printer(ostream *o) :out(o) {}
-	void operator()(unsigned int x)
-	{
-		*out << x << endl;
-	}
+    seed_printer(ostream *o) : out(o) { }
+
+    void operator()(unsigned int x) {
+        *out << x << endl;
+    }
+
 private:
-	ostream *out;
+    ostream *out;
 };
 
-void usage(const string &s)
-{
-	cerr << "Usage: " << s << " <# of 6-digit seeds to generate>" << endl;
+void usage(const string &s) {
+    cerr << "Usage: " << s << " <# of 6-digit seeds to generate>" << endl;
 }
 
-int main(int argc, char** argv)
-{
-	if (NUM_REQ_ARGS != argc)
-	{
-		usage(argv[0]);
-		return 1;
-	}
+int main(int argc, char **argv) {
+    if (NUM_REQ_ARGS != argc) {
+        usage(argv[0]);
+        return 1;
+    }
 
-	unsigned int nseeds;
+    unsigned int nseeds;
 
-	stringstream ss(argv[1]);
-	ss >> nseeds;
+    stringstream ss(argv[1]);
+    ss >> nseeds;
 
-	if (nseeds > NUM_MAX_SEEDS)
-	{
-		cerr 	<< "Error: it's not a good idea to try to generate " 
-			<< nseeds << " random 6-digit seeds." << endl
-			<< "You should modify the code to suit your needs." << endl
-			<< endl;
-		usage(argv[1]);
-		return 2;
-	}
+    if (nseeds > NUM_MAX_SEEDS) {
+        cerr << "Error: it's not a good idea to try to generate "
+        << nseeds << " random 6-digit seeds." << endl
+        << "You should modify the code to suit your needs." << endl
+        << endl;
+        usage(argv[1]);
+        return 2;
+    }
 
-	cerr << "Generating " << nseeds << " unique seeds..." << endl;
+    cerr << "Generating " << nseeds << " unique seeds..." << endl;
 
-	vector <unsigned int> seeds(nseeds);
-	
-	vector<unsigned int>::iterator unique_end = seeds.begin();
-	do {
-		generate(unique_end, seeds.end(),gen_seed(time(NULL)));
-		sort(seeds.begin(),seeds.end());
-		unique_end = unique(seeds.begin(),seeds.end());
-	} while (unique_end != seeds.end());
+    vector<unsigned int> seeds(nseeds);
 
-	for_each(seeds.begin(),seeds.end(),seed_printer(&cout));
+    vector<unsigned int>::iterator unique_end = seeds.begin();
+    do {
+        generate(unique_end, seeds.end(), gen_seed(time(NULL)));
+        sort(seeds.begin(), seeds.end());
+        unique_end = unique(seeds.begin(), seeds.end());
+    } while (unique_end != seeds.end());
 
-	return 0;
+    for_each(seeds.begin(), seeds.end(), seed_printer(&cout));
+
+    return 0;
 }
 

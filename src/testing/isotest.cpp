@@ -1,5 +1,3 @@
-
-
 /*
 
    **************************************************************
@@ -40,39 +38,41 @@
 
 using namespace std;
 
-int main(int argc, char** argv)
-{
-	/// Sets up exception handling
-	signal(SIGFPE, FPE_ExceptionHandler);
+int main(int argc, char **argv) {
+    /// Sets up exception handling
+    signal(SIGFPE, FPE_ExceptionHandler);
 
-	qpoint_opts *sugra;
-	try {
-		sugra = new qpoint_opts(argc,argv);
-	} catch (exception &e) {
-		if (sugra != nullptr)
-			delete sugra;
-		return 1;
-	}
+    qpoint_opts *sugra;
+    try {
+        sugra = new qpoint_opts(argc, argv);
+    } catch (exception &e) {
+        if (sugra != nullptr)
+            delete sugra;
+        return 1;
+    }
 
-	model m;
+    model m;
 
-	softsusy_driver softsusy(sugra);
-	micromegas_driver micro;
-	feynhiggs_driver feynhiggs;
+    softsusy_driver softsusy(sugra);
+    micromegas_driver micro;
+    feynhiggs_driver feynhiggs;
 
-	try { 
-		m = softsusy(); // need to check for displayProblem().test() and neutralino LSP 
-	} catch (const string &s) { cerr << "SOFTSUSY exception: " << s << endl; return 1;}
+    try {
+        m = softsusy(); // need to check for displayProblem().test() and neutralino LSP
+    } catch (const string &s) {
+        cerr << "SOFTSUSY exception: " << s << endl;
+        return 1;
+    }
 
 
-	micro(&m);
-	feynhiggs(&m);
+    micro(&m);
+    feynhiggs(&m);
 
-	cout << m << endl;
+    cout << m << endl;
 
-	delete sugra;
+    delete sugra;
 
-	return 0;
+    return 0;
 }
 
 

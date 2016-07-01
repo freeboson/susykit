@@ -1,5 +1,3 @@
-
-
 /*
 
     ****************************************************************************
@@ -38,20 +36,19 @@
 
 #define SUJ_DEFAULT_VERSION 3
 
-struct globalopts
-{
-	int version;
-	std::string infile, outfile;
-	std::vector<constraint> constraints;
-	bool pretend, print_cuts, force, append;
-	bool use_stdin, use_stdout;
+struct globalopts {
+    int version;
+    std::string infile, outfile;
+    std::vector<constraint> constraints;
+    bool pretend, print_cuts, force, append;
+    bool use_stdin, use_stdout;
 
-	bool merged_input;
-	bool obs_file;
-	std::string obs_filename;
+    bool merged_input;
+    bool obs_file;
+    std::string obs_filename;
 
-	bool likeconfig;
-	std::string likeconfig_filename;
+    bool likeconfig;
+    std::string likeconfig_filename;
 };
 
 void print_usage(const std::string &s);
@@ -60,7 +57,7 @@ void print_usage(const std::string &s);
 std::string get_outfile(std::string infile);
 #endif
 
-int opthandle(int argc, char** argv, globalopts* gopts);
+int opthandle(int argc, char **argv, globalopts *gopts);
 
 #endif
 
