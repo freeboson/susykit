@@ -1,5 +1,3 @@
-
-
 /*
 
     ****************************************************************************
@@ -34,30 +32,37 @@
 
 struct parameters;
 
-class superiso_driver
-{
+class superiso_driver {
 public:
-	superiso_driver();
+    superiso_driver();
 
-	void operator() (model *m);
+    void operator()(model *m);
 
 private:
 
-	void pass_superiso_slha_data(const model &m);
-	void calc_observables(model *m);
+    void pass_superiso_slha_data(const model &m);
 
-	void init_params();
-	void slha_adjust();
+    void calc_observables(model *m);
 
-	double bsgamma();
-	double bsmumu();
-	double btaunu();
-	double gmuon();
+    void init_params();
+
+    void slha_adjust();
+
+    double bsgamma();
+
+    double bsmumu();
+
+    double btaunu();
+
+    double gmuon();
+
 #ifndef SUPERISO_NO_RELIC
-	double relic_density();
+
+    double relic_density();
+
 #endif
 
-	std::shared_ptr<parameters> superiso_params;
+    std::shared_ptr<parameters> superiso_params;
 };
 
 #endif

@@ -1,5 +1,3 @@
-
-
 /*
 
     ****************************************************************************
@@ -38,35 +36,34 @@
 
 #define FH_SLHAData_len 5558
 
-class feynhiggs_driver
-{
+class feynhiggs_driver {
 public:
-	feynhiggs_driver();
+    feynhiggs_driver();
 
-	void operator() (model *m);
+    void operator()(model *m);
 
 //	~feynhiggs_driver();
 
-	static constexpr unsigned int slhadata_len = FH_SLHAData_len;
+    static constexpr unsigned int slhadata_len = FH_SLHAData_len;
 private:
-	int mssm_scope; 
-	int field_renorm; 
-	int tanbeta_renorm;
-	int higgs_mixing;
-	int p2_approx;
-	int loop_level;
-	int run_mt;
-	int bottom_resum;
-	int two_loop_complex_approx;
-	int debug_level;
+    int mssm_scope;
+    int field_renorm;
+    int tanbeta_renorm;
+    int higgs_mixing;
+    int p2_approx;
+    int loop_level;
+    int run_mt;
+    int bottom_resum;
+    int two_loop_complex_approx;
+    int debug_level;
 
-	int fh_error_state;
+    int fh_error_state;
 
-	COMPLEX slha[slhadata_len]; 	// COMPLEX is defined in ftypes.h
+    COMPLEX slha[slhadata_len];    // COMPLEX is defined in ftypes.h
 
-	void calc_observables(model *m);
+    void calc_observables(model *m);
 
-	void pass_feynhiggs_slha_data(const model *m);
+    void pass_feynhiggs_slha_data(const model *m);
 };
 
 #endif

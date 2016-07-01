@@ -1,5 +1,3 @@
-
-
 /*
 
     ****************************************************************************
@@ -35,27 +33,28 @@
 // storage to allow parallel calls to micrOMEGAs
 // ... in the future
 
-class micromegas_driver
-{
+class micromegas_driver {
 public:
-	enum relic_mode
-	{
-		normal, init
-	};
+    enum relic_mode {
+        normal, init
+    };
 
-	micromegas_driver() :relic_mode_setting(normal) {}
-	micromegas_driver(relic_mode _rm)
-		:relic_mode_setting(_rm) {}
+    micromegas_driver() : relic_mode_setting(normal) { }
 
-	model operator() (model m);
-	int operator() (model *m);
+    micromegas_driver(relic_mode _rm)
+            : relic_mode_setting(_rm) { }
+
+    model operator()(model m);
+
+    int operator()(model *m);
 
 private:
 
-	void calc_observables(model *m);
-	void pass_micromegas_slha_data(const model &m);
+    void calc_observables(model *m);
 
-	relic_mode relic_mode_setting;
+    void pass_micromegas_slha_data(const model &m);
+
+    relic_mode relic_mode_setting;
 };
 
 #endif
