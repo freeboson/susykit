@@ -1,5 +1,3 @@
-
-
 /*
 
     ****************************************************************************
@@ -28,10 +26,9 @@
 
 using namespace std;
 
-ostream& operator<< (ostream &o, const vector<double> &v)
-{
-	for_each(v.begin(),v.end(),row_printer(&o));
-	return o;
+ostream &operator<<(ostream &o, const vector<double> &v) {
+    for_each(v.begin(), v.end(), row_printer(&o));
+    return o;
 }
 
 

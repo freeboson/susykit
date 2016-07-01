@@ -1,5 +1,3 @@
-
-
 /*
 
     ****************************************************************************
@@ -30,33 +28,33 @@
 #include <string>
 #include "constrain/model.hpp"
 
-typedef double (model::*ModelLookup)(const std::string&) const;
+typedef double (model::*ModelLookup)(const std::string &) const;
 
-class model_lookup
-{
+class model_lookup {
 public:
-	enum model_map
-	{
-		unset,
-		slha,
-		output,
-		special
-	};
+    enum model_map {
+        unset,
+        slha,
+        output,
+        special
+    };
 
-	model_lookup() :mode(unset),action(NULL) {}
-	model_lookup(model_map _mode, const std::string &_code);
+    model_lookup() : mode(unset), action(NULL) { }
 
-	model_map get_mode() const { return mode; }
-	std::string get_code() const { return code; }
+    model_lookup(model_map _mode, const std::string &_code);
 
-	bool good_mode() const { return (action != NULL || mode==special); }
+    model_map get_mode() const { return mode; }
 
-	double operator()(const model &m) const;
+    std::string get_code() const { return code; }
+
+    bool good_mode() const { return (action != NULL || mode == special); }
+
+    double operator()(const model &m) const;
 
 private:
-	ModelLookup action;
-	model_map mode;
-	std::string code;
+    ModelLookup action;
+    model_map mode;
+    std::string code;
 };
 
 #endif

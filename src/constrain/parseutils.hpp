@@ -1,5 +1,3 @@
-
-
 /*
 
     ****************************************************************************
@@ -33,30 +31,30 @@
 
 #define DEFAULT_COL_WIDTH 12
 
-std::ostream& operator<< (std::ostream &o, const std::vector<double> &v);
+std::ostream &operator<<(std::ostream &o, const std::vector<double> &v);
 
-class row_print
-{
+class row_print {
 public:
-	row_print(std::ostream *_o) :o(_o) {}
-	void operator() (const std::vector<double> &v) const
-	{
-		*o << v << std::endl;
-	}
+    row_print(std::ostream *_o) : o(_o) { }
+
+    void operator()(const std::vector<double> &v) const {
+        *o << v << std::endl;
+    }
+
 private:
-	std::ostream *o;
+    std::ostream *o;
 };
 
-class row_printer
-{
+class row_printer {
 public:
-	row_printer(std::ostream *_o) :o(_o) {}
-	void operator() (const double &d) const
-	{
-		*o << std::setw(DEFAULT_COL_WIDTH) << std::setiosflags(std::ios::left) << d << " ";
-	}
+    row_printer(std::ostream *_o) : o(_o) { }
+
+    void operator()(const double &d) const {
+        *o << std::setw(DEFAULT_COL_WIDTH) << std::setiosflags(std::ios::left) << d << " ";
+    }
+
 private:
-	std::ostream *o;
+    std::ostream *o;
 };
 
 #endif
