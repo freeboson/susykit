@@ -24,7 +24,7 @@
 #include "constrain/get_slha.hpp"
 #include "constrain/special_lookups.hpp"
 
-#include "susykit/micromegas_interface.hpp"
+//#include "susykit/micromegas_interface.hpp"
 #include "susykit/softsusy_interface.hpp"
 #include "susykit/feynhiggs_interface.hpp"
 #include "susykit/darksusy_interface.hpp"
@@ -57,9 +57,9 @@ int main(int argc, char **argv) {
     get_slha slha;
 
     softsusy_driver softsusy(sugra);
-    micromegas_driver micro;
+//    micromegas_driver micro;
     feynhiggs_driver feynhiggs;
-//	darksusy_driver darksusy;
+	darksusy_driver darksusy;
     superiso_driver superiso;
 
     try {
@@ -71,9 +71,9 @@ int main(int argc, char **argv) {
 
 
     feynhiggs(&m);
-    micro(&m);
-//	darksusy(&m);
-//	superiso(&m);
+//    micro(&m);
+	darksusy(&m);
+	superiso(&m);
 
     cout << m << endl;
 
