@@ -405,12 +405,12 @@ string get_slha::au(const model *m) const {
     oss.setf(ios::scientific);
     oss.precision(8);
 
-    oss << "Block au Q= " << m->get_datum(q_au) << endl;
-    oss << right << setw(3) << ++i << setw(3) << i << setw(19) << m->get_datum(au_q) << "      # Au(Q) MSSM DRbar" <<
-    endl;
-    oss << right << setw(3) << ++i << setw(3) << i << setw(19) << m->get_datum(ac_q) << "      # Ac(Q) MSSM DRbar" <<
-    endl;
-    oss << right << setw(3) << ++i << setw(3) << i << setw(19) << m->get_datum(at_q) << "      # At(Q) MSSM DRbar" <<
+    oss << "Block au Q= " << m->get_datum(q_au) << endl; i++;
+    oss << right << setw(3) << i << setw(3) << i << setw(19) << m->get_datum(au_q) << "      # Au(Q) MSSM DRbar" <<
+    endl; i++;
+    oss << right << setw(3) << i << setw(3) << i << setw(19) << m->get_datum(ac_q) << "      # Ac(Q) MSSM DRbar" <<
+    endl; i++;
+    oss << right << setw(3) << i << setw(3) << i << setw(19) << m->get_datum(at_q) << "      # At(Q) MSSM DRbar" <<
     endl;
 
     return oss.str();
@@ -423,11 +423,11 @@ string get_slha::ad(const model *m) const {
     oss.precision(8);
 
     oss << "Block ad Q= " << m->get_datum(q_ad) << endl;
-    oss << right << setw(3) << ++i << setw(3) << i << setw(19) << m->get_datum(ad_q) << "      # Ad(Q) MSSM DRbar" <<
+    i++; oss << right << setw(3) << i << setw(3) << i << setw(19) << m->get_datum(ad_q) << "      # Ad(Q) MSSM DRbar" <<
     endl;
-    oss << right << setw(3) << ++i << setw(3) << i << setw(19) << m->get_datum(as_q) << "      # As(Q) MSSM DRbar" <<
+    i++; oss << right << setw(3) << i << setw(3) << i << setw(19) << m->get_datum(as_q) << "      # As(Q) MSSM DRbar" <<
     endl;
-    oss << right << setw(3) << ++i << setw(3) << i << setw(19) << m->get_datum(ab_q) << "      # Ab(Q) MSSM DRbar" <<
+    i++; oss << right << setw(3) << i << setw(3) << i << setw(19) << m->get_datum(ab_q) << "      # Ab(Q) MSSM DRbar" <<
     endl;
 
     return oss.str();
@@ -440,11 +440,11 @@ string get_slha::ae(const model *m) const {
     oss.precision(8);
 
     oss << "Block ae Q= " << m->get_datum(q_ae) << endl;
-    oss << right << setw(3) << ++i << setw(3) << i << setw(19) << m->get_datum(ae_q) << "      # Ae(Q) MSSM DRbar" <<
+    i++; oss << right << setw(3) << i << setw(3) << i << setw(19) << m->get_datum(ae_q) << "      # Ae(Q) MSSM DRbar" <<
     endl;
-    oss << right << setw(3) << ++i << setw(3) << i << setw(19) << m->get_datum(amu_q) << "      # Amu(Q) MSSM DRbar" <<
+    i++; oss << right << setw(3) << i << setw(3) << i << setw(19) << m->get_datum(amu_q) << "      # Amu(Q) MSSM DRbar" <<
     endl;
-    oss << right << setw(3) << ++i << setw(3) << i << setw(19) << m->get_datum(atau_q) <<
+    i++; oss << right << setw(3) << i << setw(3) << i << setw(19) << m->get_datum(atau_q) <<
     "      # Atau(Q) MSSM DRbar" << endl;
 
     return oss.str();
