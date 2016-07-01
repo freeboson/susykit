@@ -1,5 +1,3 @@
-
-
 /*
 
     ****************************************************************************
@@ -29,20 +27,19 @@
 #include <list>
 #include "model.hpp"
 
-class hepstats::loglike
-{
+class hepstats::loglike {
 public:
 
-	void add_like_term(const likedatum &datum)
-	{
-		like_terms.push_back(datum);
-	}
+    void add_like_term(const likedatum &datum) {
+        like_terms.push_back(datum);
+    }
 
-	double get_log_like(const model &m) const;
-	unsigned int get_num_like_terms() const { return like_terms.size(); }
+    double get_log_like(const model &m) const;
+
+    unsigned int get_num_like_terms() const { return like_terms.size(); }
 
 private:
-	std::list<likedatum> like_terms;
+    std::list<likedatum> like_terms;
 };
 
 #endif
