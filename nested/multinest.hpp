@@ -1,4 +1,3 @@
-
 #ifndef MULTINEST_HPP
 #define MULTINEST_HPP
 #pragma once
@@ -10,35 +9,32 @@
 #include "hepstats.hpp"
 
 
-namespace nested
-{
+namespace nested {
 
 
-	// need singleton pattern here
-	
-	template<std::size_t ndim>
-	class multinest : public softsusy_opts
-	{
+    // need singleton pattern here
 
-	public:
+    template<std::size_t ndim>
+    class multinest : public softsusy_opts {
 
-		typedef std::array<std::unique_ptr<priors::prior>, ndim> prior_list;
+    public:
 
-		multinest(prior_list _param_priors, hepstats::loglike _loglike_calc);
-	
-	private:
+        typedef std::array<std::unique_ptr<priors::prior>, ndim> prior_list;
 
-		prior_list param_priors;
-		hepstats::loglike loglike_calc;
+        multinest(prior_list _param_priors, hepstats::loglike _loglike_calc);
 
-	};
+    private:
+
+        prior_list param_priors;
+        hepstats::loglike loglike_calc;
+
+    };
 
 }
 
 template<std::size_t ndim>
 nested::multinest<ndim>::multinest(prior_list param_priors, hepstats::loglike _loglike_calc)
-:param_priors(_param_priors), loglike_calc(_loglike_calc)
-{
+        : param_priors(_param_priors), loglike_calc(_loglike_calc) {
 
 }
 

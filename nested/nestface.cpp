@@ -1,4 +1,3 @@
-
 #include "nestface.hpp"
 
 // for create_dir stuff
@@ -24,58 +23,49 @@ hepstats::loglike loglike_calc;
 
 //std::regex nl_match(R"(\n)");
 
-void create_dir(const std::string &dir)
-{
-	if (0 != mkdir(dir.c_str(),S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH))
-	{
-		if (EEXIST == errno)
-		{
-			std::cerr << dir << " exists... continuing..." << std::endl;
-		}
-		else
-		{
-			std::stringstream error_msg;
-			error_msg << "Error creating " << dir << ": " << strerror(errno);
-			throw(runtime_error(error_msg.str()));
-		}
-	}
-	else
-	{
-		std::cerr << "Created directory " << dir << std::endl;
-	}
+void create_dir(const std::string &dir) {
+    if (0 != mkdir(dir.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
+        if (EEXIST == errno) {
+            std::cerr << dir << " exists... continuing..." << std::endl;
+        }
+        else {
+            std::stringstream error_msg;
+            error_msg << "Error creating " << dir << ": " << strerror(errno);
+            throw (runtime_error(error_msg.str()));
+        }
+    }
+    else {
+        std::cerr << "Created directory " << dir << std::endl;
+    }
 }
 
 
-void set_loglike_conf(const std::string &like_conf_name)
-{
-	std::cerr << "Reading likelihood function configuration from " << like_conf_name << "..." << std::endl;
+void set_loglike_conf(const std::string &like_conf_name) {
+    std::cerr << "Reading likelihood function configuration from " << like_conf_name << "..." << std::endl;
 
-	std::ifstream reader;
-	reader.open(like_conf_name.c_str());
-	if (reader.fail())
-	{
-		std::stringstream error_msg;
-		error_msg << "Error opening " << like_conf_name << " for reading!";
-		throw(runtime_error(error_msg.str()));
-	}
+    std::ifstream reader;
+    reader.open(like_conf_name.c_str());
+    if (reader.fail()) {
+        std::stringstream error_msg;
+        error_msg << "Error opening " << like_conf_name << " for reading!";
+        throw (runtime_error(error_msg.str()));
+    }
 
-	hepstats::likeconfig config(&reader);
-	loglike_calc = config();
+    hepstats::likeconfig config(&reader);
+    loglike_calc = config();
 
-	if (reader.is_open()) 
-		reader.close();
+    if (reader.is_open())
+        reader.close();
 }
 
-std::string get_full_root(const std::string &dir, const std::string &file_root)
-{
-	std::stringstream full_root;
+std::string get_full_root(const std::string &dir, const std::string &file_root) {
+    std::stringstream full_root;
 
-	full_root << dir << "/" << file_root;
-	if (full_root.str().size() > 100)
-	{
-		throw length_error("Error: director+root larger than arbitrary cap. Feel free to change this.");
-	}
-	return full_root.str();
+    full_root << dir << "/" << file_root;
+    if (full_root.str().size() > 100) {
+        throw length_error("Error: director+root larger than arbitrary cap. Feel free to change this.");
+    }
+    return full_root.str();
 }
 
 /******************************************** loglikelihood routine ****************************************************/
@@ -96,148 +86,146 @@ std::string get_full_root(const std::string &dir, const std::string &file_root)
 
 darksusy_driver darksusy;
 
-void log_like_request(double *Cube, int &ndim, int &npars, double &lnew, void *context)
-{
+void log_like_request(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
 
-	model m;
-	lnew = -1e90;
+    model m;
+    lnew = -1e90;
 
-	auto sugra = map_cube_to_opts(Cube);
+    auto sugra = map_cube_to_opts(Cube);
 
 #ifdef DEBUG
 
-	std::forward_list<int> *pars_inputs = static_cast<std::forward_list<int>*>(context);
+    std::forward_list<int> *pars_inputs = static_cast<std::forward_list<int>*>(context);
 
-	std::stringstream point_summary;
-	
-	point_summary << "inputs = [ "
-		      << " --mtop='" << sugra->get_mtop_pole() << "'"
-		      << " --mbmb='" << sugra->get_mbmb() << "'"
-		      << " --alpha-s='" << sugra->get_alpha_s() << "'"
-		      << " --alpha-em-inv='" << sugra->get_alpha_em_inv() << "'"
-		      << " -- ";
-	for (int index : *pars_inputs)
-		point_summary << "'" << sugra->pars_at(index) << "' ";
-	point_summary << "'" << sugra->get_tb() << "' " << "'" << sugra->get_sgnmu() << "' ]";
+    std::stringstream point_summary;
+
+    point_summary << "inputs = [ "
+              << " --mtop='" << sugra->get_mtop_pole() << "'"
+              << " --mbmb='" << sugra->get_mbmb() << "'"
+              << " --alpha-s='" << sugra->get_alpha_s() << "'"
+              << " --alpha-em-inv='" << sugra->get_alpha_em_inv() << "'"
+              << " -- ";
+    for (int index : *pars_inputs)
+        point_summary << "'" << sugra->pars_at(index) << "' ";
+    point_summary << "'" << sugra->get_tb() << "' " << "'" << sugra->get_sgnmu() << "' ]";
 
 #endif
 
-	softsusy_driver softsusy(sugra.get()); // softsusy_driver will just copy the contents
-	feynhiggs_driver feynhiggs;
-	superiso_driver superiso; // not ready yet
+    softsusy_driver softsusy(sugra.get()); // softsusy_driver will just copy the contents
+    feynhiggs_driver feynhiggs;
+    superiso_driver superiso; // not ready yet
 
-	try { 
+    try {
 
-		m = softsusy(); // need to check for displayProblem().test() and neutralino LSP 
+        m = softsusy(); // need to check for displayProblem().test() and neutralino LSP
 
-	} catch (string s) { 
+    } catch (string s) {
 #ifdef DEBUG
-		s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
-		std::cerr 
-			<< point_summary.str() << " :: "
-			<< s << endl;
+        s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
+        std::cerr
+            << point_summary.str() << " :: "
+            << s << endl;
 #endif
-		return; 
-	}
+        return;
+    }
 
-	if (susy_dict::m_o1 != m.get_hierarchy(0))
-	{
-		return;	   // neutralino1 is not the LSP...
-			  // may use a tolerance in the 
-			  // mass gap in the future
-	}
+    if (susy_dict::m_o1 != m.get_hierarchy(0)) {
+        return;       // neutralino1 is not the LSP...
+        // may use a tolerance in the
+        // mass gap in the future
+    }
 
-	double softsusy_higgs = m.get_datum(susy_dict::m_h0);
+    double softsusy_higgs = m.get_datum(susy_dict::m_h0);
 
-	try {
+    try {
 
-		feynhiggs(&m);
-		darksusy(&m);
-		superiso(&m);
+        feynhiggs(&m);
+        darksusy(&m);
+        superiso(&m);
 
-	} catch (exception &e) {
+    } catch (exception &e) {
 
-		std::cerr << "Observables error :: " << e.what() << std::endl;
-		return;
+        std::cerr << "Observables error :: " << e.what() << std::endl;
+        return;
 
-	}
+    }
 
 
-	lnew = loglike_calc.get_log_like(m);
+    lnew = loglike_calc.get_log_like(m);
 
 #ifdef DEBUG
 
-	get_lsl lsl;
+    get_lsl lsl;
 
-	point_summary << " :: ln(like) = " << lnew;
+    point_summary << " :: ln(like) = " << lnew;
 
-	point_summary << " :: outputs = ["
-		      << " m_h0: " << m.get_datum(susy_dict::m_h0)
-		      << " omega: " << m.get_observable(susy_dict::observable::omega)
-		      << " m_o1: " << m.get_datum(susy_dict::m_o1)
-		      << " m_1pm: " << m.get_datum(susy_dict::m_1pm)
-		      << " m_o2: " << m.get_datum(susy_dict::m_o2)
-		      << " m_lsl: " << lsl(m)
-		      << " ]";
+    point_summary << " :: outputs = ["
+              << " m_h0: " << m.get_datum(susy_dict::m_h0)
+              << " omega: " << m.get_observable(susy_dict::observable::omega)
+              << " m_o1: " << m.get_datum(susy_dict::m_o1)
+              << " m_1pm: " << m.get_datum(susy_dict::m_1pm)
+              << " m_o2: " << m.get_datum(susy_dict::m_o2)
+              << " m_lsl: " << lsl(m)
+              << " ]";
 
-	std::cerr << point_summary.str() << std::endl;
+    std::cerr << point_summary.str() << std::endl;
 
 #else
 
-	std::forward_list<int> *pars_inputs = static_cast<std::forward_list<int>*>(context);
+    std::forward_list<int> *pars_inputs = static_cast<std::forward_list<int> *>(context);
 
-	std::stringstream point_summary;
-	point_summary << "ln(like) = " << lnew << " :: ";
-	
-	point_summary << "inputs = [ "
-		      << " --mtop='" << sugra->get_mtop_pole() << "'"
-		      << " --mbmb='" << sugra->get_mbmb() << "'"
-		      << " --alpha-s='" << sugra->get_alpha_s() << "'"
-		      << " --alpha-em-inv='" << sugra->get_alpha_em_inv() << "'"
-		      << " -- ";
-	for (int index : *pars_inputs)
-		point_summary << "'" << sugra->pars_at(index) << "' ";
-	point_summary << "'" << sugra->get_tb() << "' " << "'" << sugra->get_sgnmu() << "' ]";
+    std::stringstream point_summary;
+    point_summary << "ln(like) = " << lnew << " :: ";
 
-	get_lsl lsl;
+    point_summary << "inputs = [ "
+    << " --mtop='" << sugra->get_mtop_pole() << "'"
+    << " --mbmb='" << sugra->get_mbmb() << "'"
+    << " --alpha-s='" << sugra->get_alpha_s() << "'"
+    << " --alpha-em-inv='" << sugra->get_alpha_em_inv() << "'"
+    << " -- ";
+    for (int index : *pars_inputs)
+        point_summary << "'" << sugra->pars_at(index) << "' ";
+    point_summary << "'" << sugra->get_tb() << "' " << "'" << sugra->get_sgnmu() << "' ]";
 
-	point_summary << " :: outputs = ["
-		      << " m_h0: " << m.get_datum(susy_dict::m_h0)
-		      << " omega: " << m.get_observable(susy_dict::observable::omega)
-		      << " proton_SI: " << (m.get_observable(susy_dict::observable::proton_SI)*1e-36)
-		      << " m_o1: " << m.get_datum(susy_dict::m_o1)
-		      << " m_1pm: " << m.get_datum(susy_dict::m_1pm)
-		      << " m_o2: " << m.get_datum(susy_dict::m_o2)
-		      << " m_lsl: " << lsl(m)
-		      << " ]";
+    get_lsl lsl;
 
-	std::cerr << point_summary.str() << std::endl;
+    point_summary << " :: outputs = ["
+    << " m_h0: " << m.get_datum(susy_dict::m_h0)
+    << " omega: " << m.get_observable(susy_dict::observable::omega)
+    << " proton_SI: " << (m.get_observable(susy_dict::observable::proton_SI) * 1e-36)
+    << " m_o1: " << m.get_datum(susy_dict::m_o1)
+    << " m_1pm: " << m.get_datum(susy_dict::m_1pm)
+    << " m_o2: " << m.get_datum(susy_dict::m_o2)
+    << " m_lsl: " << lsl(m)
+    << " ]";
+
+    std::cerr << point_summary.str() << std::endl;
 
 #endif
 
-	auto *slha_row = &susy_dict::mSUGRA_row;
-	if (sugra->is_nusugra())
-		slha_row = &susy_dict::NUSUGRA_row;
+    auto *slha_row = &susy_dict::mSUGRA_row;
+    if (sugra->is_nusugra())
+        slha_row = &susy_dict::NUSUGRA_row;
 
-	auto row_begin = slha_row->begin();
+    auto row_begin = slha_row->begin();
 
-	std::transform(
-		++row_begin, // skip the model name
-		slha_row->end(),
-		Cube+ndim, 			 // these start after free params
-		[&m] (const std::string &key) -> double {
-			return m.get_datum(key);
-		}
-	);
+    std::transform(
+            ++row_begin, // skip the model name
+            slha_row->end(),
+            Cube + ndim,             // these start after free params
+            [&m](const std::string &key) -> double {
+                return m.get_datum(key);
+            }
+    );
 
-	std::transform(
-		susy_dict::observable::observe_row.begin(),
-		susy_dict::observable::observe_row.end(),
-		Cube + ndim + (slha_row->size()-1), 
-		[&m] (const std::string &key) -> double {
-			return m.get_observable(key);
-		}
-	);
+    std::transform(
+            susy_dict::observable::observe_row.begin(),
+            susy_dict::observable::observe_row.end(),
+            Cube + ndim + (slha_row->size() - 1),
+            [&m](const std::string &key) -> double {
+                return m.get_observable(key);
+            }
+    );
 
 }
 
