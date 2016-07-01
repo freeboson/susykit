@@ -1,5 +1,3 @@
-
-
 /*
 
     ****************************************************************************
@@ -31,27 +29,28 @@
 #include <vector>
 #include <random>
 
-class seedgen
-{
+class seedgen {
 public:
-	
-	typedef std::random_device::result_type seed_type;
 
-	seedgen(unsigned int _num_seeds);
+    typedef std::random_device::result_type seed_type;
 
-        seed_type operator()();
+    seedgen(unsigned int _num_seeds);
+
+    seed_type operator()();
 
 #ifndef BOOST_MPI
-	seed_type* get();
+
+    seed_type *get();
+
 #endif
 
 private:
 
-	void build_seeds();
+    void build_seeds();
 
-	unsigned int num_seeds;
-	std::vector<seed_type> seeds;
-	std::vector<seed_type>::iterator seed_it;
+    unsigned int num_seeds;
+    std::vector<seed_type> seeds;
+    std::vector<seed_type>::iterator seed_it;
 
 };
 
