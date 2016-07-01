@@ -1,7 +1,7 @@
-#ifndef PRIORS_HPP
-#define PRIORS_HPP
 
 #pragma once
+#ifndef PRIORS_HPP
+#define PRIORS_HPP
 
 namespace priors {
 

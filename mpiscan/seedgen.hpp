@@ -22,7 +22,6 @@
 
 
 #pragma once
-
 #ifndef SEEDGEN_HPP
 #define SEEDGEN_HPP
 
@@ -55,6 +54,5 @@ private:
 };
 
 #endif
-
 
 

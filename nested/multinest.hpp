@@ -1,6 +1,7 @@
+
+#pragma once
 #ifndef MULTINEST_HPP
 #define MULTINEST_HPP
-#pragma once
 
 #include <array>
 #include <memory>
@@ -39,6 +40,4 @@ nested::multinest<ndim>::multinest(prior_list param_priors, hepstats::loglike _l
 }
 
 #endif 
-
-
 

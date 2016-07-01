@@ -6,9 +6,9 @@
 #error Do not know how to link to Fortran libraries, check symbol table for your platform (nm libnest3.a | grep nestrun)
 #endif
 
-#ifndef MULTINEST_H
-#define MULTINEST_H
 #pragma once
+#ifndef NESTFACE_HPP
+#define NESTFACE_HPP
 
 #include <stdexcept>
 #include <string>

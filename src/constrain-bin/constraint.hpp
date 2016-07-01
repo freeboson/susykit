@@ -21,9 +21,8 @@
 
 
 #pragma once
-
-#ifndef _CONSTRAINT_H_
-#define _CONSTRAINT_H_
+#ifndef CONSTRAINT_HPP
+#define CONSTRAINT_HPP
 
 #include <iostream>
 #include <string>

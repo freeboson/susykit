@@ -20,8 +20,9 @@
 */
 
 
-#ifndef PARSEUTILS_H
-#define PARSEUTILS_H
+#pragma once
+#ifndef PARSEUTILS_HPP
+#define PARSEUTILS_HPP
 
 #include <ostream>
 #include <vector>

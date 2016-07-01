@@ -1,3 +1,8 @@
+
+#pragma once
+#ifndef MPISCAN_HPP
+#define MPISCAN_HPP
+
 #include <fstream>
 #include <string>
 #include <memory>
@@ -37,4 +42,5 @@ private:
 
 };
 
+#endif
 
