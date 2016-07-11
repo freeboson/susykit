@@ -60,13 +60,12 @@ ExternalProject_Add(
   DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_BINARY_DIR}/work/feynhiggs/extract"
   PATCH_COMMAND perl -pi -e "s/^LIBDIRSUFFIX = .*/LIBDIRSUFFIX = /" ${CMAKE_BINARY_DIR}/work/feynhiggs/extract/configure
-    COMMAND patch -N src/Util/extself.c
-    ${PROJECT_SOURCE_DIR}/patches/feynhiggs/extself_c.patch
+    COMMAND patch -N src/Util/extself.c ${PROJECT_SOURCE_DIR}/patches/feynhiggs/extself_c.patch
   CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/feynhiggs/extract/configure
     --64 --enable-full-g-2 --disable-vt100 CC=${CMAKE_C_COMPILER}
     FC=${CMAKE_Fortran_COMPILER} CXX=${CMAKE_CXX_COMPILER}
     --prefix=${CMAKE_BINARY_DIR}/work/feynhiggs/installed
-    BUILD_COMMAND make lib
+  BUILD_COMMAND make lib
   INSTALL_COMMAND make install
     COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
     COMMAND install ${CMAKE_BINARY_DIR}/work/feynhiggs/installed/include/CFeynHiggs.h ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
@@ -114,17 +113,14 @@ ExternalProject_Add(
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract"
   PATCH_COMMAND patch -N src/include.h ${PROJECT_SOURCE_DIR}/patches/superiso/include_h.patch
-  CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/superiso_relic/extract/configure
-    --with-cc=${CMAKE_C_COMPILER} --with-fc=${CMAKE_Fortran_COMPILER}
+  CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/superiso_relic/extract/configure --with-cc=${CMAKE_C_COMPILER} --with-fc=${CMAKE_Fortran_COMPILER}
   BUILD_COMMAND CC=${CMAKE_C_COMPILER} FC=${CMAKE_Fortran_COMPILER} make static
     COMMAND make libisospin.a librelic.a
   INSTALL_COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/libisospin.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/relic/librelic.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
-    COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/include.h
-      ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
-    COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/omega.h
-      ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
+    COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/include.h ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
+    COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/omega.h ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
 )
 add_library(isospin STATIC IMPORTED)
 set_target_properties(isospin PROPERTIES
@@ -190,15 +186,23 @@ ExternalProject_Add(
     CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
     FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${DS_FCFLAGS}
     --prefix=${CMAKE_CURRENT_BINARY_DIR}
-  BUILD_COMMAND make darksusy
+  BUILD_COMMAND make darksusy libisajet
+    COMMAND make install_tables
   INSTALL_COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/darksusy
     COMMAND sh -c "cp -pr ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include/ds*.h ${PROJECT_SOURCE_DIR}/ext/include/darksusy"
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/lib/libdarksusy.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+    COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/lib/libisajet.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
 )
 add_dependencies(DarkSUSY HiggsBounds FeynHiggs)
-add_library(DS STATIC IMPORTED)
-set_target_properties(DS PROPERTIES
+add_library(darksusy STATIC IMPORTED)
+set_target_properties(darksusy PROPERTIES
   IMPORTED_LOCATION "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libdarksusy.a"
+  INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/ext/include"
+  IMPORTED_LINK_INTERFACE_LANGUAGES "C;CXX;Fortran"
+)
+add_library(isajet STATIC IMPORTED)
+set_target_properties(isajet PROPERTIES
+  IMPORTED_LOCATION "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libisajet.a"
   INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/ext/include"
   IMPORTED_LINK_INTERFACE_LANGUAGES "C;CXX;Fortran"
 )
@@ -262,5 +266,5 @@ target_link_libraries(softest constrain soft)
 
 add_executable(qpoint ${SOURCES_QPOINT})
 target_compile_features(qpoint PRIVATE cxx_range_for)
-target_link_libraries(qpoint constrain susykit soft FH DS HB isospin relic)
+target_link_libraries(qpoint constrain susykit soft FH darksusy isajet HB isospin relic)
 
