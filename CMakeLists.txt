@@ -236,6 +236,7 @@ set(SOURCES_QPOINT src/qpoint/qpoint_softsusy_opts.cpp src/qpoint/qpoint.cpp)
 add_library(constrain STATIC ${SOURCES_LCONS})
 target_compile_features(constrain PRIVATE cxx_range_for)
 target_compile_features(constrain PRIVATE cxx_generalized_initializers)
+target_compile_definitions(constrain PRIVATE SOFTSUSY_VERSION=${SOFTSUSY_VERSION})
 
 add_library(susykit STATIC ${SOURCES_LSKIT})
 add_dependencies(susykit SoftSusy SuperIso_Relic DarkSUSY FeynHiggs)
