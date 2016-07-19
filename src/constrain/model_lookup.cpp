@@ -46,7 +46,6 @@ model_lookup::model_lookup(model_map _mode, const string &_code)
 
         case special:
             if (code == "NLSP") {
-//				cout << "%NLSP codes: MC1 = 0; MSl1 = 1; Mst1 = 2; MHH or MH3 = 3; else 9" << endl;
                 cerr <<
                 "NLSP codes: MC1 = 0; MSl1 = 1; Mst1 = 2; MHH or MH3 = 3; MNE2 = 4; MSG = 5; MSeR = 6; else 9" << endl;
             }
@@ -114,7 +113,7 @@ double model_lookup::operator()(const model &m) const {
 #if 1
             string mass;
             int next = 0;
-            int nd = 0;
+//            int nd = 0; // what was this for?
             if (m.get_hierarchy(0) == m_o1) {
                 next++;
             }
