@@ -25,7 +25,11 @@
 #define DICT_HPP
 
 #include <string>
-#include <list>
+#if defined(SUSYKIT_IS_IT_1Z_YET)
+#  include <experimental/array>
+#else
+#  include <list>
+#endif
 #include <map>
 
 namespace susy_dict {
@@ -249,7 +253,11 @@ namespace susy_dict {
         const std::string width_A0 = "width_A0";
         const std::string width_Hpm = "width_Hpm";
 
+#if defined(SUSYKIT_IS_IT_1Z_YET)
+        const decltype(auto) observe_row = std::experimental::make_array (
+#else
         const std::list<std::string> observe_row = {
+#endif
 
             // micromegas OR DarkSUSY/SuperISO
             // TODO: Clean this all up.
@@ -284,11 +292,19 @@ namespace susy_dict {
 
             // superiso_relic
             //m
+#if !defined(SUSYKIT_IS_IT_1Z_YET)
         };
+#else
+        );
+#endif
     }
 
     // whatever you do, don't mess this up!!
-    const std::list<std::string> mSUGRA_row = {
+#if defined(SUSYKIT_IS_IT_1Z_YET)
+        const decltype(auto) mSUGRA_row = std::experimental::make_array (
+#else
+        const std::list<std::string> mSUGRA_row = {
+#endif
 
         model_string,
 
@@ -360,9 +376,18 @@ namespace susy_dict {
         q_ad, ad_q, as_q, ab_q,
 
         q_ae, ae_q, amu_q, atau_q
-    };
 
-    const std::list<std::string> NUSUGRA_row = {
+#if !defined(SUSYKIT_IS_IT_1Z_YET)
+    };
+#else
+    );
+#endif
+
+#if defined(SUSYKIT_IS_IT_1Z_YET)
+        const decltype(auto) NUSUGRA_row = std::experimental::make_array (
+#else
+        const std::list<std::string> NUSUGRA_row = {
+#endif
 
         model_string,
 
@@ -449,7 +474,12 @@ namespace susy_dict {
         q_ad, ad_q, as_q, ab_q,
 
         q_ae, ae_q, amu_q, atau_q
+
+#if !defined(SUSYKIT_IS_IT_1Z_YET)
     };
+#else
+    );
+#endif
 
     const std::map<std::string, unsigned int> pdg = {
         {m_w,        24},
