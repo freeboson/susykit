@@ -30,7 +30,7 @@ set(DARKSUSY_MD5 "ee9d47aeb88980e2777a1c61b7d495d0")
 
 ExternalProject_Add(
   SoftSusy
-  URL "http://www.hepforge.org/archive/softsusy/softsusy-${SOFTSUSY_VERSION}.tar.gz"
+  URL "https://www.hepforge.org/archive/softsusy/softsusy-${SOFTSUSY_VERSION}.tar.gz"
   URL_HASH MD5=${SOFTSUSY_MD5}
   PREFIX "${CMAKE_BINARY_DIR}/work/softsusy"
   DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/ext/distfiles"
@@ -86,7 +86,7 @@ set_target_properties(FH PROPERTIES
 
 ExternalProject_Add(
   HiggsBounds
-  URL "http://www.hepforge.org/archive/higgsbounds/HiggsBounds-${HIGGSBOUNDS_VERSION}.tar.gz"
+  URL "https://www.hepforge.org/archive/higgsbounds/HiggsBounds-${HIGGSBOUNDS_VERSION}.tar.gz"
   URL_HASH MD5=${HIGGSBOUNDS_MD5}
   PREFIX "${CMAKE_CURRENT_BINARY_DIR}/work/higgsbounds"
   DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/ext/distfiles"
@@ -267,5 +267,5 @@ target_link_libraries(softest constrain soft)
 
 add_executable(qpoint ${SOURCES_QPOINT})
 target_compile_features(qpoint PRIVATE cxx_range_for)
-target_link_libraries(qpoint constrain susykit soft FH darksusy isajet HB isospin relic)
+target_link_libraries(qpoint constrain susykit soft darksusy FH isajet HB isospin relic)
 
