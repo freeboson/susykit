@@ -31,7 +31,7 @@
 class seedgen {
 public:
 
-    typedef std::random_device::result_type seed_type;
+    using seed_type std::random_device::result_type;
 
     seedgen(unsigned int _num_seeds);
 
