@@ -187,8 +187,9 @@ ExternalProject_Add(
     FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${DS_FCFLAGS}
     --prefix=${CMAKE_CURRENT_BINARY_DIR}
   BUILD_COMMAND make darksusy libisajet
-    COMMAND make install_tables
   INSTALL_COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/darksusy
+    COMMAND make install_tables
+    COMMAND sh -c "cp -prf ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/share/DarkSUSY ${PROJECT_SOURCE_DIR}/share/"
     COMMAND sh -c "cp -pr ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include/ds*.h ${PROJECT_SOURCE_DIR}/ext/include/darksusy"
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/lib/libdarksusy.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/lib/libisajet.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
