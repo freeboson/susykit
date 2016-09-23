@@ -23,18 +23,18 @@
 #include "constrain/hepstats.hpp"
 
 double hepstats::likedatum::operator()(const model &m, bool *unlikely) const {
-    if (unset)
-        return logZero;
     double theoretical_value = lookup(m);
 
-    if (lookup.get_code() == susy_dict::observable::btaunu) // special case
-    {
+    if (lookup.get_mode() == model_lookup::output
+        && lookup.get_code() == susy_dict::observable::btaunu) { // special case
         theoretical_value *= br_btaunu_sm; // the btaunu value is SUSY/SM ratio
     }
 
     double tau = (theory_percent_error)
                  ? theoretical_value * theory_uncertainty
                  : theory_uncertainty;
+
+    return calculate_pull(theoretical_value, tau, unlikely);
 
     double loglikeval = 0.0;
     *unlikely = false;

@@ -31,17 +31,15 @@ namespace hepstats {
 
     class likeconfig;
 
-    namespace likedist {
-        enum distribution {
-            gaussian,
-            poisson,
-            upper,
-            lower,
-            upper_gaussian,
-            upper_interpolated,
-            lower_interpolated
-        };
-    }
+    enum class likedist {
+        gaussian,
+        poisson,
+        upper,
+        lower,
+        upper_gaussian,
+        upper_interpolated,
+        lower_interpolated
+    };
 
     const double logZero = -1e90; // embarrassing
 
