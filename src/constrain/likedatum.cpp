@@ -27,7 +27,7 @@ double hepstats::likedatum::operator()(const model &m, bool *unlikely) const {
         return logZero;
     double theoretical_value = lookup(m);
 
-    if (lookup.get_code() == "btaunu") // special case
+    if (lookup.get_code() == susy_dict::observable::btaunu) // special case
     {
         theoretical_value *= br_btaunu_sm; // the btaunu value is SUSY/SM ratio
     }

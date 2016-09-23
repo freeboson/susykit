@@ -21,6 +21,7 @@
 
 
 #include "constrain/hepstats.hpp"
+#include <memory>
 #include <algorithm>
 #include <sstream>
 
@@ -77,9 +78,9 @@ void hepstats::likeconfig::process_stream() {
 
 
         llhood.add_like_term(
-                likedatum(
+                std::make_unique<likedatum>(
                         dist,
-                        model_lookup(type, lookup_code),
+                        model_lookup(type, lookup_code),gg
                         exp_val,
                         exp_err,
                         theory_err,

@@ -33,11 +33,13 @@ namespace hepstats {
 
     namespace likedist {
         enum distribution {
-            Gaussian,
-            Poisson,
-            Upper,
-            Lower,
-            Upper_Gaussian
+            gaussian,
+            poisson,
+            upper,
+            lower,
+            upper_gaussian,
+            upper_interpolated,
+            lower_interpolated
         };
     }
 
