@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - hepstats.hpp:                                                            -
+    - gaussian_datum.cpp:                                                      -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -27,36 +27,13 @@
 */
 
 
-#pragma once
-#ifndef HEPSTATS_HPP
-#define HEPSTATS_HPP
+#include "gaussian_datum.hpp"
 
-namespace hepstats {
-    class loglike;
 
-    class likedatum;
-
-    class likeconfig;
-
-    enum class likedist {
-        gaussian,
-        poisson,
-        upper,
-        lower,
-        upper_gaussian,
-        upper_interpolated,
-        lower_interpolated
-    };
-
-    constexpr double logZero = -1e90; // embarrassing
-
-    constexpr double br_btaunu_sm = 1.18e-4;
-    constexpr double br_btaunu_sm_err = 0.16e-4;
+double virtual hepstats::gaussian_datum::calculate_pull(const double &theoretical_value, const double &tau,
+                                                        bool *unlikely) const {
+    *unlikely = false;
+    return -std::pow(theoretical_value - exp_value, 2.0) /
+           (std::pow(tau, 2.0) + std::pow(exp_uncertainty, 2.0)) / 2.0;
 }
-
-#include "loglike.hpp"
-#include "likedatum.hpp"
-#include "likeconfig.hpp"
-
-#endif
 

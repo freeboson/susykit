@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - hepstats.hpp:                                                            -
+    - gaussian_datum.hpp:                                                      -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -28,35 +28,31 @@
 
 
 #pragma once
-#ifndef HEPSTATS_HPP
-#define HEPSTATS_HPP
+#ifndef SUSYKIT_GAUSSIAN_DATUM_HPP
+#define SUSYKIT_GAUSSIAN_DATUM_HPP
+
+#include "hepstats.hpp"
 
 namespace hepstats {
-    class loglike;
 
-    class likedatum;
+    class gaussian_datum : public likedatum {
+    public:
+        gaussian_datum(const model_lookup &_lookup, double _theory_uncertainty,
+                       bool _theory_percent_error, double exp_value,
+                       double exp_uncertainty)
+                : likedatum(_lookup,
+                            _theory_uncertainty,
+                            _theory_percent_error),
+                  exp_value(exp_value), exp_uncertainty(exp_uncertainty) { }
 
-    class likeconfig;
+    private:
+        double calculate_pull(const double &theoretical_value,
+                              const double &tau, bool *unlikely) const;
 
-    enum class likedist {
-        gaussian,
-        poisson,
-        upper,
-        lower,
-        upper_gaussian,
-        upper_interpolated,
-        lower_interpolated
+        double exp_value;
+        double exp_uncertainty;
     };
 
-    constexpr double logZero = -1e90; // embarrassing
-
-    constexpr double br_btaunu_sm = 1.18e-4;
-    constexpr double br_btaunu_sm_err = 0.16e-4;
 }
 
-#include "loglike.hpp"
-#include "likedatum.hpp"
-#include "likeconfig.hpp"
-
-#endif
-
+#endif //SUSYKIT_GAUSSIAN_DATUM_HPP

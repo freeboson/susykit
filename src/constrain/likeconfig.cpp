@@ -31,6 +31,7 @@
 #include <memory>
 #include <algorithm>
 #include <sstream>
+#include <constrain/gaussian_datum.hpp>
 
 const std::string hepstats::likeconfig::comment_chars = "#";
 
@@ -40,17 +41,22 @@ void hepstats::likeconfig::process_stream() {
     while (std::getline(*conf_stream, conf_line)) {
         auto comment_pos = conf_line.find_first_of(comment_chars);
 
-//		std::cerr << std::endl << "before='" << conf_line << "'" << std::endl; 	// debugging
+//      std::cerr << std::endl << "before='" << conf_line << "'" << std::endl;  // debugging
         conf_line = conf_line.substr(0, comment_pos);
-//		std::cerr << "after='" << conf_line << "'" << std::endl;		// debugging
+//      std::cerr << "after='" << conf_line << "'" << std::endl;                // debugging
 
         std::istringstream parse(conf_line);
 
         std::string lookup_type, lookup_code, dist_type;
+        double theory_err;
+        std::string theory_percent_err;
+
         if (!(parse >> lookup_type)
             || !(parse >> lookup_code)
-            || !(parse >> dist_type)) {
-//			std::cerr << "Rejecting this line!" << std::endl;		// debugging
+            || !(parse >> dist_type)
+            || !(parse >> theory_err)
+            || !(parse >> theory_percent_err)) {
+//          std::cerr << "Rejecting this line!" << std::endl;                   // debugging
             continue;
         }
 
@@ -78,22 +84,34 @@ void hepstats::likeconfig::process_stream() {
         else
             dist = likedist::gaussian; //default
 
-        switch(dist) {
+        double exp_val, exp_err;
+        switch (dist) {
             case likedist::lower:
             case likedist::upper:
             case likedist::poisson:
-            case likedist::lower:
-            case likedist::lower:
+            case likedist::upper_gaussian:
+            case likedist::gaussian:
+                if (!(parse >> exp_val) || !(parse >> exp_err))
+                    continue;
+                llhood.add_like_term(std::make_unique<gaussian_datum>
+                                             (model_lookup(type, lookup_code),
+                                              theory_err,
+                                              theory_percent_err,
+                                              exp_val,
+                                              exp_err));
+                break;
+            case likedist::
+
         }
 
-        double exp_val, exp_err, theory_err;
         std::string theory_percent_err;
 
-        std::transform(lookup_type.begin(), lookup_type.end(), lookup_type.begin(), ::tolower);
-        std::transform(dist_type.begin(), dist_type.end(), dist_type.begin(), ::tolower);
-        std::transform(theory_percent_err.begin(), theory_percent_err.end(), theory_percent_err.begin(), ::tolower);
-
-
+        std::transform(lookup_type.begin(), lookup_type.end(),
+                       lookup_type.begin(), ::tolower);
+        std::transform(dist_type.begin(), dist_type.end(), dist_type.begin(),
+                       ::tolower);
+        std::transform(theory_percent_err.begin(), theory_percent_err.end(),
+                       theory_percent_err.begin(), ::tolower);
 
 
         llhood.add_like_term(

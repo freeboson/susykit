@@ -213,7 +213,7 @@ set(SOURCES_LCONS
   src/constrain/model.cpp src/constrain/model_lookup.cpp
   src/constrain/special_lookups.cpp src/constrain/get_slha.cpp
   src/constrain/likeconfig.cpp src/constrain/likedatum.cpp
-  src/constrain/loglike.cpp
+  src/constrain/loglike.cpp include/constrain/gaussian_datum.cpp
 )
 
 set(SOURCES_LSKIT
