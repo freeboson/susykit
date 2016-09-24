@@ -35,6 +35,8 @@
 
 const std::string hepstats::likeconfig::comment_chars = "#";
 
+std::istream& operator>>(std::istream &is, hepstats::likedist &dist);
+
 void hepstats::likeconfig::process_stream() {
     std::string conf_line;
 
@@ -127,4 +129,28 @@ void hepstats::likeconfig::process_stream() {
     }
 }
 
+std::istream& operator>>(std::istream &is, hepstats::likedist &dist) {
+    std::string desc;
+    is >> desc;
+    std::transform(desc.begin(), desc.end(), desc.begin(), ::tolower);
+
+    if (desc == "lower")
+        dist = hepstats::likedist::lower;
+    else if (desc == "upper")
+        dist = hepstats::likedist::upper;
+    else if (desc == "poisson")
+        dist = hepstats::likedist::poisson;
+    else if (desc == "upper_gaussian")
+        dist = hepstats::likedist::upper_gaussian;
+    else if (desc == "upper_interpolated")
+        dist = hepstats::likedist::upper_interpolated;
+    else if (desc == "lower_interpolated")
+        dist = hepstats::likedist::lower_interpolated;
+    else if (desc == "gaussian")
+        dist = hepstats::likedist::gaussian;
+    else
+        is.setstate(std::ios::failbit);
+
+    return is;
+}
 

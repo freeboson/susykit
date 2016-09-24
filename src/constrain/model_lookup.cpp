@@ -50,6 +50,7 @@ model_lookup::model_lookup(model_map _mode, const string &_code)
 
         case output:
             action = &model::get_observable;
+            break;
 
         case special:
             if (code == "NLSP") {
@@ -57,18 +58,11 @@ model_lookup::model_lookup(model_map _mode, const string &_code)
                 "NLSP codes: MC1 = 0; MSl1 = 1; Mst1 = 2; MHH or MH3 = 3; MNE2 = 4; MSG = 5; MSeR = 6; else 9" << endl;
             }
             break;
-        default:
-            cerr << "Invalid model_map value supplied! action will be set to NULL!" << endl;
-            action = NULL;
     }
 }
 
 double model_lookup::operator()(const model &m) const {
     if (mode != special) {
-        if (NULL == action || unset == mode) {
-            cerr << "Error: Lookup action is not set!" << endl;
-            return 0;
-        }
         return MEMBER_FN_PTR_CALL(m, action)(code);
     }
     else { // hack hack hack hack

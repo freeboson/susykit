@@ -40,13 +40,12 @@ typedef double (model::*ModelLookup)(const std::string &) const;
 class model_lookup {
 public:
     enum model_map {
-        unset,
         slha,
         output,
         special
     };
 
-    model_lookup() : mode(unset), action(NULL) { }
+    model_lookup() = delete;
 
     model_lookup(model_map _mode, const std::string &_code);
 
