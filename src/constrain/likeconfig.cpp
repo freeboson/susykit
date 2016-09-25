@@ -36,6 +36,7 @@
 const std::string hepstats::likeconfig::comment_chars = "#";
 
 std::istream& operator>>(std::istream &is, hepstats::likedist &dist);
+std::istream& operator>>(std::istream &is, model_lookup::model_map &mm);
 
 void hepstats::likeconfig::process_stream() {
     std::string conf_line;
@@ -49,44 +50,24 @@ void hepstats::likeconfig::process_stream() {
 
         std::istringstream parse(conf_line);
 
-        std::string lookup_type, lookup_code, dist_type;
+        model_lookup::model_map lookup_type;
+        std::string lookup_code;
+        likedist dist;
         double theory_err;
-        std::string theory_percent_err;
+        bool theory_percent_err;
 
         if (!(parse >> lookup_type)
             || !(parse >> lookup_code)
-            || !(parse >> dist_type)
+            || !(parse >> dist)
             || !(parse >> theory_err)
-            || !(parse >> theory_percent_err)) {
+            || !(parse >> std::boolalpha >> theory_percent_err)) {
 //          std::cerr << "Rejecting this line!" << std::endl;                   // debugging
             continue;
         }
 
-        model_lookup::model_map type;
-        if (lookup_type == "special")
-            type = model_lookup::special;
-        else if (lookup_type == "output")
-            type = model_lookup::output;
-        else
-            type = model_lookup::slha;
-
-        likedist dist;
-        if (dist_type == "lower")
-            dist = likedist::lower;
-        else if (dist_type == "upper")
-            dist = likedist::upper;
-        else if (dist_type == "poisson")
-            dist = likedist::poisson;
-        else if (dist_type == "upper_gaussian")
-            dist = likedist::upper_gaussian;
-        else if (dist_type == "upper_interpolated")
-            dist = likedist::upper_interpolated;
-        else if (dist_type == "lower_interpolated")
-            dist = likedist::lower_interpolated;
-        else
-            dist = likedist::gaussian; //default
 
         double exp_val, exp_err;
+        std::string data_filename;
         switch (dist) {
             case likedist::lower:
             case likedist::upper:
@@ -96,7 +77,8 @@ void hepstats::likeconfig::process_stream() {
                 if (!(parse >> exp_val) || !(parse >> exp_err))
                     continue;
                 llhood.add_like_term(std::make_unique<gaussian_datum>
-                                             (model_lookup(type, lookup_code),
+                                             (model_lookup(lookup_type,
+                                                           lookup_code),
                                               theory_err,
                                               theory_percent_err,
                                               exp_val,
@@ -105,16 +87,6 @@ void hepstats::likeconfig::process_stream() {
             case likedist::
 
         }
-
-        std::string theory_percent_err;
-
-        std::transform(lookup_type.begin(), lookup_type.end(),
-                       lookup_type.begin(), ::tolower);
-        std::transform(dist_type.begin(), dist_type.end(), dist_type.begin(),
-                       ::tolower);
-        std::transform(theory_percent_err.begin(), theory_percent_err.end(),
-                       theory_percent_err.begin(), ::tolower);
-
 
         llhood.add_like_term(
                 std::make_unique<likedatum>(
@@ -130,24 +102,41 @@ void hepstats::likeconfig::process_stream() {
 }
 
 std::istream& operator>>(std::istream &is, hepstats::likedist &dist) {
-    std::string desc;
-    is >> desc;
-    std::transform(desc.begin(), desc.end(), desc.begin(), ::tolower);
+    std::string dist_spec;
+    is >> dist_spec;
+    std::transform(dist_spec.begin(), dist_spec.end(), dist_spec.begin(), ::tolower);
 
-    if (desc == "lower")
+    if (dist_spec == "lower")
         dist = hepstats::likedist::lower;
-    else if (desc == "upper")
+    else if (dist_spec == "upper")
         dist = hepstats::likedist::upper;
-    else if (desc == "poisson")
+    else if (dist_spec == "poisson")
         dist = hepstats::likedist::poisson;
-    else if (desc == "upper_gaussian")
+    else if (dist_spec == "upper_gaussian")
         dist = hepstats::likedist::upper_gaussian;
-    else if (desc == "upper_interpolated")
+    else if (dist_spec == "upper_interpolated")
         dist = hepstats::likedist::upper_interpolated;
-    else if (desc == "lower_interpolated")
+    else if (dist_spec == "lower_interpolated")
         dist = hepstats::likedist::lower_interpolated;
-    else if (desc == "gaussian")
+    else if (dist_spec == "gaussian")
         dist = hepstats::likedist::gaussian;
+    else
+        is.setstate(std::ios::failbit);
+
+    return is;
+}
+
+std::istream& operator>>(std::istream &is, model_lookup::model_map &mm){
+    std::string mm_spec;
+    is >> mm_spec;
+    std::transform(mm_spec.begin(), mm_spec.end(), mm_spec.begin(), ::tolower);
+
+    if (mm_spec == "special")
+        mm = model_lookup::special;
+    else if (mm_spec == "output")
+        mm = model_lookup::output;
+    else if (mm_spec == "slha")
+        mm = model_lookup::slha;
     else
         is.setstate(std::ios::failbit);
 
