@@ -35,35 +35,37 @@
 #include "model.hpp"
 #include "model_lookup.hpp"
 
-class hepstats::likedatum {
-public:
-    likedatum(
-            model_lookup _lookup,
-            double _theory_uncertainty,
-            bool _theory_percent_error = false
-    )
+namespace hepstats {
+    class likedatum {
+    public:
+        likedatum(
+                model_lookup _lookup,
+                double _theory_uncertainty,
+                bool _theory_percent_error = false
+        )
 
-            : lookup(_lookup),
-              theory_uncertainty(_theory_uncertainty),
-              theory_percent_error(_theory_percent_error) {
-        // all done!
-    }
+                : lookup(_lookup),
+                  theory_uncertainty(_theory_uncertainty),
+                  theory_percent_error(_theory_percent_error) {
+            // all done!
+        }
 
-    double operator()(const model &m,
-                      bool *unlikely = nullptr) const; // note that this gives -ln(like) = chi^2/2!!!!
+        double operator()(const model &m,
+                          bool *unlikely = nullptr) const; // note that this gives -ln(like) = chi^2/2!!!!
 
-private:
-    model_lookup lookup;
-    double theory_uncertainty;
-    bool theory_percent_error;
+    private:
+        model_lookup lookup;
+        double theory_uncertainty;
+        bool theory_percent_error;
 
-    double virtual calculate_pull(const double &theoretical_value,
-                                  const double &tau, bool *unlikely) const;
+        double virtual calculate_pull(const double &theoretical_value,
+                                      const double &tau, bool *unlikely) const;
 
-    double get_95cl_loglike(double delta, double tau, bool *unlikely) const;
+        double get_95cl_loglike(double delta, double tau, bool *unlikely) const;
 
-    double z_fn(double arg) const;
-};
+        double z_fn(double arg) const;
+    };
+}
 
 #endif
 
