@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - interpolated_data.cpp:                                                   -
+    - simple_datum.cpp:                                                        -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -27,50 +27,6 @@
 */
 
 
-#include "interpolated_data.hpp"
+#include "constrain/simple_datum.hpp"
 
-#include <fstream>
-#include <stdexcept>
-#include <iterator>
-#include <algorithm>
-
-bool first_coord_lt(const auto &lhs, const auto &rhs) {
-    return std::get<0>(lhs) < std::get<0>(rhs);
-}
-
-bool first_coord_eq(const auto &lhs, const auto &rhs) {
-    return std::get<0>(lhs) == std::get<0>(rhs);
-}
-
-double hepstats::interpolated_data::get_limit_at(const double &x) const {
-    if (x <= std::get<0>(table.front()))
-        return std::get<1>(table.front());
-    if (x >= std::get<0>(table.back()))
-        return std::get<1>(table.back());
-    const auto upper = std::lower_bound(begin(table), end(table),
-                                        first_coord_lt);
-    const auto lower = std::prev(upper);
-    double dx = upper->first - lower->first;
-    double dy = upper->second - lower->second;
-    if (dx == 0.0) return lower->first;
-    return (dy/dx)*(x - lower->first) + lower->first;
-}
-
-void hepstats::interpolated_data::load_data(const std::string &data_filename) {
-    std::ifstream f(data_filename);
-    if (f.fail()) {
-        throw std::invalid_argument("Could not read from " + data_filename);
-    }
-
-    table.reserve(table_start_size);
-    double x, y;
-    while (f >> x >> y) {
-        table.push_back(std::make_pair(x, y));
-        if (table.size() >= table.capacity())
-            table.reserve(table.capacity()+table_start_size);
-    }
-    table.shrink_to_fit();
-    std::sort(std::begin(table), std::end(table), first_coord_lt);
-    std::unique(std::begin(table), std::end(table), first_coord_eq);
-}
 

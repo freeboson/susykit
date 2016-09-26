@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - simple_datum.cpp:                                                        -
+    - gaussian_datum.cpp:                                                      -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -27,6 +27,14 @@
 */
 
 
-#include "simple_datum.hpp"
+#include "constrain/gaussian_datum.hpp"
 
+
+double hepstats::gaussian_datum::calculate_pull(const double &theoretical_value,
+                                                const double &tau,
+                                                bool *unlikely) const {
+    *unlikely = false;
+    return -std::pow(theoretical_value - exp_value, 2.0) /
+           (std::pow(tau, 2.0) + std::pow(exp_uncertainty, 2.0)) / 2.0;
+}
 
