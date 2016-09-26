@@ -214,7 +214,9 @@ set(SOURCES_LCONS
   src/constrain/special_lookups.cpp src/constrain/get_slha.cpp
   src/constrain/likeconfig.cpp src/constrain/likedatum.cpp
   src/constrain/loglike.cpp src/constrain/gaussian_datum.cpp
-        src/constrain/simple_datum.cpp src/constrain/interpolated_data.cpp)
+  src/constrain/simple_datum.cpp src/constrain/interpolated_data.cpp
+  src/constrain/upper_gaussian_datum.cpp
+)
 
 set(SOURCES_LSKIT
   src/susykit/superiso_interface.cpp src/susykit/softsusy_interface.cpp
