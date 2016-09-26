@@ -48,7 +48,6 @@ namespace hepstats {
     private:
         double calculate_pull(const double &theoretical_value,
                               const double &tau, bool *unlikely) const;
-
     };
 }
 
