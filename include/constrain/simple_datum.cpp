@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - gaussian_datum.hpp:                                                      -
+    - simple_datum.cpp:                                                        -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -27,30 +27,6 @@
 */
 
 
-#pragma once
-#ifndef SUSYKIT_GAUSSIAN_DATUM_HPP
-#define SUSYKIT_GAUSSIAN_DATUM_HPP
-
 #include "simple_datum.hpp"
 
-namespace hepstats {
-    class gaussian_datum : public simple_datum {
-    public:
-        gaussian_datum(const model_lookup &lookup, double theory_uncertainty,
-                       bool theory_percent_error, double exp_value,
-                       double exp_uncertainty)
-                : simple_datum(lookup,
-                               theory_uncertainty,
-                               theory_percent_error,
-                               exp_value,
-                               exp_uncertainty) {}
-
-    private:
-        double calculate_pull(const double &theoretical_value,
-                              const double &tau, bool *unlikely) const;
-
-    };
-}
-
-#endif //SUSYKIT_GAUSSIAN_DATUM_HPP
 
