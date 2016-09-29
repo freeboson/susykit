@@ -65,6 +65,7 @@ ExternalProject_Add(
     --64 --enable-full-g-2 --disable-vt100 CC=${CMAKE_C_COMPILER}
     FC=${CMAKE_Fortran_COMPILER} CXX=${CMAKE_CXX_COMPILER}
     --prefix=${CMAKE_BINARY_DIR}/work/feynhiggs/installed
+    FFLAGS="-fPIC" CFLAGS="-fPIC"
   BUILD_COMMAND make lib
   INSTALL_COMMAND make install
     COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
