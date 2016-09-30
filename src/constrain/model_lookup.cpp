@@ -110,8 +110,8 @@ double model_lookup::operator()(const model &m) const {
             get_RGG_approx rgg;
             return rgg(m);
         }
+#if 0
         else if (code == "msp") {
-#if 1
             string mass;
             int next = 0;
 //            int nd = 0; // what was this for?
@@ -127,32 +127,8 @@ double model_lookup::operator()(const model &m) const {
                 cerr << m.get_hierarchy(next++) << ";";
             }
             cerr << endl;
-#else
-            int nd = 0;
-            string mass;
-            double last = 0;
-
-            for (int i = 0; nd < 4; i++)
-            {
-                if (m.get_hierarchy(i) == m_o1)
-                    continue;
-
-                double curr;
-
-                mass = m.get_hierarchy(i);
-                curr = m.get_datum(mass);
-
-                if (0 == nd || curr - last > 10)
-                {
-                    nd++;
-                    last = curr;
-                    cerr << mass << ";";
-                    continue;
-                }
-            }
-            cerr << endl;
-#endif
         }
+#endif
         else {
             cerr << "Error: " << code << "is not a special action!" << endl;
             return 0;
