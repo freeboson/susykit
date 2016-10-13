@@ -40,7 +40,7 @@ namespace hepstats {
 
     enum class likedist {
         gaussian,
-        poisson,
+//        poisson,
         upper,
         lower,
         upper_gaussian,

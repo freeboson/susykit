@@ -34,7 +34,8 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include "likedatum.hpp"
+#include <istream>
+#include "constrain/likedatum.hpp"
 
 namespace hepstats {
     class interpolated_data {
@@ -47,8 +48,9 @@ namespace hepstats {
 
     private:
         void load_data(const std::string &data_filename);
+        void load_data(std::istream *is);
 
-        constexpr double table_start_size = 500;
+        constexpr size_t table_start_size = 500;
         std::vector<std::pair<double, double> > table;
     };
 }

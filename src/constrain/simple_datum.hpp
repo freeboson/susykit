@@ -31,7 +31,7 @@
 #ifndef SUSYKIT_SIMPLE_DATUM_HPP
 #define SUSYKIT_SIMPLE_DATUM_HPP
 
-#include "likedatum.hpp"
+#include "constrain/likedatum.hpp"
 
 namespace hepstats {
     class simple_datum : public likedatum {
