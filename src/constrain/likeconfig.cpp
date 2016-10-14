@@ -31,12 +31,14 @@
 #include <memory>
 #include <algorithm>
 #include <sstream>
-#include <constrain/gaussian_datum.hpp>
+#include "gaussian_datum.hpp"
+#include "upper_gaussian_datum.hpp"
 
 const std::string hepstats::likeconfig::comment_chars = "#";
 
-std::istream& operator>>(std::istream &is, hepstats::likedist &dist);
-std::istream& operator>>(std::istream &is, model_lookup::model_map &mm);
+std::istream &operator>>(std::istream &is, hepstats::likedist &dist);
+
+std::istream &operator>>(std::istream &is, model_lookup::model_map &mm);
 
 void hepstats::likeconfig::process_stream() {
     std::string conf_line;
@@ -65,29 +67,30 @@ void hepstats::likeconfig::process_stream() {
             continue;
         }
 
-
         double exp_val, exp_err;
         std::string data_filename;
         switch (dist) {
-            case likedist::lower:
-            case likedist::upper:
-            case likedist::poisson:
-            case likedist::upper_gaussian:
             case likedist::gaussian:
                 if (!(parse >> exp_val) || !(parse >> exp_err))
                     continue;
                 llhood.add_like_term(std::make_unique<gaussian_datum>
                                              (model_lookup(lookup_type,
                                                            lookup_code),
-                                              theory_err,
-                                              theory_percent_err,
-                                              exp_val,
-                                              exp_err));
+                                              theory_err, theory_percent_err,
+                                              exp_val, exp_err));
                 break;
-            case likedist::
 
+            case likedist::upper_gaussian:
+                if (!(parse >> exp_val) || !(parse >> exp_err))
+                    continue;
+                llhood.add_like_term(std::make_unique<upper_gaussian_datum>
+                                             (model_lookup(lookup_type,
+                                                           lookup_code),
+                                              theory_err, theory_percent_err,
+                                              exp_val, exp_err));
+                break;
         }
-
+#if 0
         llhood.add_like_term(
                 std::make_unique<likedatum>(
                         dist,
@@ -98,20 +101,22 @@ void hepstats::likeconfig::process_stream() {
                         (bool) (theory_percent_err == "true")
                 )
         );
+#endif
     }
 }
 
-std::istream& operator>>(std::istream &is, hepstats::likedist &dist) {
+std::istream &operator>>(std::istream &is, hepstats::likedist &dist) {
     std::string dist_spec;
     is >> dist_spec;
-    std::transform(dist_spec.begin(), dist_spec.end(), dist_spec.begin(), ::tolower);
+    std::transform(dist_spec.begin(), dist_spec.end(), dist_spec.begin(),
+                   ::tolower);
 
     if (dist_spec == "lower")
         dist = hepstats::likedist::lower;
     else if (dist_spec == "upper")
         dist = hepstats::likedist::upper;
-    else if (dist_spec == "poisson")
-        dist = hepstats::likedist::poisson;
+//    else if (dist_spec == "poisson")
+//        dist = hepstats::likedist::poisson;
     else if (dist_spec == "upper_gaussian")
         dist = hepstats::likedist::upper_gaussian;
     else if (dist_spec == "upper_interpolated")
@@ -126,7 +131,7 @@ std::istream& operator>>(std::istream &is, hepstats::likedist &dist) {
     return is;
 }
 
-std::istream& operator>>(std::istream &is, model_lookup::model_map &mm){
+std::istream &operator>>(std::istream &is, model_lookup::model_map &mm) {
     std::string mm_spec;
     is >> mm_spec;
     std::transform(mm_spec.begin(), mm_spec.end(), mm_spec.begin(), ::tolower);
