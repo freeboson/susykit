@@ -60,10 +60,6 @@ namespace hepstats {
 
         double virtual calculate_pull(const double &theoretical_value,
                                       const double &tau, bool *unlikely) const;
-
-        double get_95cl_loglike(double delta, double tau, bool *unlikely) const;
-
-        double z_fn(double arg) const;
     };
 }
 
