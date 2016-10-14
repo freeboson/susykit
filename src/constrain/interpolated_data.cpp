@@ -27,7 +27,7 @@
 */
 
 
-#include "constrain/interpolated_data.hpp"
+#include "interpolated_data.hpp"
 
 #include <fstream>
 #include <stdexcept>
@@ -61,10 +61,13 @@ void hepstats::interpolated_data::load_data(const std::string &data_filename) {
     if (f.fail()) {
         throw std::invalid_argument("Could not read from " + data_filename);
     }
+    load_data(&f);
+}
 
+void hepstats::interpolated_data::load_data(std::istream *is) {
     table.reserve(table_start_size);
     double x, y;
-    while (f >> x >> y) {
+    while ((*is) >> x >> y) {
         table.push_back(std::make_pair(x, y));
         if (table.size() >= table.capacity())
             table.reserve(table.capacity()+table_start_size);
