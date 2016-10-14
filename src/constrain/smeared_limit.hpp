@@ -37,12 +37,13 @@ namespace hepstats {
     class smeared_limit : public likedatum {
     public:
         enum limit_type { upper, lower };
-        smeared_limit(limit_type lt) : {}
+        smeared_limit(model_lookup, double theory_error,
+                      bool theory_percent_error, limit_type);
 
     private:
+        using delta_ptr = double (*)(double,double);
         double get_95cl_loglike(double delta, double tau, bool *unlikely) const;
-
-
+        delta_ptr get_delta;
     };
 }
 

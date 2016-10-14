@@ -27,15 +27,35 @@
 */
 
 #include <cmath>
+#include <stdexcept>
 #include "smeared_limit.hpp"
 
 double z_fn(double arg) {
     return std::erfc(arg / sqrt(2.0)) / 2.0;
 }
 
-double hepstats::smeared_limit::get_95cl_loglike(double delta,
+double get_delta_upper(double limit, double pred) {
+    return std::abs(pred) - limit;
+}
+
+double get_delta_lower(double limit, double pred) {
+    return limit - std::abs(pred);
+}
+
+hepstats::smeared_limit::smeared_limit(model_lookup ml, double theory_error,
+                                       bool theory_percent_error, limit_type lt)
+        : likedatum(ml, theory_error, theory_percent_error) {
+    if (upper == limit_type) {
+        get_delta = &get_delta_upper;
+    } else if (lower == limit_type) {
+        get_delta = &get_delta_lower;
+    } else {
+        throw (std::logic_error("Unknown limit_type!"));
+    }
+}
+
+double hepstats::smeared_limit::get_95cl_loglike(double exp_val,
                                                  double exp_uncertainty,
-                                                 double tau,
                                                  bool *unlikely) const {
     // this is based on SmearedBound() in SuperBayes, source/calclike.f90
     // which in turn is based on hep-ph/0602028, with a minor fix
@@ -43,8 +63,8 @@ double hepstats::smeared_limit::get_95cl_loglike(double delta,
     double error = std::hypot(sigma, tau);
     double tlim = (sigma / tau) * delta / error;
 
-    double expterm = std::exp(-std::pow(delta,2.0) /
-                                      (2.0*std::pow(error,2.0)));
+    double expterm = std::exp(-std::pow(delta, 2.0) /
+                              (2.0 * std::pow(error, 2.0)));
 
     double zterm2 = z_fn(delta / tau);
 
