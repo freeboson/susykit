@@ -27,7 +27,7 @@
 */
 
 
-#include "constrain/upper_gaussian_datum.hpp"
+#include "upper_gaussian_datum.hpp"
 
 double hepstats::upper_gaussian_datum::calculate_pull(const double
                                                  &theoretical_value,
