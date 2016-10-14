@@ -31,15 +31,18 @@
 #ifndef SUSYKIT_SMEARED_LIMIT_HPP
 #define SUSYKIT_SMEARED_LIMIT_HPP
 
+#include "constrain/hepstats.hpp"
 
 namespace hepstats {
-    class smeared_limit {
+    class smeared_limit : public likedatum {
     public:
-        smeared_limit(bool _lower) : lower(_lower) {}
+        enum limit_type { upper, lower };
+        smeared_limit(limit_type lt) : {}
 
     private:
         double get_95cl_loglike(double delta, double tau, bool *unlikely) const;
-        const bool lower;
+
+
     };
 }
 
