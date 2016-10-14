@@ -37,9 +37,10 @@
 namespace hepstats {
     class upper_gaussian_datum : public simple_datum {
     public:
-        gaussian_datum(const model_lookup &lookup, double theory_uncertainty,
-                       bool theory_percent_error, double exp_value,
-                       double exp_uncertainty)
+        upper_gaussian_datum(
+                const model_lookup &lookup, double theory_uncertainty,
+                bool theory_percent_error, double exp_value,
+                double exp_uncertainty)
                 : simple_datum(lookup,
                                theory_uncertainty,
                                theory_percent_error,

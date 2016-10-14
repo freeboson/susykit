@@ -29,10 +29,9 @@
 
 #include "upper_gaussian_datum.hpp"
 
-double hepstats::upper_gaussian_datum::calculate_pull(const double
-                                                 &theoretical_value,
-                                                const double &tau,
-                                                bool *unlikely) const {
+double hepstats::upper_gaussian_datum::calculate_pull(
+        const double &theoretical_value, const double &tau,
+        bool *unlikely) const {
     *unlikely = false;
     if (theoretical_value <= exp_value)
         return 0.0;
