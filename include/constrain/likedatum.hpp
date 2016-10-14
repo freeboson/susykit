@@ -40,26 +40,25 @@ namespace hepstats {
     public:
         likedatum(
                 model_lookup _lookup,
-                double _theory_uncertainty,
-                bool _theory_percent_error = false
-        )
-
+                double _theory_uncertainty, bool _theory_percent_error)
                 : lookup(_lookup),
                   theory_uncertainty(_theory_uncertainty),
                   theory_percent_error(_theory_percent_error) {
             // all done!
         }
 
+        // NOTE: per sampler convention, this gives -ln(like) = chi^2/2
         double operator()(const model &m,
-                          bool *unlikely = nullptr) const; // note that this gives -ln(like) = chi^2/2!!!!
+                          bool *unlikely = nullptr) const;
 
     private:
         model_lookup lookup;
         double theory_uncertainty;
         bool theory_percent_error;
 
-        double virtual calculate_pull(const double &theoretical_value,
-                                      const double &tau, bool *unlikely) const;
+        virtual
+        double calculate_pull(const double &theoretical_value,
+                              const double &tau, bool *unlikely) const = 0;
     };
 }
 
