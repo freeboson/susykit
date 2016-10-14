@@ -41,11 +41,8 @@ namespace hepstats {
                 const model_lookup &lookup, double theory_uncertainty,
                 bool theory_percent_error, double exp_value,
                 double exp_uncertainty)
-                : simple_datum(lookup,
-                               theory_uncertainty,
-                               theory_percent_error,
-                               exp_value,
-                               exp_uncertainty) {}
+                : simple_datum(lookup, theory_uncertainty, theory_percent_error,
+                               exp_value, exp_uncertainty) {}
 
     private:
         double calculate_pull(const double &theoretical_value,
