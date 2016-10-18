@@ -5,7 +5,8 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - gaussian_datum.hpp:                                                      -
+    - gaussian.hpp:                                                            -
+    -                                                                          -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -28,28 +29,23 @@
 
 
 #pragma once
-#ifndef SUSYKIT_GAUSSIAN_DATUM_HPP
-#define SUSYKIT_GAUSSIAN_DATUM_HPP
+#ifndef SUSYKIT_GAUSSIAN_HPP
+#define SUSYKIT_GAUSSIAN_HPP
 
-#include "simple_datum.hpp"
+#include "distribution.hpp"
 
 namespace hepstats {
-    class gaussian_datum : public simple_datum {
+    class gaussian : public distribution {
     public:
-        gaussian_datum(const model_lookup &lookup, double theory_uncertainty,
-                       bool theory_percent_error, double exp_value,
-                       double exp_uncertainty)
-                : simple_datum(lookup,
-                               theory_uncertainty,
-                               theory_percent_error,
-                               exp_value,
-                               exp_uncertainty) {}
+        gaussian(double theory_error, bool theory_percent_error)
+                : distribution(theory_error, theory_percent_error) {}
 
-    private:
-        double calculate_pull(const double &theoretical_value,
-                              const double &tau, bool *unlikely) const;
+        double calculate_pull(const double &pred,
+                              const double &limit,
+                              const double &limit_error,
+                              bool *unlikely) const override;
     };
 }
 
-#endif //SUSYKIT_GAUSSIAN_DATUM_HPP
+#endif //SUSYKIT_GAUSSIAN_HPP
 

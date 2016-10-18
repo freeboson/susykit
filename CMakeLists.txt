@@ -214,9 +214,9 @@ set(SOURCES_LCONS
   src/constrain/model.cpp src/constrain/model_lookup.cpp
   src/constrain/special_lookups.cpp src/constrain/get_slha.cpp
   src/constrain/likeconfig.cpp src/constrain/likedatum.cpp
-  src/constrain/loglike.cpp src/constrain/gaussian_datum.cpp
+  src/constrain/loglike.cpp src/constrain/gaussian.cpp
   src/constrain/simple_datum.cpp src/constrain/interpolated_data.cpp
-  src/constrain/upper_gaussian_datum.cpp src/constrain/smeared_limit.cpp
+        src/constrain/upper_gaussian.cpp src/constrain/smeared_limit.cpp
   src/constrain/experimental_data.cpp src/constrain/distribution.cpp
 )
 

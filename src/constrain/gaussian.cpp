@@ -27,14 +27,16 @@
 */
 
 
-#include "gaussian_datum.hpp"
+#include <cmath>
+#include "gaussian.hpp"
 
-
-double hepstats::gaussian_datum::calculate_pull(const double &theoretical_value,
-                                                const double &tau,
-                                                bool *unlikely) const {
+double
+hepstats::gaussian::calculate_pull(const double &pred, const double &limit,
+                                   const double &limit_error,
+                                   bool *unlikely) const override {
     *unlikely = false;
-    return -std::pow(theoretical_value - exp_value, 2.0) /
-           (std::pow(tau, 2.0) + std::pow(exp_uncertainty, 2.0)) / 2.0;
+    double tau = theory_percent_error ? pred*theory_error : theory_error;
+    return -std::pow(pred - limit, 2.0) /
+           (std::pow(tau, 2.0) + std::pow(limit_error, 2.0)) / 2.0;
 }
 

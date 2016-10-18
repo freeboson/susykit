@@ -32,9 +32,21 @@
 #define SUSYKIT_DISTRIBUTION_HPP
 
 
-class distribution {
+namespace hepstats {
+    class distribution {
+    public:
+        distribution(double _theory_error, bool _theory_percent_error)
+                : theory_error(_theory_error),
+                  theory_percent_error(_theory_percent_error) {}
 
-};
+        virtual double calculate_pull(double pred, double limit,
+                                      double limit_error,
+                                      bool *unlikely) const = 0;
+
+        const double theory_error;
+        const bool theory_percent_error;
+    };
+}
 
 
 #endif //SUSYKIT_DISTRIBUTION_HPP

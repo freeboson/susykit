@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - upper_gaussian_datum.hpp:                                                -
+    - upper_gaussian.cpp:                                                      -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -27,29 +27,18 @@
 */
 
 
-#pragma once
-#ifndef SUSYKIT_UPPER_GAUSSIAN_DATUM_HPP
-#define SUSYKIT_UPPER_GAUSSIAN_DATUM_HPP
+#include "upper_gaussian.hpp"
 
-
-#include "simple_datum.hpp"
-
-namespace hepstats {
-    class upper_gaussian_datum : public simple_datum {
-    public:
-        upper_gaussian_datum(
-                const model_lookup &lookup, double theory_uncertainty,
-                bool theory_percent_error, double exp_value,
-                double exp_uncertainty)
-                : simple_datum(lookup, theory_uncertainty, theory_percent_error,
-                               exp_value, exp_uncertainty) {}
-
-    private:
-        double calculate_pull(const double &theoretical_value,
-                              const double &tau, bool *unlikely) const;
-    };
+double
+hepstats::upper_gaussian::calculate_pull(const double &pred,
+                                         const double &limit,
+                                         const double &limit_error,
+                                         bool *unlikely) const override {
+    if (pred > limit) {
+        return gaussian::calculate_pull(pred, limit, limit_error, unlikely);
+    } else {
+        *unlikely = false;
+        return 0.0;
+    }
 }
-
-
-#endif //SUSYKIT_UPPER_GAUSSIAN_DATUM_HPP
 
