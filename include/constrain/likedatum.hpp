@@ -53,12 +53,12 @@ namespace hepstats {
 
     private:
         model_lookup lookup;
+        std::shared_pointer<experimental_data> exp;
+        std::shared_pointer<distribution> dist;
+
         double theory_uncertainty;
         bool theory_percent_error;
 
-        virtual
-        double calculate_pull(const double &theoretical_value,
-                              const double &tau, bool *unlikely) const = 0;
     };
 }
 
