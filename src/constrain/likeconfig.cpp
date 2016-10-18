@@ -31,8 +31,8 @@
 #include <memory>
 #include <algorithm>
 #include <sstream>
-#include "gaussian_datum.hpp"
-#include "upper_gaussian_datum.hpp"
+#include "gaussian.hpp"
+#include "upper_gaussian.hpp"
 
 const std::string hepstats::likeconfig::comment_chars = "#";
 
@@ -73,7 +73,7 @@ void hepstats::likeconfig::process_stream() {
             case likedist::gaussian:
                 if (!(parse >> exp_val) || !(parse >> exp_err))
                     continue;
-                llhood.add_like_term(std::make_unique<gaussian_datum>
+                llhood.add_like_term(std::make_unique<gaussian>
                                              (model_lookup(lookup_type,
                                                            lookup_code),
                                               theory_err, theory_percent_err,
