@@ -216,8 +216,8 @@ set(SOURCES_LCONS
   src/constrain/likeconfig.cpp src/constrain/likedatum.cpp
   src/constrain/loglike.cpp src/constrain/gaussian_datum.cpp
   src/constrain/simple_datum.cpp src/constrain/interpolated_data.cpp
-  src/constrain/upper_gaussian_datum.cpp
-  src/constrain/smeared_limit.cpp
+  src/constrain/upper_gaussian_datum.cpp src/constrain/smeared_limit.cpp
+  src/constrain/experimental_data.cpp src/constrain/experimental_data.hpp
 )
 
 set(SOURCES_LSKIT
