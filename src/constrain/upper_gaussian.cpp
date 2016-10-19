@@ -29,13 +29,11 @@
 
 #include "upper_gaussian.hpp"
 
-double
-hepstats::upper_gaussian::calculate_pull(const double &pred,
-                                         const double &limit,
-                                         const double &limit_error,
-                                         bool *unlikely) const override {
+double hepstats::upper_gaussian::calculate_pull(double pred, double limit,
+                                                double tau, double sigma,
+                                                bool *unlikely) const override {
     if (pred > limit) {
-        return gaussian::calculate_pull(pred, limit, limit_error, unlikely);
+        return gaussian::calculate_pull(pred, limit, tau, sigma, unlikely);
     } else {
         *unlikely = false;
         return 0.0;

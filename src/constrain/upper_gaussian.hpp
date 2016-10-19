@@ -37,12 +37,12 @@
 namespace hepstats {
     class upper_gaussian : public gaussian {
     public:
-        upper_gaussian(double theory_error, bool theory_percent_error)
-                : distribution(theory_error, theory_percent_error) {}
+        upper_gaussian(model_lookup lookup,
+                       double pred_error, bool pred_percent_error)
+                : gaussian(lookup, pred_error, pred_percent_error) {}
 
-        double calculate_pull(const double &pred,
-                              const double &limit,
-                              const double &limit_error,
+        double calculate_pull(double pred, double limit,
+                              double tau, double sigma,
                               bool *unlikely) const override;
     };
 }
