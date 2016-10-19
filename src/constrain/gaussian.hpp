@@ -40,9 +40,9 @@ namespace hepstats {
                  double pred_error, bool pred_percent_error)
                 : likedatum(lookup, pred_error, pred_percent_error) {}
 
-        double calculate_pull(double pred, double limit,
-                              double tau, double sigma,
-                              bool *unlikely) const override;
+        virtual double calculate_pull(double pred, double limit,
+                                      double tau, double sigma,
+                                      bool *unlikely) const override;
     };
 }
 
