@@ -54,8 +54,8 @@ hepstats::smeared_limit::smeared_limit(model_lookup ml, double theory_error,
     }
 }
 
-double hepstats::smeared_limit::get_95cl_loglike(double exp_val,
-                                                 double exp_uncertainty,
+double hepstats::smeared_limit::get_95cl_loglike(double limit,
+                                                 double sigma,
                                                  bool *unlikely) const {
     // this is based on SmearedBound() in SuperBayes, source/calclike.f90
     // which in turn is based on hep-ph/0602028, with a minor fix
@@ -63,26 +63,22 @@ double hepstats::smeared_limit::get_95cl_loglike(double exp_val,
     double error = std::hypot(sigma, tau);
     double tlim = (sigma / tau) * delta / error;
 
-    double expterm = std::exp(-std::pow(delta, 2.0) /
-                              (2.0 * std::pow(error, 2.0)));
+    double error = hypot(sigma,tau);
 
-    double zterm2 = z_fn(delta / tau);
+    double expterm = exp(-0.5 * pow(-delta/error,2.0));
+    double zterm2 = erfc((delta/tau) / sqrt(2.0)) / 2.0;
 
-    double loglikeval = 0.0;
+    cout << "  dbg:  zfunc2 = " << zterm2 << nl
+         << "  dbg: z_tstar = " << (1+erf((sigma/tau)*delta/error/sqrt(2.0)))/2.0 <<endl;
 
     if (expterm > 0.0) {
-        loglikeval = std::log(
-                sigma / delta * expterm * (1 - z_fn(tlim)) + zterm2);
+        return -log(sigma/error * expterm * (1+erf((sigma/tau)*delta/error/sqrt(2.0)))/2.0 + zterm2);
     } else {
-        if (zterm2 < 0.5) {
-//			std::cerr << "unlikely!" << std::endl;
-            *unlikely = true;
-            loglikeval = logZero;
-        } else {
-            loglikeval = 0.0;
-        }
+        if (zterm2 < 0.5)
+            return -1e25;
+        else
+            return 0.0;
     }
-    return loglikeval;
 }
 
 
