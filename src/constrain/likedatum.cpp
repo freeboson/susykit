@@ -30,18 +30,17 @@
 #include "constrain/hepstats.hpp"
 
 double hepstats::likedatum::operator()(const model &m, bool *unlikely) const {
-    double theoretical_value = lookup(m);
+    double pred = lookup(m);
 
     if (lookup.get_mode() == model_lookup::output
         && lookup.get_code() == susy_dict::observable::btaunu) { // special case
-        theoretical_value *= br_btaunu_sm; // the btaunu value is SUSY/SM ratio
+        pred *= br_btaunu_sm; // the btaunu value is SUSY/SM ratio
     }
 
-    double tau = (theory_percent_error)
-                 ? theoretical_value * theory_uncertainty
-                 : theory_uncertainty;
+    double tau = (pred_percent_error) ? pred * pred_error : pred_error;
 
-    return calculate_pull(theoretical_value, tau, unlikely);
+    return calculate_pull(pred, exp->get_limit(),
+                          tau, exp->get_limit_error(), unlikely);
 }
 
 

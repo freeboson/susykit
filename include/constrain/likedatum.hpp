@@ -40,10 +40,10 @@ namespace hepstats {
     public:
         likedatum(
                 model_lookup _lookup,
-                double _theory_uncertainty, bool _theory_percent_error)
+                double _pred_error, bool _pred_percent_error)
                 : lookup(_lookup),
-                  theory_uncertainty(_theory_uncertainty),
-                  theory_percent_error(_theory_percent_error) {
+                  pred_error(_pred_error),
+                  pred_percent_error(_pred_percent_error) {
             // all done!
         }
 
@@ -51,13 +51,16 @@ namespace hepstats {
         double operator()(const model &m,
                           bool *unlikely = nullptr) const;
 
+        virtual double calculate_pull(double pred, double limit,
+                                      double tau, double sigma,
+                                      bool *unlikely) const = 0;
+
     private:
         model_lookup lookup;
         std::shared_pointer<experimental_data> exp;
-        std::shared_pointer<distribution> dist;
 
-        double theory_uncertainty;
-        bool theory_percent_error;
+        double pred_error;
+        bool pred_percent_error;
 
     };
 }
