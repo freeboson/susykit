@@ -40,7 +40,7 @@ namespace hepstats {
                       double pred_error, bool pred_percent_error)
                 : likedatum(lookup, pred_error, pred_percent_error) {}
 
-        virtual double get_delta() const = 0;
+        virtual double get_delta(double pred, double limit) const = 0;
 
         double calculate_pull(double pred, double limit,
                               double tau, double sigma,

@@ -218,7 +218,7 @@ set(SOURCES_LCONS
   src/constrain/simple_datum.cpp src/constrain/interpolated_data.cpp
   src/constrain/upper_gaussian.cpp src/constrain/smeared_limit.cpp
   src/constrain/experimental_data.cpp
-)
+        src/constrain/smeared_upper_limit.cpp src/constrain/smeared_upper_limit.hpp src/constrain/smeared_lower_limit.cpp src/constrain/smeared_lower_limit.hpp)
 
 set(SOURCES_LSKIT
   src/susykit/superiso_interface.cpp src/susykit/softsusy_interface.cpp
