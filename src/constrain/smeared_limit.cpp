@@ -52,9 +52,9 @@ double hepstats::smeared_limit::calculate_pull(double pred, double limit,
         return -log((sigma/error)*expterm*zterm1 + zterm2);
     } else {
         if (zterm2 < 0.5)
-            return -1e25; // zterm2 == 0
+            return logZero; // zterm2 == 0
         else
-            return 0.0;   // zterm2 == 1
+            return 0.0;     // zterm2 == 1
     }
 }
 
