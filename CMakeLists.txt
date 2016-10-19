@@ -217,7 +217,7 @@ set(SOURCES_LCONS
   src/constrain/loglike.cpp src/constrain/gaussian.cpp
   src/constrain/simple_datum.cpp src/constrain/interpolated_data.cpp
   src/constrain/upper_gaussian.cpp src/constrain/smeared_limit.cpp
-  src/constrain/experimental_data.cpp src/constrain/distribution.cpp
+  src/constrain/experimental_data.cpp
 )
 
 set(SOURCES_LSKIT
