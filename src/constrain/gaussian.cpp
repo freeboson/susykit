@@ -30,13 +30,11 @@
 #include <cmath>
 #include "gaussian.hpp"
 
-double
-hepstats::gaussian::calculate_pull(const double &pred, const double &limit,
-                                   const double &limit_error,
-                                   bool *unlikely) const override {
+double hepstats::gaussian::calculate_pull(double pred, double limit,
+                                          double tau, double sigma,
+                                          bool *unlikely) const override {
     *unlikely = false;
-    double tau = theory_percent_error ? pred*theory_error : theory_error;
     return -std::pow(pred - limit, 2.0) /
-           (std::pow(tau, 2.0) + std::pow(limit_error, 2.0)) / 2.0;
+           (std::pow(tau, 2.0) + std::pow(sigma, 2.0)) / 2.0;
 }
 

@@ -7,7 +7,6 @@
     -                                                                          -
     - gaussian.hpp:                                                            -
     -                                                                          -
-    -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
     - SusyKit is free software: you can redistribute it and/or modify it under -
@@ -32,17 +31,17 @@
 #ifndef SUSYKIT_GAUSSIAN_HPP
 #define SUSYKIT_GAUSSIAN_HPP
 
-#include "distribution.hpp"
+#include "constrain/likedatum.hpp"
 
 namespace hepstats {
-    class gaussian : public distribution {
+    class gaussian : public likedatum {
     public:
-        gaussian(double theory_error, bool theory_percent_error)
-                : distribution(theory_error, theory_percent_error) {}
+        gaussian(model_lookup lookup,
+                 double pred_error, bool pred_percent_error)
+                : likedatum(lookup, pred_error, pred_percent_error) {}
 
-        double calculate_pull(const double &pred,
-                              const double &limit,
-                              const double &limit_error,
+        double calculate_pull(double pred, double limit,
+                              double tau, double sigma,
                               bool *unlikely) const override;
     };
 }
