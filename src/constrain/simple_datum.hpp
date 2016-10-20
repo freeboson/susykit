@@ -31,22 +31,21 @@
 #ifndef SUSYKIT_SIMPLE_DATUM_HPP
 #define SUSYKIT_SIMPLE_DATUM_HPP
 
-#include "constrain/likedatum.hpp"
+#include "experimental_data.hpp"
 
 namespace hepstats {
-    class simple_datum : public likedatum {
+    class simple_datum : public experimental_data {
     public:
-        simple_datum(const model_lookup &lookup, double theory_uncertainty,
-                     bool theory_percent_error, double exp_value,
-                     double exp_uncertainty)
-                : likedatum(lookup,
-                            theory_uncertainty,
-                            theory_percent_error),
-                  exp_value(exp_value), exp_uncertainty(exp_uncertainty) {}
+        simple_datum(double _limit, double _limit_error)
+                : limit(_limit), limit_error(_limit_error) {}
+
+        inline double get_limit(const model &) override { return limit; }
+        inline double get_limit_error(const model &) override {
+            return limit_error;
+        }
 
     private:
-
-        const double exp_value, exp_uncertainty;
+        const double limit, limit_error;
     };
 }
 
