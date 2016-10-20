@@ -31,12 +31,13 @@
 #ifndef SUSYKIT_EXPERIMENTAL_DATA_HPP
 #define SUSYKIT_EXPERIMENTAL_DATA_HPP
 
+#include "constrain/model.hpp"
+
 namespace hepstats {
     class experimental_data {
     public:
-        experimental_data() = delete;
-        virtual double get_limit(double) const = 0;
-        virtual double get_error(double) const = 0;
+        virtual double get_limit(const model &) const = 0;
+        virtual double get_error(const model &) const = 0;
     };
 }
 

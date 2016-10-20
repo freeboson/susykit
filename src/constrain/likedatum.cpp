@@ -39,8 +39,8 @@ double hepstats::likedatum::operator()(const model &m, bool *unlikely) const {
 
     double tau = (pred_percent_error) ? pred * pred_error : pred_error;
 
-    return calculate_pull(pred, exp->get_limit(),
-                          tau, exp->get_limit_error(), unlikely);
+    return calculate_pull(pred, exp->get_limit(m),
+                          tau, exp->get_limit_error(m), unlikely);
 }
 
 
