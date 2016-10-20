@@ -42,14 +42,18 @@ bool first_coord_eq(const auto &lhs, const auto &rhs) {
     return std::get<0>(lhs) == std::get<0>(rhs);
 }
 
-hepstats::interpolated_data::interpolated_data(std::istream *is) {
+hepstats::interpolated_data::interpolated_data(model_lookup _lookup_axis,
+                                               double _limit_error,
+                                               std::istream *is)
+        : lookup_axis(_lookup_axis), limit_error(_limit_error) {
     if (is->fail()) {
         throw std::invalid_argument("Could not read from istream object");
     }
     load_data(is);
 }
 
-double hepstats::interpolated_data::get_limit_at(const double &x) const {
+double hepstats::interpolated_data::get_limit(const model &m) const override {
+    double x = lookup_axis(m);
     if (x <= std::get<0>(table.front()))
         return std::get<1>(table.front());
     if (x >= std::get<0>(table.back()))
@@ -60,7 +64,7 @@ double hepstats::interpolated_data::get_limit_at(const double &x) const {
     double dx = upper->first - lower->first;
     double dy = upper->second - lower->second;
     if (dx == 0.0) return lower->first;
-    return (dy/dx)*(x - lower->first) + lower->first;
+    return (dy / dx) * (x - lower->first) + lower->first;
 }
 
 void hepstats::interpolated_data::load_data(const std::string &data_filename) {
@@ -77,7 +81,7 @@ void hepstats::interpolated_data::load_data(std::istream *is) {
     while ((*is) >> x >> y) {
         table.push_back(std::make_pair(x, y));
         if (table.size() >= table.capacity())
-            table.reserve(table.capacity()+table_start_size);
+            table.reserve(table.capacity() + table_start_size);
     }
     table.shrink_to_fit();
     std::sort(std::begin(table), std::end(table), first_coord_lt);
