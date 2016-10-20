@@ -39,8 +39,8 @@ namespace hepstats {
         simple_datum(double _limit, double _limit_error)
                 : limit(_limit), limit_error(_limit_error) {}
 
-        inline double get_limit(const model &) override { return limit; }
-        inline double get_limit_error(const model &) override {
+        inline double get_limit(const model &) const override { return limit; }
+        inline double get_limit_error(const model &) const override {
             return limit_error;
         }
 
