@@ -31,8 +31,13 @@
 #include <memory>
 #include <algorithm>
 #include <sstream>
+
 #include "gaussian.hpp"
 #include "upper_gaussian.hpp"
+#include "smeared_lower_limit.hpp"
+#include "smeared_upper_limit.hpp"
+#include "simple_datum.hpp"
+#include "interpolated_data.hpp"
 
 const std::string hepstats::likeconfig::comment_chars = "#";
 
@@ -83,7 +88,17 @@ void hepstats::likeconfig::process_stream() {
             case likedist::upper_gaussian:
                 if (!(parse >> exp_val) || !(parse >> exp_err))
                     continue;
-                llhood.add_like_term(std::make_unique<upper_gaussian_datum>
+                llhood.add_like_term(std::make_unique<upper_gaussian>
+                                             (model_lookup(lookup_type,
+                                                           lookup_code),
+                                              theory_err, theory_percent_err,
+                                              exp_val, exp_err));
+                break;
+
+            case likedist::lower:
+                if (!(parse >> exp_val) || !(parse >> exp_err))
+                    continue;
+                llhood.add_like_term(std::make_unique<smeared_lower_limit>
                                              (model_lookup(lookup_type,
                                                            lookup_code),
                                               theory_err, theory_percent_err,
@@ -111,22 +126,21 @@ std::istream &operator>>(std::istream &is, hepstats::likedist &dist) {
     std::transform(dist_spec.begin(), dist_spec.end(), dist_spec.begin(),
                    ::tolower);
 
-    if (dist_spec == "lower")
-        dist = hepstats::likedist::lower;
-    else if (dist_spec == "upper")
-        dist = hepstats::likedist::upper;
-//    else if (dist_spec == "poisson")
-//        dist = hepstats::likedist::poisson;
-    else if (dist_spec == "upper_gaussian")
-        dist = hepstats::likedist::upper_gaussian;
-    else if (dist_spec == "upper_interpolated")
-        dist = hepstats::likedist::upper_interpolated;
-    else if (dist_spec == "lower_interpolated")
-        dist = hepstats::likedist::lower_interpolated;
-    else if (dist_spec == "gaussian")
+    if (dist_spec == "gaussian") {
         dist = hepstats::likedist::gaussian;
-    else
+    } else if (dist_spec == "upper_gaussian") {
+        dist = hepstats::likedist::upper_gaussian;
+    } else if (dist_spec == "lower") {
+        dist = hepstats::likedist::lower;
+    } else if (dist_spec == "upper") {
+        dist = hepstats::likedist::upper;
+    } else if (dist_spec == "lower_interpolated") {
+            dist = hepstats::likedist::lower_interpolated;
+    } else if (dist_spec == "upper_interpolated") {
+        dist = hepstats::likedist::upper_interpolated;
+    } else {
         is.setstate(std::ios::failbit);
+    }
 
     return is;
 }
