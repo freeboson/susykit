@@ -37,7 +37,7 @@ namespace hepstats {
     class experimental_data {
     public:
         virtual double get_limit(const model &) const = 0;
-        virtual double get_error(const model &) const = 0;
+        virtual double get_limit_error(const model &) const = 0;
     };
 }
 

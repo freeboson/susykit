@@ -36,15 +36,17 @@
 #include <utility>
 #include <istream>
 #include "constrain/likedatum.hpp"
+#include "experimental_data.hpp"
 
 namespace hepstats {
-    class interpolated_data {
+    class interpolated_data : public experimental_data {
     public:
         interpolated_data(const std::string &data_filename) {
             load_data(data_filename);
         }
 
-        double get_limit_at(const double &x) const;
+        double get_limit(const model &m) const;
+        double get_limit_error(const model &m) const;
 
     private:
         void load_data(const std::string &data_filename);
