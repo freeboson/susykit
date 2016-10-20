@@ -34,6 +34,7 @@
 #include <cmath>
 #include "model.hpp"
 #include "model_lookup.hpp"
+#include "experimental_data.hpp"
 
 namespace hepstats {
     class likedatum {

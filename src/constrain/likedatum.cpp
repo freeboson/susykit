@@ -27,7 +27,7 @@
 */
 
 
-#include "constrain/hepstats.hpp"
+#include "constrain/likedatum.hpp"
 
 double hepstats::likedatum::operator()(const model &m, bool *unlikely) const {
     double pred = lookup(m);
