@@ -27,10 +27,10 @@
 */
 
 
+#include <stdexcept>
 #include "constrain/model_lookup.hpp"
 #include "constrain/dict.hpp"
 #include "constrain/special_lookups.hpp"
-
 #include "parseutils.hpp"
 
 // this will call the member function of the class of which "instance" is 
@@ -53,11 +53,15 @@ model_lookup::model_lookup(model_map _mode, const string &_code)
             break;
 
         case special:
+            action = nullptr;
             if (code == "NLSP") {
                 cerr <<
                 "NLSP codes: MC1 = 0; MSl1 = 1; Mst1 = 2; MHH or MH3 = 3; MNE2 = 4; MSG = 5; MSeR = 6; else 9" << endl;
             }
             break;
+
+        default:
+            throw domain_error("Unimplemented lookup mode!");
     }
 }
 
