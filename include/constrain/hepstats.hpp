@@ -41,11 +41,11 @@ namespace hepstats {
     enum class likedist {
         gaussian,
 //        poisson,
-        upper,
-        lower,
         upper_gaussian,
-        upper_interpolated,
+        lower,
+        upper,
         lower_interpolated
+        upper_interpolated,
     };
 
     constexpr double logZero = -1e90; // embarrassing
