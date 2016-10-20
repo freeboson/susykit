@@ -45,6 +45,8 @@ namespace hepstats {
             load_data(data_filename);
         }
 
+        interpolated_data(std::istream *is);
+
         double get_limit(const model &m) const;
         double get_limit_error(const model &m) const;
 

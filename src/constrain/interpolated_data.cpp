@@ -42,6 +42,13 @@ bool first_coord_eq(const auto &lhs, const auto &rhs) {
     return std::get<0>(lhs) == std::get<0>(rhs);
 }
 
+hepstats::interpolated_data::interpolated_data(std::istream *is) {
+    if (is->fail()) {
+        throw std::invalid_argument("Could not read from istream object");
+    }
+    load_data(is);
+}
+
 double hepstats::interpolated_data::get_limit_at(const double &x) const {
     if (x <= std::get<0>(table.front()))
         return std::get<1>(table.front());
