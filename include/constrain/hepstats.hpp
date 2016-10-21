@@ -44,8 +44,8 @@ namespace hepstats {
         upper_gaussian,
         lower,
         upper,
-        lower_interpolated
-        upper_interpolated,
+        lower_interpolated,
+        upper_interpolated
     };
 
     constexpr double logZero = -1e90; // embarrassing
