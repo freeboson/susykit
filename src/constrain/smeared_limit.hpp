@@ -32,7 +32,7 @@
 #define SUSYKIT_SMEARED_LIMIT_HPP
 
 #include "constrain/hepstats.hpp"
-#include "experimental_data.hpp"
+#include "constrain/experimental_data.hpp"
 
 namespace hepstats {
     class smeared_limit : public likedatum {

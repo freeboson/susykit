@@ -31,7 +31,7 @@
 #ifndef SUSYKIT_SIMPLE_DATUM_HPP
 #define SUSYKIT_SIMPLE_DATUM_HPP
 
-#include "experimental_data.hpp"
+#include "constrain/experimental_data.hpp"
 
 namespace hepstats {
     class simple_datum : public experimental_data {

@@ -36,7 +36,7 @@
 #include <utility>
 #include <istream>
 #include "constrain/likedatum.hpp"
-#include "experimental_data.hpp"
+#include "constrain/experimental_data.hpp"
 
 namespace hepstats {
     class interpolated_data : public experimental_data {
