@@ -32,13 +32,16 @@
 #define SUSYKIT_GAUSSIAN_HPP
 
 #include "constrain/likedatum.hpp"
+#include "experimental_data.hpp"
 
 namespace hepstats {
     class gaussian : public likedatum {
     public:
         gaussian(model_lookup lookup,
-                 double pred_error, bool pred_percent_error)
-                : likedatum(lookup, pred_error, pred_percent_error) {}
+                 double pred_error, bool pred_percent_error,
+                 std::unique_ptr<experimental_data> data)
+                : likedatum(lookup, pred_error, pred_percent_error,
+                            std::move(data)) {}
 
         virtual double calculate_pull(double pred, double limit,
                                       double tau, double sigma,

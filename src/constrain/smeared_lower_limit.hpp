@@ -38,8 +38,10 @@ namespace hepstats {
     class smeared_lower_limit : public smeared_limit {
     public:
         smeared_lower_limit(model_lookup lookup,
-        double pred_error, bool pred_percent_error)
-        : smeared_limit(lookup, pred_error, pred_percent_error) {}
+                            double pred_error, bool pred_percent_error,
+                            std::unique_ptr<experimental_data> data)
+                : smeared_limit(lookup, pred_error, pred_percent_error,
+                                move(data)) {}
 
         inline double get_delta(double pred, double limit) final {
             return limit - pred;

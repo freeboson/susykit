@@ -38,8 +38,10 @@ namespace hepstats {
     class upper_gaussian : public gaussian {
     public:
         upper_gaussian(model_lookup lookup,
-                       double pred_error, bool pred_percent_error)
-                : gaussian(lookup, pred_error, pred_percent_error) {}
+                       double pred_error, bool pred_percent_error,
+                       std::unique_ptr<experimental_data> data)
+                : gaussian(lookup, pred_error, pred_percent_error,
+                           std::move(data)) {}
 
         double calculate_pull(double pred, double limit,
                               double tau, double sigma,

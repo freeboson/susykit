@@ -32,13 +32,16 @@
 #define SUSYKIT_SMEARED_LIMIT_HPP
 
 #include "constrain/hepstats.hpp"
+#include "experimental_data.hpp"
 
 namespace hepstats {
     class smeared_limit : public likedatum {
     public:
         smeared_limit(model_lookup lookup,
-                      double pred_error, bool pred_percent_error)
-                : likedatum(lookup, pred_error, pred_percent_error) {}
+                      double pred_error, bool pred_percent_error,
+                      std::unique_ptr<experimental_data> data)
+                : likedatum(lookup, pred_error, pred_percent_error,
+                            std::move(data)) {}
 
         virtual double get_delta(double pred, double limit) const = 0;
 
