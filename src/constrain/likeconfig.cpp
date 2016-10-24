@@ -27,10 +27,10 @@
 */
 
 
-#include "constrain/hepstats.hpp"
 #include <memory>
 #include <algorithm>
 #include <sstream>
+#include "constrain/hepstats.hpp"
 
 #include "gaussian.hpp"
 #include "upper_gaussian.hpp"
