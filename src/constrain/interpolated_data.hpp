@@ -43,7 +43,7 @@ namespace hepstats {
     public:
         interpolated_data(model_lookup _lookup_axis,
                           double _limit_error,
-                          std::string &data_filename)
+                          const std::string &data_filename)
                 : lookup_axis(_lookup_axis), limit_error(_limit_error) {
             load_data(data_filename);
         }
