@@ -46,7 +46,7 @@ namespace hepstats {
                 : lookup(_lookup),
                   pred_error(_pred_error),
                   pred_percent_error(_pred_percent_error),
-                  exp_data(std::move(exp)) {
+                  exp_data(std::move(_exp)) {
             // all done!
         }
 
