@@ -49,3 +49,5 @@ install_manifest.txt
 bin/
 ext/
 share/
+.idea/
+build/
