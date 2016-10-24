@@ -60,63 +60,85 @@ void hepstats::likeconfig::process_stream() {
         model_lookup::model_map lookup_type;
         std::string lookup_code;
         likedist dist;
-        double theory_err;
-        bool theory_percent_err;
+        double pred_error;
+        bool pred_percent_err;
 
         if (!(parse >> lookup_type)
             || !(parse >> lookup_code)
             || !(parse >> dist)
-            || !(parse >> theory_err)
-            || !(parse >> std::boolalpha >> theory_percent_err)) {
+            || !(parse >> pred_error)
+            || !(parse >> std::boolalpha >> pred_percent_err)) {
 //          std::cerr << "Rejecting this line!" << std::endl;                   // debugging
             continue;
         }
 
-        double exp_val, exp_err;
+        // to init simple_datum
+        double limit, limit_error;
+        // to init interpolated_data (limit_error used here too)
+        model_lookup::model_map lookup_axis_type;
+        std::string lookup_axis_code;
         std::string data_filename;
         switch (dist) {
             case likedist::gaussian:
-                if (!(parse >> exp_val) || !(parse >> exp_err))
+                if (!(parse >> limit) || !(parse >> limit_error))
                     continue;
-                llhood.add_like_term(std::make_unique<gaussian>
-                                             (model_lookup(lookup_type,
-                                                           lookup_code),
-                                              theory_err, theory_percent_err,
-                                              exp_val, exp_err));
+                llhood.add_like_term(std::make_unique<gaussian>(
+                        model_lookup(lookup_type, lookup_code),
+                        pred_error, pred_percent_err,
+                        std::make_unique<simple_datum>(limit, limit_error)));
                 break;
 
             case likedist::upper_gaussian:
-                if (!(parse >> exp_val) || !(parse >> exp_err))
+                if (!(parse >> limit) || !(parse >> limit_error))
                     continue;
-                llhood.add_like_term(std::make_unique<upper_gaussian>
-                                             (model_lookup(lookup_type,
-                                                           lookup_code),
-                                              theory_err, theory_percent_err,
-                                              exp_val, exp_err));
+                llhood.add_like_term(std::make_unique<upper_gaussian>(
+                        model_lookup(lookup_type, lookup_code),
+                        pred_error, pred_percent_err,
+                        std::make_unique<simple_datum>(limit, limit_error)));
                 break;
 
             case likedist::lower:
-                if (!(parse >> exp_val) || !(parse >> exp_err))
+                if (!(parse >> limit) || !(parse >> limit_error))
                     continue;
-                llhood.add_like_term(std::make_unique<smeared_lower_limit>
-                                             (model_lookup(lookup_type,
-                                                           lookup_code),
-                                              theory_err, theory_percent_err,
-                                              exp_val, exp_err));
+                llhood.add_like_term(std::make_unique<smeared_lower_limit>(
+                        model_lookup(lookup_type, lookup_code),
+                        pred_error, pred_percent_err,
+                        std::make_unique<simple_datum>(limit, limit_error)));
+                break;
+
+            case likedist::upper:
+                if (!(parse >> limit) || !(parse >> limit_error))
+                    continue;
+                llhood.add_like_term(std::make_unique<smeared_upper_limit>(
+                        model_lookup(lookup_type, lookup_code),
+                        pred_error, pred_percent_err,
+                        std::make_unique<simple_datum>(limit, limit_error)));
+                break;
+
+            case likedist::lower_interpolated:
+                if (!(parse >> lookup_axis_type) || !(parse >> lookup_axis_code)
+                        || !(parse >> data_filename) || !(parse >> limit_error))
+                    continue;
+                llhood.add_like_term(std::make_unique<smeared_lower_limit>(
+                        model_lookup(lookup_type, lookup_code),
+                        pred_error, pred_percent_err,
+                        std::make_unique<interpolated_data>(
+                               model_lookup(lookup_axis_type, lookup_axis_code),
+                               data_filename, limit_error)));
+                break;
+
+            case likedist::upper_interpolated:
+                if (!(parse >> lookup_axis_type) || !(parse >> lookup_axis_code)
+                        || !(parse >> data_filename) || !(parse >> limit_error))
+                    continue;
+                llhood.add_like_term(std::make_unique<smeared_upper_limit>(
+                        model_lookup(lookup_type, lookup_code),
+                        pred_error, pred_percent_err,
+                        std::make_unique<interpolated_data>(
+                               model_lookup(lookup_axis_type, lookup_axis_code),
+                               data_filename, limit_error)));
                 break;
         }
-#if 0
-        llhood.add_like_term(
-                std::make_unique<likedatum>(
-                        dist,
-                        model_lookup(type, lookup_code),
-                        exp_val,
-                        exp_err,
-                        theory_err,
-                        (bool) (theory_percent_err == "true")
-                )
-        );
-#endif
     }
 }
 
@@ -135,7 +157,7 @@ std::istream &operator>>(std::istream &is, hepstats::likedist &dist) {
     } else if (dist_spec == "upper") {
         dist = hepstats::likedist::upper;
     } else if (dist_spec == "lower_interpolated") {
-            dist = hepstats::likedist::lower_interpolated;
+        dist = hepstats::likedist::lower_interpolated;
     } else if (dist_spec == "upper_interpolated") {
         dist = hepstats::likedist::upper_interpolated;
     } else {
