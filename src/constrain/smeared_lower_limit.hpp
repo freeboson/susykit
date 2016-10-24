@@ -43,7 +43,7 @@ namespace hepstats {
                 : smeared_limit(lookup, pred_error, pred_percent_error,
                                 move(data)) {}
 
-        inline double get_delta(double pred, double limit) final {
+        inline double get_delta(double pred, double limit) const final {
             return limit - pred;
         }
     };
