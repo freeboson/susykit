@@ -41,10 +41,12 @@ namespace hepstats {
     public:
         likedatum(
                 model_lookup _lookup,
-                double _pred_error, bool _pred_percent_error)
+                double _pred_error, bool _pred_percent_error,
+                std::unique_ptr<experimental_data> _exp)
                 : lookup(_lookup),
                   pred_error(_pred_error),
-                  pred_percent_error(_pred_percent_error) {
+                  pred_percent_error(_pred_percent_error),
+                  exp_data(std::move(exp)) {
             // all done!
         }
 
@@ -58,7 +60,7 @@ namespace hepstats {
 
     private:
         model_lookup lookup;
-        std::shared_pointer<experimental_data> exp;
+        std::unique_ptr<experimental_data> exp_data;
 
         double pred_error;
         bool pred_percent_error;
