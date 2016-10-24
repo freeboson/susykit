@@ -65,7 +65,7 @@ namespace hepstats {
 
         const model_lookup lookup_axis;
         const double limit_error;
-        constexpr size_t table_start_size = 500;
+        static constexpr size_t table_start_size = 500;
         std::vector<std::pair<double, double> > table;
     };
 }
