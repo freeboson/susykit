@@ -46,7 +46,7 @@ public:
 
     model_lookup() = delete;
 
-    model_lookup(model_map _mode, const std::string &_code);
+    model_lookup(model_map _mode, std::string _code);
 
     model_map get_mode() const { return mode; }
 
