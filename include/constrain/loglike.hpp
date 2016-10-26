@@ -44,7 +44,9 @@ public:
 
     double get_log_like(const model &m) const;
 
-    size_t get_num_like_terms() const { return like_terms.size(); }
+    auto get_num_like_terms() const -> decltype(like_terms.size()) {
+        return like_terms.size();
+    }
 
 private:
     std::list<std::unique_ptr<likedatum> > like_terms;
