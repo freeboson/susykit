@@ -32,7 +32,7 @@
 
 double hepstats::gaussian::calculate_pull(double pred, double limit,
                                           double tau, double sigma,
-                                          bool *unlikely) const override {
+                                          bool *unlikely) const {
     *unlikely = false;
     return std::pow(pred - limit, 2.0) /
            (2.0 * (std::pow(tau, 2.0) + std::pow(sigma, 2.0)));
