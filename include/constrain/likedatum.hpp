@@ -32,6 +32,7 @@
 #define LIKEDATUM_HPP
 
 #include <cmath>
+#include <memory>
 #include "model.hpp"
 #include "model_lookup.hpp"
 #include "experimental_data.hpp"
