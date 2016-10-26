@@ -45,7 +45,47 @@ std::istream &operator>>(std::istream &is, hepstats::likedist &dist);
 
 std::istream &operator>>(std::istream &is, model_lookup::model_map &mm);
 
-void hepstats::likeconfig::process_stream() {
+template<class ld>
+static bool add_simple_term(std::istream *is, hepstats::loglike *ll,
+                            model_lookup::model_map lt, std::string lc,
+                            double pred_err, bool pct_err) {
+    static_assert(std::is_base_of<hepstats::likedatum, ld>::value,
+                  "specified ld is not derived from hepstats::likedatum.");
+    double limit, limit_error;
+    if (!(*is >> limit) || !(*is >> limit_error)) {
+        return false;
+    }
+    ll->add_like_term(std::make_unique<ld>(
+            model_lookup(lt, lc), pred_err, pct_err,
+            std::make_unique<hepstats::simple_datum>(limit, limit_error)));
+    return true;
+}
+
+template<class ld>
+static bool add_interpolated_term(std::istream *is, hepstats::loglike *ll,
+                                  model_lookup::model_map lt, std::string lc,
+                                  double pred_err, bool pct_err) {
+    static_assert(std::is_base_of<hepstats::likedatum, ld>::value,
+                  "specified ld is not derived from hepstats::likedatum.");
+    double limit_error;
+    model_lookup::model_map lookup_axis_type;
+    std::string lookup_axis_code, data_filename;
+    if (!(*is >> lookup_axis_type) || !(*is >> lookup_axis_code)
+        || !(*is >> data_filename) || !(*is >> limit_error)) {
+        return false;
+    }
+    ll->add_like_term(std::make_unique<ld>(
+            model_lookup(lt, lc), pred_err, pct_err,
+            std::make_unique<hepstats::interpolated_data>(
+                    model_lookup(lookup_axis_type, lookup_axis_code),
+                    data_filename, limit_error)));
+    return true;
+}
+
+auto
+hepstats::likeconfig::operator()(std::istream *conf_stream) const -> loglike {
+
+    loglike ll; // object to be returned, use move semantics plz
     std::string conf_line;
 
     while (std::getline(*conf_stream, conf_line)) {
@@ -72,74 +112,59 @@ void hepstats::likeconfig::process_stream() {
             continue;
         }
 
-        // to init simple_datum
-        double limit, limit_error;
-        // to init interpolated_data (limit_error used here too)
-        model_lookup::model_map lookup_axis_type;
-        std::string lookup_axis_code;
-        std::string data_filename;
+        // at the moment, continue = break, but leave it this way in case we
+        // add stuff after the switch for some reason
         switch (dist) {
             case likedist::gaussian:
-                if (!(parse >> limit) || !(parse >> limit_error))
+                if (!(add_simple_term<gaussian>(
+                        conf_stream, &ll, lookup_type, lookup_code,
+                        pred_error, pred_percent_err))) {
                     continue;
-                llhood.add_like_term(std::make_unique<gaussian>(
-                        model_lookup(lookup_type, lookup_code),
-                        pred_error, pred_percent_err,
-                        std::make_unique<simple_datum>(limit, limit_error)));
+                }
                 break;
 
             case likedist::upper_gaussian:
-                if (!(parse >> limit) || !(parse >> limit_error))
+                if (!(add_simple_term<upper_gaussian>(
+                        conf_stream, &ll, lookup_type, lookup_code,
+                        pred_error, pred_percent_err))) {
                     continue;
-                llhood.add_like_term(std::make_unique<upper_gaussian>(
-                        model_lookup(lookup_type, lookup_code),
-                        pred_error, pred_percent_err,
-                        std::make_unique<simple_datum>(limit, limit_error)));
+                }
                 break;
 
             case likedist::lower:
-                if (!(parse >> limit) || !(parse >> limit_error))
+                if (!(add_simple_term<smeared_lower_limit>(
+                        conf_stream, &ll, lookup_type, lookup_code,
+                        pred_error, pred_percent_err))) {
                     continue;
-                llhood.add_like_term(std::make_unique<smeared_lower_limit>(
-                        model_lookup(lookup_type, lookup_code),
-                        pred_error, pred_percent_err,
-                        std::make_unique<simple_datum>(limit, limit_error)));
+                }
                 break;
 
             case likedist::upper:
-                if (!(parse >> limit) || !(parse >> limit_error))
+                if (!(add_simple_term<smeared_upper_limit>(
+                        conf_stream, &ll, lookup_type, lookup_code,
+                        pred_error, pred_percent_err))) {
                     continue;
-                llhood.add_like_term(std::make_unique<smeared_upper_limit>(
-                        model_lookup(lookup_type, lookup_code),
-                        pred_error, pred_percent_err,
-                        std::make_unique<simple_datum>(limit, limit_error)));
+                }
                 break;
 
             case likedist::lower_interpolated:
-                if (!(parse >> lookup_axis_type) || !(parse >> lookup_axis_code)
-                        || !(parse >> data_filename) || !(parse >> limit_error))
+                if (!(add_interpolated_term<smeared_lower_limit>(
+                        conf_stream, &ll, lookup_type, lookup_code,
+                        pred_error, pred_percent_err))) {
                     continue;
-                llhood.add_like_term(std::make_unique<smeared_lower_limit>(
-                        model_lookup(lookup_type, lookup_code),
-                        pred_error, pred_percent_err,
-                        std::make_unique<interpolated_data>(
-                               model_lookup(lookup_axis_type, lookup_axis_code),
-                               data_filename, limit_error)));
+                }
                 break;
 
             case likedist::upper_interpolated:
-                if (!(parse >> lookup_axis_type) || !(parse >> lookup_axis_code)
-                        || !(parse >> data_filename) || !(parse >> limit_error))
+                if (!(add_interpolated_term<smeared_upper_limit>(
+                        conf_stream, &ll, lookup_type, lookup_code,
+                        pred_error, pred_percent_err))) {
                     continue;
-                llhood.add_like_term(std::make_unique<smeared_upper_limit>(
-                        model_lookup(lookup_type, lookup_code),
-                        pred_error, pred_percent_err,
-                        std::make_unique<interpolated_data>(
-                               model_lookup(lookup_axis_type, lookup_axis_code),
-                               data_filename, limit_error)));
+                }
                 break;
         }
     }
+    return ll;
 }
 
 std::istream &operator>>(std::istream &is, hepstats::likedist &dist) {
