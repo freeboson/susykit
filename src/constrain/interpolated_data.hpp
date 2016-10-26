@@ -33,7 +33,7 @@
 
 #include <string>
 #include <vector>
-#include <utility>
+#include <array>
 #include <istream>
 #include "constrain/likedatum.hpp"
 #include "constrain/experimental_data.hpp"
@@ -58,6 +58,8 @@ namespace hepstats {
             return limit_error;
         }
 
+        using coord = std::array<double, 2>;
+
     private:
         void load_data(const std::string &data_filename);
 
@@ -66,7 +68,7 @@ namespace hepstats {
         const model_lookup lookup_axis;
         const double limit_error;
         static constexpr size_t table_start_size = 500;
-        std::vector<std::pair<double, double> > table;
+        std::vector<coord> table;
     };
 }
 
