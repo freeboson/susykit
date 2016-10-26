@@ -44,7 +44,7 @@ public:
 
     double get_log_like(const model &m) const;
 
-    auto get_num_like_terms() const -> decltype(like_terms.size()) {
+    auto get_num_like_terms() const {
         return like_terms.size();
     }
 
