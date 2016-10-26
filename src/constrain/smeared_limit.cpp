@@ -34,7 +34,7 @@ using namespace std;
 
 double hepstats::smeared_limit::calculate_pull(double pred, double limit,
                                                double tau, double sigma,
-                                               bool *unlikely) const override {
+                                               bool *unlikely) const {
     // this is based on SmearedBound() in SuperBayes, source/calclike.f90
     // which in turn is based on hep-ph/0602028, with a minor fix
     if (sigma <= 0.0)
