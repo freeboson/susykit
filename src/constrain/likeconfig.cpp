@@ -39,10 +39,7 @@
 #include "simple_datum.hpp"
 #include "interpolated_data.hpp"
 
-const std::string hepstats::likeconfig::comment_chars = "#";
-
 std::istream &operator>>(std::istream &is, hepstats::likedist &dist);
-
 std::istream &operator>>(std::istream &is, model_lookup::model_map &mm);
 
 template<class ld>

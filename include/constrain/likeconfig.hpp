@@ -38,7 +38,8 @@
 
 class hepstats::likeconfig {
 public:
-    likeconfig(_comment_chars = "#") : comment_chars(_comment_chars) {}
+    likeconfig(std::string _comment_chars = "#")
+            : comment_chars(_comment_chars) {}
 
     loglike operator()(std::istream *is) const;
 
