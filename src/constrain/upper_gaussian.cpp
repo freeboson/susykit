@@ -31,7 +31,7 @@
 
 double hepstats::upper_gaussian::calculate_pull(double pred, double limit,
                                                 double tau, double sigma,
-                                                bool *unlikely) const override {
+                                                bool *unlikely) const {
     if (pred > limit) {
         return gaussian::calculate_pull(pred, limit, tau, sigma, unlikely);
     } else {
