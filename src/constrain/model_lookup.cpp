@@ -41,7 +41,7 @@
 using namespace std;
 using namespace susy_dict;
 
-model_lookup::model_lookup(model_map _mode, const string &_code)
+model_lookup::model_lookup(model_map _mode, string _code)
         : mode(_mode), code(_code) {
     switch (mode) {
         case slha:
