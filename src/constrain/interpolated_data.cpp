@@ -34,11 +34,13 @@
 #include <iterator>
 #include <algorithm>
 
-bool first_coord_lt(const auto &lhs, const auto &rhs) {
+using coord = hepstats::interpolated_data::coord;
+
+bool first_coord_lt(const coord &lhs, const coord &rhs) {
     return std::get<0>(lhs) < std::get<0>(rhs);
 }
 
-bool first_coord_eq(const auto &lhs, const auto &rhs) {
+bool first_coord_eq(const coord &lhs, const coord &rhs) {
     return std::get<0>(lhs) == std::get<0>(rhs);
 }
 
@@ -52,19 +54,19 @@ hepstats::interpolated_data::interpolated_data(model_lookup _lookup_axis,
     load_data(is);
 }
 
-double hepstats::interpolated_data::get_limit(const model &m) const override {
+double hepstats::interpolated_data::get_limit(const model &m) const {
     double x = lookup_axis(m);
     if (x <= std::get<0>(table.front()))
         return std::get<1>(table.front());
     if (x >= std::get<0>(table.back()))
         return std::get<1>(table.back());
     const auto upper = std::lower_bound(begin(table), end(table),
-                                        first_coord_lt);
+                                        coord({x,0.0}), first_coord_lt);
     const auto lower = std::prev(upper);
-    double dx = upper->first - lower->first;
-    double dy = upper->second - lower->second;
-    if (dx == 0.0) return lower->first;
-    return (dy / dx) * (x - lower->first) + lower->first;
+    double dx = std::get<0>(*upper) - std::get<0>(*lower);
+    double dy = std::get<1>(*upper) - std::get<1>(*lower);
+    if (dx == 0.0) return std::get<0>(*lower); // should actually throw
+    return (dy / dx) * (x - std::get<0>(*lower)) + std::get<1>(*lower);
 }
 
 void hepstats::interpolated_data::load_data(const std::string &data_filename) {
@@ -79,12 +81,13 @@ void hepstats::interpolated_data::load_data(std::istream *is) {
     table.reserve(table_start_size);
     double x, y;
     while ((*is) >> x >> y) {
-        table.push_back(std::make_pair(x, y));
+        table.push_back({x, y});
         if (table.size() >= table.capacity())
             table.reserve(table.capacity() + table_start_size);
     }
-    table.shrink_to_fit();
     std::sort(std::begin(table), std::end(table), first_coord_lt);
-    std::unique(std::begin(table), std::end(table), first_coord_eq);
+    auto last = std::unique(std::begin(table), std::end(table), first_coord_eq);
+    table.erase(last,end(table));
+    table.shrink_to_fit();
 }
 
