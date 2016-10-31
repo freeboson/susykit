@@ -43,8 +43,6 @@
 class constraint {
 public:
 
-    constraint();
-
     constraint(const model_lookup &_ml, const std::string &cons_line);
 
     constraint(const hepstats::loglike &_loglike, const std::string &limit);
