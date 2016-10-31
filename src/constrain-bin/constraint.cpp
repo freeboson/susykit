@@ -32,11 +32,6 @@
 
 using namespace std;
 
-constraint::constraint()
-        : lower(0), upper(0), lset(false), uset(false), xset(false) {
-
-}
-
 constraint::constraint(const model_lookup &_ml, const string &cons_line)
         : ml(_ml), lower(0), upper(0), lset(false), uset(false), xset(false), like_constraint(false) {
     stringstream cline(cons_line);
