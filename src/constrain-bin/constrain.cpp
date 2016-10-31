@@ -84,10 +84,8 @@ int main(int argc, char **argv) {
     cerr << "infile=" << gopts.infile << " " << "outfile=" << gopts.outfile << endl;
     if (gopts.print_cuts) {
         cerr << "Listing Constraints:" << endl;
-        for (vector<constraint>::iterator it = gopts.constraints.begin();
-             it != gopts.constraints.end();
-             it++)
-            cerr << it->get_constraint() << endl;
+        for (const auto &c : gopts.constraints)
+            cerr << c.get_constraint() << endl;
     }
 
     if (gopts.pretend)
