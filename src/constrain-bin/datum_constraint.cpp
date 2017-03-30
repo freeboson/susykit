@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - constraint.hpp:                                                          -
+    - datum_constraint.cpp:                                                               -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -27,40 +27,40 @@
 */
 
 
-#pragma once
-#ifndef CONSTRAINT_HPP
-#define CONSTRAINT_HPP
+#include "datum_constraint.hpp"
 
-#include <iostream>
-#include <string>
-#include <sstream>
+using namespace std;
 
-#include "constrain/model.hpp"
-#include "constrain/model_lookup.hpp"
+datum_constraint::datum_constraint(const model_lookup &_ml,
+                                   const std::string &cons_line)
+        : constraint(), ml(_ml) {
+    stringstream cline(cons_line);
+    cline >> param;
+    process_limit(cline);
+}
 
-class constraint {
-public:
+double datum_constraint::get_value(const model &m) const {
+    return ml(m);
+}
 
-    constraint();
+std::string datum_constraint::get_constraint_type() const {
+    stringstream ss;
+        switch (ml.get_mode()) {
+            case model_lookup::slha:
+                ss << "Basic";
+                break;
+            case model_lookup::output:
+                ss << "Output";
+                break;
+            case model_lookup::special:
+                ss << "Special";
+                break;
+        }
 
-    int operator()(const model &m) const;
-    std::string get_constraint() const;
+    ss << " constraint ";
+    return ss.str();
+}
 
-    virtual double get_value(const model &m) const = 0;
-
-    virtual std::string get_constraint_type() const = 0;
-    virtual std::string get_constraint_name() const = 0;
-
-protected:
-    void process_limit(std::stringstream &ss);
-
-private:
-    double lower, upper;
-    bool lset, uset;
-    bool xset;
-
-    int check_model(double value) const;
-};
-
-#endif
-
+std::string datum_constraint::get_constraint_name() const {
+    return param;
+}

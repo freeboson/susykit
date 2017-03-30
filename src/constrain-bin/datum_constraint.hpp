@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - constraint.hpp:                                                          -
+    - datum_constraint.hpp:                                                               -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -28,39 +28,23 @@
 
 
 #pragma once
-#ifndef CONSTRAINT_HPP
-#define CONSTRAINT_HPP
+#ifndef SUSYKIT_DATUM_CONSTRAINT_HPP
+#define SUSYKIT_DATUM_CONSTRAINT_HPP
 
-#include <iostream>
-#include <string>
-#include <sstream>
+#include "constraint.hpp"
 
-#include "constrain/model.hpp"
-#include "constrain/model_lookup.hpp"
-
-class constraint {
+class datum_constraint : public constraint {
 public:
+    datum_constraint(const model_lookup &_ml, const std::string &cons_line);
 
-    constraint();
-
-    int operator()(const model &m) const;
-    std::string get_constraint() const;
-
-    virtual double get_value(const model &m) const = 0;
-
-    virtual std::string get_constraint_type() const = 0;
-    virtual std::string get_constraint_name() const = 0;
-
-protected:
-    void process_limit(std::stringstream &ss);
+    double get_value(const model &m) const final;
+    std::string get_constraint_type() const final;
+    std::string get_constraint_name() const final;
 
 private:
-    double lower, upper;
-    bool lset, uset;
-    bool xset;
-
-    int check_model(double value) const;
+    model_lookup ml;
+    std::string param;
 };
 
-#endif
 
+#endif //SUSYKIT_DATUM_CONSTRAINT_HPP

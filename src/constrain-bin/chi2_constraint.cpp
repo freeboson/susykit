@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - constraint.hpp:                                                          -
+    - chi2_constraint.cpp:                                                               -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -27,40 +27,25 @@
 */
 
 
-#pragma once
-#ifndef CONSTRAINT_HPP
-#define CONSTRAINT_HPP
+#include "chi2_constraint.hpp"
 
-#include <iostream>
-#include <string>
-#include <sstream>
+using namespace std;
 
-#include "constrain/model.hpp"
-#include "constrain/model_lookup.hpp"
+chi2_constraint::chi2_constraint(const hepstats::loglike &_loglike,
+                                 const std::string &limit)
+        :loglike(_loglike), param("[chi^2 = -2ln(like)]") {
+    stringstream limit_ss(limit);
+    process_limit(limit_ss);
+}
 
-class constraint {
-public:
+double chi2_constraint::get_value(const model &m) const {
+    return 2*loglike.get_log_like(m);
+}
 
-    constraint();
+std::string chi2_constraint::get_constraint_type() const {
+    return "Advanced Statistical ";
+}
 
-    int operator()(const model &m) const;
-    std::string get_constraint() const;
-
-    virtual double get_value(const model &m) const = 0;
-
-    virtual std::string get_constraint_type() const = 0;
-    virtual std::string get_constraint_name() const = 0;
-
-protected:
-    void process_limit(std::stringstream &ss);
-
-private:
-    double lower, upper;
-    bool lset, uset;
-    bool xset;
-
-    int check_model(double value) const;
-};
-
-#endif
-
+std::string chi2_constraint::get_constraint_name() const {
+    return param;
+}
