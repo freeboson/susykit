@@ -236,6 +236,11 @@ int opthandle(int argc, char **argv, globalopts *gopts) {
                     cerr << "getopt_long() error!!!" << endl;
                     return 1;
                 }
+                if (gopts->likeconfig) {
+                    cerr << "Currently only one likelihood config file can be"
+                            " passed." << endl;
+                    return 1;
+                }
                 gopts->likeconfig = true;
                 gopts->likeconfig_filename = string(optarg);
                 break;
@@ -368,8 +373,8 @@ int opthandle(int argc, char **argv, globalopts *gopts) {
             return 1;
         }
         cerr << "Loading likelihood function from " << gopts->likeconfig_filename << "..." << endl;
-        hepstats::likeconfig likeconfig(&likeread);
-        hepstats::loglike loglike = likeconfig.get_loglike_fn();
+        hepstats::likeconfig config;
+        hepstats::loglike loglike = config(&likeread);
 
         for_each(like_limits.begin(), like_limits.end(),
                  [&gopts, &loglike](const string &lim) -> void {
@@ -381,22 +386,23 @@ int opthandle(int argc, char **argv, globalopts *gopts) {
 
     int argi = optind;
 
-    if (argi >= argc) {
+    if (argi >= argc) { // no filenames
         gopts->infile = "[stdin]";
         gopts->use_stdin = true;
 
         gopts->outfile = "[stdout]";
         gopts->use_stdout = true;
     }
-    else {
-        gopts->infile = argv[argi++];
+    else { // first filename is input
+        gopts->infile = argv[argi];
         gopts->use_stdin = false;
-        if (argi >= argc) {
+        argi++; // check next
+        if (argi >= argc) { // only 1 filename
             gopts->outfile = "[stdout]";
             gopts->use_stdout = true;
         }
-        else {
-            gopts->outfile = argv[argi++];
+        else { // second filename is output
+            gopts->outfile = argv[argi];
             gopts->use_stdout = false;
         }
     }
