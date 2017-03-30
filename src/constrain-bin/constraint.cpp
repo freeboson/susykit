@@ -89,11 +89,6 @@ void constraint::process_limit(std::stringstream &ss) {
 // returns int which is bitset of which limits m fails
 // where lower is the lsb, upper is the msb
 int constraint::check_model(double value) const {
-    if (!ml.good_mode() && !like_constraint) {
-        cerr << "model_lookup not set!" << endl;
-        return 0x4;
-    }
-
     int retflag = 0;
     if (!lset && !uset) {
         // no constraints? no problem! fail xset, pass !xset
