@@ -30,11 +30,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <string>
 
 #include "constraint.hpp"
 #include "constrain_opts.hpp"
-#include "constrain/model.hpp"
 #include "constrain/parse.hpp"
 
 #include "constrain/hepstats.hpp"
@@ -45,10 +43,12 @@ using namespace std;
 
 class constrain {
 public:
-    constrain(istream *_i, ostream *_o, bool _merged, bool _cdb_file, istream *_cdb)
-            : i(_i), o(_o), merged(_merged), cdb_file(_cdb_file), cdb(_cdb), mp() { }
+    constrain(istream *_i, ostream *_o, bool _merged, bool _cdb_file,
+              istream *_cdb)
+            : i(_i), o(_o), merged(_merged), cdb_file(_cdb_file), cdb(_cdb),
+              mp() {}
 
-    void operator()(vector<constraint>::iterator, vector<constraint>::iterator);
+    void operator()(const vector<unique_ptr<constraint> > &constraints);
 
 private:
     istream *i;
@@ -81,11 +81,12 @@ int main(int argc, char **argv) {
     cerr << endl;
 
 
-    cerr << "infile=" << gopts.infile << " " << "outfile=" << gopts.outfile << endl;
+    cerr << "infile=" << gopts.infile << " " << "outfile=" << gopts.outfile
+         << endl;
     if (gopts.print_cuts) {
         cerr << "Listing Constraints:" << endl;
         for (const auto &c : gopts.constraints)
-            cerr << c.get_constraint() << endl;
+            cerr << c->get_constraint() << endl;
     }
 
     if (gopts.pretend)
@@ -93,32 +94,35 @@ int main(int argc, char **argv) {
 
     if (gopts.constraints.size() < 1 && !gopts.force) {
         cerr << "No constraints requested... try cp?" << endl
-        << "(Or, try using --force to update db format.)" << endl
-        << endl;
+             << "(Or, try using --force to update db format.)" << endl
+             << endl;
         print_usage(argv[0]);
         return 1;
     }
 
-    fstream f, fout;
+    ifstream f;
+    ofstream fout;
     fstream cdb;
 
     if (!gopts.use_stdin) {
-        f.open(gopts.infile.c_str(), fstream::in);
+        f.open(gopts.infile.c_str());
         if (!f.is_open() || f.fail()) {
-            cerr << "Unable to open " << gopts.infile << " for reading!" << endl;
+            cerr << "Unable to open " << gopts.infile << " for reading!"
+                 << endl;
             return 1;
         }
     }
 
     if (!gopts.use_stdout) {
         if (gopts.append)
-            fout.open(gopts.outfile.c_str(), fstream::out | fstream::app);
+            fout.open(gopts.outfile.c_str(), fstream::app);
         else
-            fout.open(gopts.outfile.c_str(), fstream::out | fstream::trunc);
+            fout.open(gopts.outfile.c_str(), fstream::trunc);
 
         if (!fout.is_open() || fout.fail()) {
             if (f.is_open()) f.close();
-            cerr << "Unable to open " << gopts.outfile << " for writing!" << endl;
+            cerr << "Unable to open " << gopts.outfile << " for writing!"
+                 << endl;
             return 1;
         }
     }
@@ -128,7 +132,8 @@ int main(int argc, char **argv) {
         if (!cdb.is_open() || cdb.fail()) {
             if (f.is_open()) f.close();
             if (fout.is_open()) fout.close();
-            cerr << "Unable to open " << gopts.obs_filename << " for reading!" << endl;
+            cerr << "Unable to open " << gopts.obs_filename << " for reading!"
+                 << endl;
             return 1;
         }
     }
@@ -140,7 +145,7 @@ int main(int argc, char **argv) {
                   &cdb
     );
 
-    con(gopts.constraints.begin(), gopts.constraints.end());
+    con(gopts.constraints);
     cerr << "Done!" << endl;
     cerr << endl;
     if (f.is_open()) f.close();
@@ -149,7 +154,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void constrain::operator()(vector<constraint>::iterator first, vector<constraint>::iterator last) {
+void constrain::operator()(const vector<unique_ptr<constraint> > &constraints) {
     string model_line;
     string cdb_line;
     for (int j = 0; getline(*i, model_line); j++) {
@@ -172,10 +177,9 @@ void constrain::operator()(vector<constraint>::iterator first, vector<constraint
 //			cerr << "bad observables?" << endl;
             continue;
         }
-        for (vector<constraint>::iterator it = first;
-             it != last && isSafe;
-             it++) {
-            isSafe = (0 == it->operator()(m));
+        for (const auto &c : constraints) {
+            isSafe = (0 == c->operator()(m));
+            if (!isSafe) { break; }
 //			cerr << "retflag = " << it->operator()(m) << endl;
         }
         if (isSafe) {
@@ -183,5 +187,3 @@ void constrain::operator()(vector<constraint>::iterator first, vector<constraint
         }
     }
 }
-
-

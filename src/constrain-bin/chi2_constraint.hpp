@@ -36,7 +36,7 @@
 
 class chi2_constraint : public constraint {
 public:
-    chi2_constraint(const hepstats::loglike &_loglike,
+    chi2_constraint(hepstats::loglike &&_loglike,
                     const std::string &limit);
 
     double get_value(const model &m) const final;

@@ -37,6 +37,7 @@
 #include <vector>
 #include <unistd.h>
 #include <getopt.h>
+#include <memory>
 
 #include "constrain/model_lookup.hpp"
 #include "constraint.hpp"

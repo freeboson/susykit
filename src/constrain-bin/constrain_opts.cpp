@@ -380,7 +380,7 @@ int opthandle(int argc, char **argv, globalopts *gopts) {
         for_each(like_limits.begin(), like_limits.end(),
                  [&gopts, &loglike](const string &lim) -> void {
                      gopts->constraints.push_back
-                             (make_unique<chi2_constraint>(loglike, lim));
+                             (make_unique<chi2_constraint>(move(loglike), lim));
                  }
         );
     }

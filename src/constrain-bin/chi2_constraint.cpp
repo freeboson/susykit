@@ -31,9 +31,9 @@
 
 using namespace std;
 
-chi2_constraint::chi2_constraint(const hepstats::loglike &_loglike,
+chi2_constraint::chi2_constraint(hepstats::loglike &&_loglike,
                                  const std::string &limit)
-        :loglike(_loglike), param("[chi^2 = -2ln(like)]") {
+        :loglike(move(_loglike)), param("[chi^2 = -2ln(like)]") {
     stringstream limit_ss(limit);
     process_limit(limit_ss);
 }
@@ -49,3 +49,4 @@ std::string chi2_constraint::get_constraint_type() const {
 std::string chi2_constraint::get_constraint_name() const {
     return param;
 }
+

@@ -231,6 +231,7 @@ set(SOURCES_LSKIT
 set(SOURCES_CONSTRAIN
   src/constrain-bin/constraint.cpp src/constrain-bin/constrain.cpp
   src/constrain-bin/constrain_opts.cpp
+  src/constrain-bin/datum_constraint.cpp src/constrain-bin/chi2_constraint.cpp
 )
 
 set(SOURCES_QPARSE src/qparse/qparse.cpp)

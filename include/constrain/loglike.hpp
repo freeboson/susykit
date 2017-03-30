@@ -38,6 +38,10 @@
 class hepstats::loglike {
 public:
 
+    loglike() = default;
+    loglike(loglike &&l);
+    loglike& operator=(loglike &&l);
+
     void add_like_term(std::unique_ptr<likedatum> datum) {
         like_terms.emplace_back(std::move(datum));
     }

@@ -31,6 +31,16 @@
 
 #include <numeric>
 
+hepstats::loglike::loglike(loglike &&l) : like_terms(move(l.like_terms)) {
+
+}
+
+auto hepstats::loglike::operator=(loglike &&l) -> loglike& {
+    if (this != &l) {
+        like_terms = move(l.like_terms);
+    }
+    return *this;
+}
 
 double hepstats::loglike::get_log_like(const model &m) const {
     bool bad_like = false;
