@@ -17,6 +17,10 @@
                                           `8, ,8I                          
                                            `Y8P"                           
 
+
+.. image:: https://travis-ci.org/freeboson/susykit.svg?branch=master
+   :target: http://travis-ci.org/freeboson/susykit
+
 What is ``SusyKit``?
 --------------------
 Essentially, ``SusyKit`` is a program that interfaces several packages that are
