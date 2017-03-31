@@ -6,8 +6,8 @@ include(ExternalProject)
 include(ProcessorCount)
 
 ProcessorCount(NCores)
-if(not NCores equal 0)
-  math(expr NCoresPlusOne "${NCores} + 1")
+if(NOT NCores EQUAL 0)
+  math(EXPR NCoresPlusOne "${NCores} + 1")
   set(PARMAKE -j{NCoresPlusOne})
 endif()
 
