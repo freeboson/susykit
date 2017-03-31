@@ -4,13 +4,20 @@ os:
 compiler:
   - clang
   - gcc
+addons:
+  apt:
+    sources:
+      - george-edison55-precise-backports # cmake 3.2.3 / doxygen 1.8.3
+    packages:
+      - cmake
+      - cmake-data
 notifications:
   email: false
   irc:
     channels:
       - "ircs://chat.freenode.net:6697/#freeboson"
     template:
-      - "%{repository/%{branch}#%{build_number} (%{commit}) : %{message}"
+      - "%{repository}/%{branch}#%{build_number} %{commit} : [%{message}]"
     on_success: change
     on_failure: always
 script:
