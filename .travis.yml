@@ -21,14 +21,15 @@ notifications:
     channels:
       - "ircs://chat.freenode.net:6697/#freeboson"
     template:
-      - "[%{repository} %{branch}] Build #%{build_number} (%{commit}) : [%{message}]"
+      - "[%{repository} %{branch}] [%{commit}: %{commit_subject}] : [%{message}]"
     on_success: change
     on_failure: always
     skip_join: true
 before_install:
   - wget https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.sh
-  - sh cmake-3.7.2-Linux-x86_64.sh --prefix=cmake --skip-license --exclude-subdir
+  - mkdir $HOME/cmake
+  - sh cmake-3.7.2-Linux-x86_64.sh --prefix=$HOME/cmake --skip-license --exclude-subdir
 script:
   - mkdir build
   - cd build
-  - cmake .. && make
+  - $HOME/cmake/bin/cmake .. && make
