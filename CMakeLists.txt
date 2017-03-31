@@ -3,6 +3,14 @@ enable_language(Fortran)
 
 project(SusyKit)
 include(ExternalProject)
+include(ProcessorCount)
+
+ProcessorCount(NCores)
+if(not NCores equal 0)
+  math(expr NCoresPlusOne "${NCores} + 1")
+  set(PARMAKE -j{NCoresPlusOne})
+endif
+
 enable_language(CXX)
 enable_language(C)
 enable_language(Fortran)
@@ -115,7 +123,7 @@ ExternalProject_Add(
   PATCH_COMMAND patch -N src/include.h ${PROJECT_SOURCE_DIR}/patches/superiso/include_h.patch
   CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/superiso_relic/extract/configure --with-cc=${CMAKE_C_COMPILER} --with-fc=${CMAKE_Fortran_COMPILER}
   BUILD_COMMAND CC=${CMAKE_C_COMPILER} FC=${CMAKE_Fortran_COMPILER} make static
-    COMMAND make libisospin.a librelic.a
+    COMMAND make ${PARMAKE} libisospin.a librelic.a
   INSTALL_COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/libisospin.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/relic/librelic.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
@@ -186,7 +194,7 @@ ExternalProject_Add(
     CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
     FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${DS_FCFLAGS}
     --prefix=${CMAKE_CURRENT_BINARY_DIR}
-  BUILD_COMMAND make darksusy libisajet
+  BUILD_COMMAND make ${PARMAKE} darksusy libisajet
   INSTALL_COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/darksusy
     COMMAND make install_tables
     COMMAND sh -c "cp -prf ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/share/DarkSUSY ${PROJECT_SOURCE_DIR}/share/"

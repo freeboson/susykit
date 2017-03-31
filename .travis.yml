@@ -42,8 +42,8 @@ before_install:
   - mkdir $HOME/cmake
   - sh cmake-3.7.2-Linux-x86_64.sh --prefix=$HOME/cmake --skip-license --exclude-subdir
 script:
-  - mkdir build
+  - (mkdir build || echo "build dir cached")
   - cd build
   - $HOME/cmake/bin/cmake ..
-  - travis_wait 60 make -j3 SuperIso_Relic
+  - travis_wait 60 make SuperIso_Relic
   - make
