@@ -1,0 +1,20 @@
+language: cpp
+os:
+  - linux
+compiler:
+  - clang
+  - gcc
+notifications:
+  email: false
+  irc:
+    channels:
+      - "ircs://chat.freenode.net:6697/#freeboson"
+    template:
+      - "%{repository/%{branch}#%{build_number} (%{commit}) : %{message}"
+    on_success: change
+    on_failure: always
+ uncomment the following lines to override the default test script
+script:
+  - mkdir build
+  - cd build
+  - cmake .. && make
