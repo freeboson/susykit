@@ -3,20 +3,29 @@ sudo: false
 language: cpp
 os:
   - linux
-compiler:
-  - gcc
-  #  - clang
-cache:
-  directories:
-    - $HOME/cmake
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - gfortran
-      - gcc-6
-      - g++-6
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gfortran
+            - gcc-6
+            - g++-6
+      env: CC=gcc-6 CXX=g++-6 FC=gfortran
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-4.0
+          packages:
+            - gfortran
+            - clang-4.0
+            - clang++-4.0
+      env: CC=clang-4.0 CXX=clang++-4.0 FC=gfortran
 notifications:
   email: false
   irc:
@@ -27,8 +36,7 @@ notifications:
     on_success: change
     on_failure: always
     skip_join: true
-env:
-  - CC=gcc-6 CXX=g++-6 FC=gfortran
+
 before_install:
   - wget https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.sh
   - mkdir $HOME/cmake
