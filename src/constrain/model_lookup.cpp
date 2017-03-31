@@ -31,7 +31,7 @@
 #include "constrain/model_lookup.hpp"
 #include "constrain/dict.hpp"
 #include "constrain/special_lookups.hpp"
-#include "parseutils.hpp"
+#include "constrain/parseutils.hpp"
 
 // this will call the member function of the class of which "instance" is 
 // an instance of, pointed to by "mem_fn_ptr"
