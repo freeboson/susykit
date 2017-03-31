@@ -9,7 +9,7 @@ ProcessorCount(NCores)
 if(not NCores equal 0)
   math(expr NCoresPlusOne "${NCores} + 1")
   set(PARMAKE -j{NCoresPlusOne})
-endif
+endif()
 
 enable_language(CXX)
 enable_language(C)
