@@ -45,5 +45,5 @@ script:
   - mkdir build
   - cd build
   - $HOME/cmake/bin/cmake ..
-  - make -d SuperIso_Relic
+  - make VERBOSE=true SuperIso_Relic
   - make
