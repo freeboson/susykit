@@ -11,15 +11,17 @@ addons:
     packages:
       - cmake
       - cmake-data
+      - gfortran
 notifications:
   email: false
   irc:
     channels:
       - "ircs://chat.freenode.net:6697/#freeboson"
     template:
-      - "%{repository}/%{branch}#%{build_number} %{commit} : [%{message}]"
+      - "[%{repository} %{branch}] Build #%{build_number} (%{commit}) : [%{message}]"
     on_success: change
     on_failure: always
+    skip_join: true
 script:
   - mkdir build
   - cd build
