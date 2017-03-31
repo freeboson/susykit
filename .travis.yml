@@ -45,5 +45,5 @@ script:
   - mkdir build
   - cd build
   - $HOME/cmake/bin/cmake ..
-  - make VERBOSE=true SuperIso_Relic
+  - travis_wait 60 make -j3 SuperIso_Relic
   - make
