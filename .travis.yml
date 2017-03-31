@@ -6,7 +6,9 @@ os:
 compiler:
   - gcc
   #  - clang
-cache: packages
+cache:
+  directories:
+    - $HOME/cmake
 addons:
   apt:
     sources:
@@ -25,6 +27,10 @@ notifications:
     on_success: change
     on_failure: always
     skip_join: true
+env:
+  - CC=gcc-6
+  - CXX=g++-6
+  - FC=gfortran
 before_install:
   - wget https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.sh
   - mkdir $HOME/cmake
