@@ -1,8 +1,6 @@
 dist: trusty
 sudo: false
 language: cpp
-os:
-  - linux
 matrix:
   include:
     - compiler: gcc
@@ -14,7 +12,7 @@ matrix:
             - gfortran
             - gcc-6
             - g++-6
-      env: CC=gcc-6 CXX=g++-6 FC=gfortran
+      env: MY_CC=gcc-6 MY_CXX=g++-6 FC=gfortran
     - compiler: clang
       addons:
         apt:
@@ -25,7 +23,7 @@ matrix:
             - gfortran
             - clang-4.0
             - clang++-4.0
-      env: CC=clang-4.0 CXX=clang++-4.0 FC=gfortran
+      env: MY_CC=clang-4.0 MY_CXX=clang++-4.0 FC=gfortran
 notifications:
   email: false
   irc:
@@ -38,6 +36,8 @@ notifications:
     skip_join: true
 
 before_install:
+  - export CC=$MY_CC
+  - export CXX=$MY_CXX
   - wget https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.sh
   - mkdir $HOME/cmake
   - sh cmake-3.7.2-Linux-x86_64.sh --prefix=$HOME/cmake --skip-license --exclude-subdir
