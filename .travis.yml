@@ -28,9 +28,7 @@ notifications:
     on_failure: always
     skip_join: true
 env:
-  - CC=gcc-6
-  - CXX=g++-6
-  - FC=gfortran
+  - CC=gcc-6 CXX=g++-6 FC=gfortran
 before_install:
   - wget https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.sh
   - mkdir $HOME/cmake
@@ -38,4 +36,6 @@ before_install:
 script:
   - mkdir build
   - cd build
-  - $HOME/cmake/bin/cmake .. && make
+  - $HOME/cmake/bin/cmake ..
+  - travis_wait 30 make SuperIso_Relic
+  - make
