@@ -1,49 +1,11 @@
-dist: trusty
-sudo: false
-language: cpp
-matrix:
-  include:
-    - compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - gfortran
-            - gcc-6
-            - g++-6
-      env: MY_CC=gcc-6 MY_CXX=g++-6 FC=gfortran
-    - compiler: clang
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-4.0
-          packages:
-            - gfortran
-            - clang-4.0
-            - clang++-4.0
-      env: MY_CC=clang-4.0 MY_CXX=clang++-4.0 FC=gfortran
-notifications:
-  email: false
-  irc:
-    channels:
-      - "ircs://chat.freenode.net:6697/#freeboson"
-    template:
-      - "[%{repository} %{branch}] [%{commit}: %{commit_subject}] : [%{message}]"
-    on_success: change
-    on_failure: always
-    skip_join: true
-
-before_install:
-  - export CC=$MY_CC
-  - export CXX=$MY_CXX
-  - wget https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.sh
-  - mkdir $HOME/cmake
-  - sh cmake-3.7.2-Linux-x86_64.sh --prefix=$HOME/cmake --skip-license --exclude-subdir
+image: gcc-6.3
+#before_install:
+#  - wget https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.sh
+#  - mkdir $HOME/cmake
+#  - sh cmake-3.7.2-Linux-x86_64.sh --prefix=$HOME/cmake --skip-license --exclude-subdir
 script:
   - (mkdir build || echo "build dir cached")
   - cd build
-  - $HOME/cmake/bin/cmake ..
-  - travis_wait 60 make SuperIso_Relic
+  - cmake ..  #  - $HOME/cmake/bin/cmake ..
+  - make SuperIso_Relic
   - make
