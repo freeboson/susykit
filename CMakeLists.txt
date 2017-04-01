@@ -124,6 +124,7 @@ ExternalProject_Add(
   CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/superiso_relic/extract/configure --with-cc=${CMAKE_C_COMPILER} --with-fc=${CMAKE_Fortran_COMPILER}
   BUILD_COMMAND CC=${CMAKE_C_COMPILER} FC=${CMAKE_Fortran_COMPILER} make static
     COMMAND make ${PARMAKE} libisospin.a librelic.a
+    COMMAND make libisospin.a librelic.a
   INSTALL_COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/libisospin.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/superiso_relic/extract/src/relic/librelic.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/superiso_relic
