@@ -1,13 +1,6 @@
 dist: trusty
 sudo: false
 language: cpp
-cache:
-  directories:
-    - build/work/superiso_relic
-    - build/work/feynhiggs
-    - build/work/darksusy
-    - build/work/higgsbounds
-    - build/work/softsusy
 matrix:
   include:
     - compiler: gcc
