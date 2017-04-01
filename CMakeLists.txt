@@ -8,7 +8,7 @@ include(ProcessorCount)
 ProcessorCount(NCores)
 if(NOT NCores EQUAL 0)
   math(EXPR NCoresPlusOne "${NCores} + 1")
-  set(PARMAKE -j{NCoresPlusOne})
+  set(PARMAKE "-j${NCoresPlusOne}")
 endif()
 
 enable_language(CXX)
