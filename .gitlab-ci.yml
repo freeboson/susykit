@@ -3,9 +3,10 @@ image: gcc-6.3
 #  - wget https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.sh
 #  - mkdir $HOME/cmake
 #  - sh cmake-3.7.2-Linux-x86_64.sh --prefix=$HOME/cmake --skip-license --exclude-subdir
-script:
-  - (mkdir build || echo "build dir cached")
-  - cd build
-  - cmake ..  #  - $HOME/cmake/bin/cmake ..
-  - make SuperIso_Relic
-  - make
+build:
+  script:
+    - (mkdir build || echo "build dir cached")
+    - cd build
+    - cmake ..  #  - $HOME/cmake/bin/cmake ..
+    - make SuperIso_Relic
+    - make
