@@ -1,0 +1,11 @@
+--- configure	2017-04-02 20:26:18.000000000 +1000
++++ configure	2017-04-02 20:26:31.000000000 +1000
+@@ -30,7 +30,7 @@
+ #  a) GNU compiler (http://gcc.gnu.org/wiki/GFortran): 
+ F90C = gfortran
+ F77C = gfortran
+-F90FLAGS = -fbounds-check -ffixed-line-length-none
++F90FLAGS = -std=f95 -fbounds-check -ffixed-line-length-none
+ 
+ # F90FLAGS = -fbounds-check -ffixed-line-length-none -fPIC
+ # use the compiler flag -fopenmp for parallel processing
