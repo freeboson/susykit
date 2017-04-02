@@ -1,12 +1,8 @@
-image: gcc:6.3
-#before_install:
-#  - wget https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.sh
-#  - mkdir $HOME/cmake
-#  - sh cmake-3.7.2-Linux-x86_64.sh --prefix=$HOME/cmake --skip-license --exclude-subdir
+image: freeboson/cmake-gcc:gcc-6
 build:
   script:
     - (mkdir build || echo "build dir cached")
     - cd build
-    - cmake ..  #  - $HOME/cmake/bin/cmake ..
+    - /opt/cmake/bin/cmake ..
     - make SuperIso_Relic
     - make
