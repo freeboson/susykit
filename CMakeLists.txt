@@ -102,7 +102,7 @@ ExternalProject_Add(
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/higgsbounds/extract"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/higgsbounds/extract"
   CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/work/higgsbounds/extract/configure
-  BUILD_COMMAND make libHB
+  BUILD_COMMAND FFLAGS="-std=f95" make libHB
   INSTALL_COMMAND install libHB.a ${CMAKE_CURRENT_BINARY_DIR}/lib
 )
 add_library(HB STATIC IMPORTED)
