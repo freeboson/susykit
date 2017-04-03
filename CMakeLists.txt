@@ -25,12 +25,12 @@ include_directories(${PROJECT_SOURCE_DIR}/ext/include)
 
 set(SOFTSUSY_VERSION "3.7.2")     #latest
 set(FEYNHIGGS_VERSION "2.11.3")   #latest
-set(HIGGSBOUNDS_VERSION "4.2.1")  #update
+set(HIGGSBOUNDS_VERSION "5.0.0beta")  #latest
 set(SUPERISO_RELIC_VERSION "3.4") #latest
 set(MICROMEGAS_VERSION "2.4.5")   #abandon
 set(DARKSUSY_VERSION "5.1.2")     #update
 set(FEYNHIGGS_MD5 "49f5ea1838cb233baffd85bbc1b0d87d")
-set(HIGGSBOUNDS_MD5 "47b93330d4e0fddcc23b381548db355b")
+set(HIGGSBOUNDS_MD5 "ec4903a77bc35e6ebc0a98278786c31e")
 set(SOFTSUSY_MD5 "5efdbf71e43cfdb9c3ef619fe5abff8a")
 set(SUPERISO_RELIC_MD5 "97cf83c8bd90f2a9993c2209337f9e72")
 set(MICROMEGAS_MD5 "322856e02ddf06c76077b65f3a64de5d")
@@ -102,7 +102,7 @@ ExternalProject_Add(
   DOWNLOAD_NO_PROGRESS 1
   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/higgsbounds/extract"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/work/higgsbounds/extract"
-  PATCH_COMMAND patch -N configure ${PROJECT_SOURCE_DIR}/patches/higgsbounds/configure.patch
+#  PATCH_COMMAND patch -N configure ${PROJECT_SOURCE_DIR}/patches/higgsbounds/configure.patch
   CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/work/higgsbounds/extract/configure
   BUILD_COMMAND make libHB
   INSTALL_COMMAND install libHB.a ${CMAKE_CURRENT_BINARY_DIR}/lib
