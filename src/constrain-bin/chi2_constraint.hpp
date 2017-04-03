@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - likeconfig.hpp:                                                          -
+    - chi2_constraint.hpp:                                                               -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -28,25 +28,25 @@
 
 
 #pragma once
-#ifndef LIKECONFIG_HPP
-#define LIKECONFIG_HPP
+#ifndef SUSYKIT_CHI2_CONSTRAINT_HPP
+#define SUSYKIT_CHI2_CONSTRAINT_HPP
 
-#include <string>
-#include <istream>
+#include "constraint.hpp"
+#include "constrain/hepstats.hpp"
 
-#include "model.hpp"
-
-class hepstats::likeconfig {
+class chi2_constraint : public constraint {
 public:
-    likeconfig(std::string _comment_chars = "#")
-            : comment_chars(_comment_chars) {}
+    chi2_constraint(hepstats::loglike &&_loglike,
+                    const std::string &limit);
 
-    loglike operator()(std::istream *is) const;
+    double get_value(const model &m) const final;
+    std::string get_constraint_type() const final;
+    std::string get_constraint_name() const final;
 
 private:
-    const std::string comment_chars;
+    hepstats::loglike loglike;
+    std::string param;
 };
 
-#endif
 
-
+#endif //SUSYKIT_CHI2_CONSTRAINT_HPP

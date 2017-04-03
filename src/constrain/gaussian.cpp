@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - likeconfig.hpp:                                                          -
+    - gaussian_datum.cpp:                                                      -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -27,26 +27,14 @@
 */
 
 
-#pragma once
-#ifndef LIKECONFIG_HPP
-#define LIKECONFIG_HPP
+#include <cmath>
+#include "gaussian.hpp"
 
-#include <string>
-#include <istream>
-
-#include "model.hpp"
-
-class hepstats::likeconfig {
-public:
-    likeconfig(std::string _comment_chars = "#")
-            : comment_chars(_comment_chars) {}
-
-    loglike operator()(std::istream *is) const;
-
-private:
-    const std::string comment_chars;
-};
-
-#endif
-
+double hepstats::gaussian::calculate_pull(double pred, double limit,
+                                          double tau, double sigma,
+                                          bool *unlikely) const {
+    *unlikely = false;
+    return std::pow(pred - limit, 2.0) /
+           (2.0 * (std::pow(tau, 2.0) + std::pow(sigma, 2.0)));
+}
 

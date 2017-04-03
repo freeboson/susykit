@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - likeconfig.hpp:                                                          -
+    - datum_constraint.hpp:                                                               -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -28,25 +28,23 @@
 
 
 #pragma once
-#ifndef LIKECONFIG_HPP
-#define LIKECONFIG_HPP
+#ifndef SUSYKIT_DATUM_CONSTRAINT_HPP
+#define SUSYKIT_DATUM_CONSTRAINT_HPP
 
-#include <string>
-#include <istream>
+#include "constraint.hpp"
 
-#include "model.hpp"
-
-class hepstats::likeconfig {
+class datum_constraint : public constraint {
 public:
-    likeconfig(std::string _comment_chars = "#")
-            : comment_chars(_comment_chars) {}
+    datum_constraint(const model_lookup &_ml, const std::string &cons_line);
 
-    loglike operator()(std::istream *is) const;
+    double get_value(const model &m) const final;
+    std::string get_constraint_type() const final;
+    std::string get_constraint_name() const final;
 
 private:
-    const std::string comment_chars;
+    model_lookup ml;
+    std::string param;
 };
 
-#endif
 
-
+#endif //SUSYKIT_DATUM_CONSTRAINT_HPP

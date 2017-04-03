@@ -37,7 +37,7 @@
 #else
 #  include <list>
 #endif
-#include <map>
+#include <unordered_map>
 
 namespace susy_dict {
     // MODSEL block
@@ -488,7 +488,7 @@ namespace susy_dict {
     );
 #endif
 
-    const std::map<std::string, unsigned int> pdg = {
+    const std::unordered_map<std::string, unsigned int> pdg = {
         {m_w,        24},
         {m_h0,       25},
         {m_H0,       35},

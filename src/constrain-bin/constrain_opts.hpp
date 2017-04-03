@@ -37,6 +37,7 @@
 #include <vector>
 #include <unistd.h>
 #include <getopt.h>
+#include <memory>
 
 #include "constrain/model_lookup.hpp"
 #include "constraint.hpp"
@@ -46,7 +47,7 @@
 struct globalopts {
     int version;
     std::string infile, outfile;
-    std::vector<constraint> constraints;
+    std::vector< std::unique_ptr<constraint> > constraints;
     bool pretend, print_cuts, force, append;
     bool use_stdin, use_stdout;
 

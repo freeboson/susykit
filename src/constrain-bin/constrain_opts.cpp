@@ -28,8 +28,9 @@
 
 
 #include "constrain_opts.hpp"
-#include <cstring>
-#include <algorithm>
+#include "datum_constraint.hpp"
+#include "chi2_constraint.hpp"
+
 #include <fstream>
 
 //extern char *optarg;
@@ -188,7 +189,7 @@ int opthandle(int argc, char **argv, globalopts *gopts) {
                     return 1;
                 }
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::slha, get_cline_code(string(optarg))), string(optarg))
+                        make_unique<datum_constraint>(model_lookup(model_lookup::slha, get_cline_code(string(optarg))), string(optarg))
                 );
                 break;
 
@@ -198,7 +199,7 @@ int opthandle(int argc, char **argv, globalopts *gopts) {
                     return 1;
                 }
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::special, get_cline_code(string(optarg))), string(optarg))
+                        make_unique<datum_constraint>(model_lookup(model_lookup::special, get_cline_code(string(optarg))), string(optarg))
                 );
                 break;
 
@@ -209,7 +210,7 @@ int opthandle(int argc, char **argv, globalopts *gopts) {
                 }
                 need_observables = true;
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::output, get_cline_code(string(optarg))), string(optarg))
+                        make_unique<datum_constraint>(model_lookup(model_lookup::output, get_cline_code(string(optarg))), string(optarg))
                 );
                 break;
 
@@ -236,6 +237,11 @@ int opthandle(int argc, char **argv, globalopts *gopts) {
                     cerr << "getopt_long() error!!!" << endl;
                     return 1;
                 }
+                if (gopts->likeconfig) {
+                    cerr << "Currently only one likelihood config file can be"
+                            " passed." << endl;
+                    return 1;
+                }
                 gopts->likeconfig = true;
                 gopts->likeconfig_filename = string(optarg);
                 break;
@@ -258,13 +264,13 @@ int opthandle(int argc, char **argv, globalopts *gopts) {
                 ss << susy_dict::observable::bsgnlo << (bsgnlo_accepted + bsgnlo_delta - bsgnlo_lim) << " " <<
                 (bsgnlo_accepted + bsgnlo_delta + bsgnlo_lim);
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::output, get_cline_code(ss.str())), ss.str()));
+                        make_unique<datum_constraint>(model_lookup(model_lookup::output, get_cline_code(ss.str())), ss.str()));
 
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::output, susy_dict::observable::bsmumu),
+                        make_unique<datum_constraint>(model_lookup(model_lookup::output, susy_dict::observable::bsmumu),
                                    susy_dict::observable::bsmumu + string(" # 4.5e-9"))); // combined LHC limit
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::output, susy_dict::observable::gmuon),
+                        make_unique<datum_constraint>(model_lookup(model_lookup::output, susy_dict::observable::gmuon),
                                    susy_dict::observable::gmuon + string(" -11.4e-10 9.4e-9"))); // Brookhaven
                 break;
 
@@ -276,46 +282,46 @@ int opthandle(int argc, char **argv, globalopts *gopts) {
                 ss.clear();
                 ss << "bsgnlo " << (bsgnlo_accepted - bsgnlo_lim) << " " << (bsgnlo_accepted + bsgnlo_lim);
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::output, get_cline_code(ss.str())), ss.str()));
+                        make_unique<datum_constraint>(model_lookup(model_lookup::output, get_cline_code(ss.str())), ss.str()));
 
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::output, susy_dict::observable::bsmumu),
+                        make_unique<datum_constraint>(model_lookup(model_lookup::output, susy_dict::observable::bsmumu),
                                    susy_dict::observable::bsmumu + string(" # 4.5e-9"))); // combined LHC limit
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::output, susy_dict::observable::gmuon),
+                        make_unique<datum_constraint>(model_lookup(model_lookup::output, susy_dict::observable::gmuon),
                                    susy_dict::observable::gmuon + string(" -11.4e-10 9.4e-9"))); // Brookhaven
                 break;
 
             case 'P':
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::slha, get_cline_code(higgs)), higgs)
+                        make_unique<datum_constraint>(model_lookup(model_lookup::slha, get_cline_code(higgs)), higgs)
                 );
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::slha, get_cline_code(neutralino1)), neutralino1)
+                        make_unique<datum_constraint>(model_lookup(model_lookup::slha, get_cline_code(neutralino1)), neutralino1)
                 );
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::slha, get_cline_code(chargino1)), chargino1)
+                        make_unique<datum_constraint>(model_lookup(model_lookup::slha, get_cline_code(chargino1)), chargino1)
                 );
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::slha, get_cline_code(selectronr)), selectronr)
+                        make_unique<datum_constraint>(model_lookup(model_lookup::slha, get_cline_code(selectronr)), selectronr)
                 );
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::slha, get_cline_code(smuonr)), smuonr)
+                        make_unique<datum_constraint>(model_lookup(model_lookup::slha, get_cline_code(smuonr)), smuonr)
                 );
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::slha, get_cline_code(stau1)), stau1)
+                        make_unique<datum_constraint>(model_lookup(model_lookup::slha, get_cline_code(stau1)), stau1)
                 );
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::slha, get_cline_code(sbottom1)), sbottom1)
+                        make_unique<datum_constraint>(model_lookup(model_lookup::slha, get_cline_code(sbottom1)), sbottom1)
                 );
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::slha, get_cline_code(stop1)), stop1)
+                        make_unique<datum_constraint>(model_lookup(model_lookup::slha, get_cline_code(stop1)), stop1)
                 );
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::slha, get_cline_code(gluino)), gluino)
+                        make_unique<datum_constraint>(model_lookup(model_lookup::slha, get_cline_code(gluino)), gluino)
                 );
                 gopts->constraints.push_back(
-                        constraint(model_lookup(model_lookup::special, get_cline_code(squark)), squark)
+                        make_unique<datum_constraint>(model_lookup(model_lookup::special, get_cline_code(squark)), squark)
                 );
 
                 break;
@@ -368,12 +374,13 @@ int opthandle(int argc, char **argv, globalopts *gopts) {
             return 1;
         }
         cerr << "Loading likelihood function from " << gopts->likeconfig_filename << "..." << endl;
-        hepstats::likeconfig likeconfig(&likeread);
-        hepstats::loglike loglike = likeconfig.get_loglike_fn();
+        hepstats::likeconfig config;
+        hepstats::loglike loglike = config(&likeread);
 
         for_each(like_limits.begin(), like_limits.end(),
                  [&gopts, &loglike](const string &lim) -> void {
-                     gopts->constraints.push_back(constraint(loglike, lim));
+                     gopts->constraints.push_back
+                             (make_unique<chi2_constraint>(move(loglike), lim));
                  }
         );
     }
@@ -381,22 +388,23 @@ int opthandle(int argc, char **argv, globalopts *gopts) {
 
     int argi = optind;
 
-    if (argi >= argc) {
+    if (argi >= argc) { // no filenames
         gopts->infile = "[stdin]";
         gopts->use_stdin = true;
 
         gopts->outfile = "[stdout]";
         gopts->use_stdout = true;
     }
-    else {
-        gopts->infile = argv[argi++];
+    else { // first filename is input
+        gopts->infile = argv[argi];
         gopts->use_stdin = false;
-        if (argi >= argc) {
+        argi++; // check next
+        if (argi >= argc) { // second filename is
             gopts->outfile = "[stdout]";
             gopts->use_stdout = true;
         }
         else {
-            gopts->outfile = argv[argi++];
+            gopts->outfile = argv[argi];
             gopts->use_stdout = false;
         }
     }

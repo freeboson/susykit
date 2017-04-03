@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - likeconfig.hpp:                                                          -
+    - interpolated_data.hpp:                                                   -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -28,25 +28,49 @@
 
 
 #pragma once
-#ifndef LIKECONFIG_HPP
-#define LIKECONFIG_HPP
+#ifndef SUSYKIT_INTERPOLATED_DATA_HPP
+#define SUSYKIT_INTERPOLATED_DATA_HPP
 
 #include <string>
+#include <vector>
+#include <array>
 #include <istream>
+#include "constrain/likedatum.hpp"
+#include "constrain/experimental_data.hpp"
 
-#include "model.hpp"
+namespace hepstats {
+    class interpolated_data : public experimental_data {
+    public:
+        interpolated_data(model_lookup _lookup_axis,
+                          const std::string &data_filename,
+                          double _limit_error)
+                : lookup_axis(_lookup_axis), limit_error(_limit_error) {
+            load_data(data_filename);
+        }
 
-class hepstats::likeconfig {
-public:
-    likeconfig(std::string _comment_chars = "#")
-            : comment_chars(_comment_chars) {}
+        interpolated_data(model_lookup _lookup_axis,
+                          double _limit_error,
+                          std::istream *is);
 
-    loglike operator()(std::istream *is) const;
+        double get_limit(const model &m) const override;
 
-private:
-    const std::string comment_chars;
-};
+        double get_limit_error(const model &) const override {
+            return limit_error;
+        }
 
-#endif
+        using coord = std::array<double, 2>;
 
+    private:
+        void load_data(const std::string &data_filename);
+
+        void load_data(std::istream *is);
+
+        const model_lookup lookup_axis;
+        const double limit_error;
+        static constexpr size_t table_start_size = 500;
+        std::vector<coord> table;
+    };
+}
+
+#endif //SUSYKIT_INTERPOLATED_DATA_HPP
 

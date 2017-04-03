@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - likeconfig.hpp:                                                          -
+    - upper_gaussian.cpp:                                                      -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -27,26 +27,16 @@
 */
 
 
-#pragma once
-#ifndef LIKECONFIG_HPP
-#define LIKECONFIG_HPP
+#include "upper_gaussian.hpp"
 
-#include <string>
-#include <istream>
-
-#include "model.hpp"
-
-class hepstats::likeconfig {
-public:
-    likeconfig(std::string _comment_chars = "#")
-            : comment_chars(_comment_chars) {}
-
-    loglike operator()(std::istream *is) const;
-
-private:
-    const std::string comment_chars;
-};
-
-#endif
-
+double hepstats::upper_gaussian::calculate_pull(double pred, double limit,
+                                                double tau, double sigma,
+                                                bool *unlikely) const {
+    if (pred > limit) {
+        return gaussian::calculate_pull(pred, limit, tau, sigma, unlikely);
+    } else {
+        *unlikely = false;
+        return 0.0;
+    }
+}
 

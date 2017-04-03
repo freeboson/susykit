@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - likeconfig.hpp:                                                          -
+    - chi2_constraint.cpp:                                                               -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -27,26 +27,26 @@
 */
 
 
-#pragma once
-#ifndef LIKECONFIG_HPP
-#define LIKECONFIG_HPP
+#include "chi2_constraint.hpp"
 
-#include <string>
-#include <istream>
+using namespace std;
 
-#include "model.hpp"
+chi2_constraint::chi2_constraint(hepstats::loglike &&_loglike,
+                                 const std::string &limit)
+        :loglike(move(_loglike)), param("[chi^2 = -2ln(like)]") {
+    stringstream limit_ss(limit);
+    process_limit(limit_ss);
+}
 
-class hepstats::likeconfig {
-public:
-    likeconfig(std::string _comment_chars = "#")
-            : comment_chars(_comment_chars) {}
+double chi2_constraint::get_value(const model &m) const {
+    return 2*loglike.get_log_like(m);
+}
 
-    loglike operator()(std::istream *is) const;
+std::string chi2_constraint::get_constraint_type() const {
+    return "Advanced Statistical ";
+}
 
-private:
-    const std::string comment_chars;
-};
-
-#endif
-
+std::string chi2_constraint::get_constraint_name() const {
+    return param;
+}
 

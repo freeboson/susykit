@@ -32,47 +32,42 @@
 #define LIKEDATUM_HPP
 
 #include <cmath>
+#include <memory>
 #include "model.hpp"
 #include "model_lookup.hpp"
+#include "experimental_data.hpp"
 
-class hepstats::likedatum {
-public:
-    likedatum() : unset(true) { }
+namespace hepstats {
+    class likedatum {
+    public:
+        likedatum(
+                model_lookup _lookup,
+                double _pred_error, bool _pred_percent_error,
+                std::unique_ptr<experimental_data> _exp)
+                : lookup(_lookup),
+                  pred_error(_pred_error),
+                  pred_percent_error(_pred_percent_error),
+                  exp_data(std::move(_exp)) {
+            // all done!
+        }
 
-    likedatum(likedist::distribution _dist,
-              model_lookup _lookup,
-              double _exp_value,
-              double _exp_uncertainty,
-              double _theory_uncertainty,
-              bool _theory_percent_error = false
-    )
+        // NOTE: per sampler convention, this gives -ln(like) = chi^2/2
+        double operator()(const model &m,
+                          bool *unlikely = nullptr) const;
 
-            : dist(_dist),
-              lookup(_lookup),
-              exp_value(_exp_value),
-              exp_uncertainty(_exp_uncertainty),
-              theory_uncertainty(_theory_uncertainty),
-              theory_percent_error(_theory_percent_error),
-              unset(false) {
-        // all done!
-    }
+        virtual double calculate_pull(double pred, double limit,
+                                      double tau, double sigma,
+                                      bool *unlikely) const = 0;
 
-    double operator()(const model &m, bool *unlikely = nullptr) const; // note that this gives -ln(like) = chi^2/2!!!!
+    private:
+        model_lookup lookup;
+        std::unique_ptr<experimental_data> exp_data;
 
-private:
-    likedist::distribution dist;
-    model_lookup lookup;
-    double exp_value;
-    double exp_uncertainty;
-    double theory_uncertainty;
-    bool theory_percent_error;
+        double pred_error;
+        bool pred_percent_error;
 
-    bool unset;
-
-    double get_95cl_loglike(double delta, double tau, bool *unlikely) const;
-
-    double z_fn(double arg) const;
-};
+    };
+}
 
 #endif
 

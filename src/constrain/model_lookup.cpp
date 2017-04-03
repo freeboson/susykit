@@ -27,11 +27,11 @@
 */
 
 
+#include <stdexcept>
 #include "constrain/model_lookup.hpp"
 #include "constrain/dict.hpp"
 #include "constrain/special_lookups.hpp"
-
-#include "parseutils.hpp"
+#include "constrain/parseutils.hpp"
 
 // this will call the member function of the class of which "instance" is 
 // an instance of, pointed to by "mem_fn_ptr"
@@ -41,7 +41,7 @@
 using namespace std;
 using namespace susy_dict;
 
-model_lookup::model_lookup(model_map _mode, const string &_code)
+model_lookup::model_lookup(model_map _mode, string _code)
         : mode(_mode), code(_code) {
     switch (mode) {
         case slha:
@@ -50,25 +50,23 @@ model_lookup::model_lookup(model_map _mode, const string &_code)
 
         case output:
             action = &model::get_observable;
+            break;
 
         case special:
+            action = nullptr;
             if (code == "NLSP") {
                 cerr <<
                 "NLSP codes: MC1 = 0; MSl1 = 1; Mst1 = 2; MHH or MH3 = 3; MNE2 = 4; MSG = 5; MSeR = 6; else 9" << endl;
             }
             break;
+
         default:
-            cerr << "Invalid model_map value supplied! action will be set to NULL!" << endl;
-            action = NULL;
+            throw domain_error("Unimplemented lookup mode!");
     }
 }
 
 double model_lookup::operator()(const model &m) const {
     if (mode != special) {
-        if (NULL == action || unset == mode) {
-            cerr << "Error: Lookup action is not set!" << endl;
-            return 0;
-        }
         return MEMBER_FN_PTR_CALL(m, action)(code);
     }
     else { // hack hack hack hack
@@ -116,8 +114,8 @@ double model_lookup::operator()(const model &m) const {
             get_RGG_approx rgg;
             return rgg(m);
         }
+#if 0
         else if (code == "msp") {
-#if 1
             string mass;
             int next = 0;
 //            int nd = 0; // what was this for?
@@ -133,32 +131,8 @@ double model_lookup::operator()(const model &m) const {
                 cerr << m.get_hierarchy(next++) << ";";
             }
             cerr << endl;
-#else
-            int nd = 0;
-            string mass;
-            double last = 0;
-
-            for (int i = 0; nd < 4; i++)
-            {
-                if (m.get_hierarchy(i) == m_o1)
-                    continue;
-
-                double curr;
-
-                mass = m.get_hierarchy(i);
-                curr = m.get_datum(mass);
-
-                if (0 == nd || curr - last > 10)
-                {
-                    nd++;
-                    last = curr;
-                    cerr << mass << ";";
-                    continue;
-                }
-            }
-            cerr << endl;
-#endif
         }
+#endif
         else {
             cerr << "Error: " << code << "is not a special action!" << endl;
             return 0;

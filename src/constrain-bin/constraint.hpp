@@ -38,33 +38,26 @@
 #include "constrain/model.hpp"
 #include "constrain/model_lookup.hpp"
 
-#include "constrain/hepstats.hpp"
-
 class constraint {
 public:
 
     constraint();
 
-    constraint(const model_lookup &_ml, const std::string &cons_line);
-
-    constraint(const hepstats::loglike &_loglike, const std::string &limit);
-
     int operator()(const model &m) const;
-
-    double get_value(const model &m) const;
-
     std::string get_constraint() const;
 
+    virtual double get_value(const model &m) const = 0;
+
+    virtual std::string get_constraint_type() const = 0;
+    virtual std::string get_constraint_name() const = 0;
+
+protected:
+    void process_limit(std::stringstream &ss);
+
 private:
-    model_lookup ml;
-    hepstats::loglike loglike;
-    std::string param;
     double lower, upper;
     bool lset, uset;
     bool xset;
-    bool like_constraint;
-
-    void process_limit(std::stringstream &ss);
 
     int check_model(double value) const;
 };

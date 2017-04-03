@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - likeconfig.hpp:                                                          -
+    - upper_gaussian.hpp:                                                      -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -28,25 +28,27 @@
 
 
 #pragma once
-#ifndef LIKECONFIG_HPP
-#define LIKECONFIG_HPP
+#ifndef SUSYKIT_UPPER_GAUSSIAN_HPP
+#define SUSYKIT_UPPER_GAUSSIAN_HPP
 
-#include <string>
-#include <istream>
 
-#include "model.hpp"
+#include "gaussian.hpp"
 
-class hepstats::likeconfig {
-public:
-    likeconfig(std::string _comment_chars = "#")
-            : comment_chars(_comment_chars) {}
+namespace hepstats {
+    class upper_gaussian : public gaussian {
+    public:
+        upper_gaussian(model_lookup lookup,
+                       double pred_error, bool pred_percent_error,
+                       std::unique_ptr<experimental_data> data)
+                : gaussian(lookup, pred_error, pred_percent_error,
+                           std::move(data)) {}
 
-    loglike operator()(std::istream *is) const;
+        double calculate_pull(double pred, double limit,
+                              double tau, double sigma,
+                              bool *unlikely) const override;
+    };
+}
 
-private:
-    const std::string comment_chars;
-};
 
-#endif
-
+#endif //SUSYKIT_UPPER_GAUSSIAN_HPP
 

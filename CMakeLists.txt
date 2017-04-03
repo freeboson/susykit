@@ -73,6 +73,7 @@ ExternalProject_Add(
     --64 --enable-full-g-2 --disable-vt100 CC=${CMAKE_C_COMPILER}
     FC=${CMAKE_Fortran_COMPILER} CXX=${CMAKE_CXX_COMPILER}
     --prefix=${CMAKE_BINARY_DIR}/work/feynhiggs/installed
+    FFLAGS="-fPIC" CFLAGS="-fPIC"
   BUILD_COMMAND make lib
   INSTALL_COMMAND make install
     COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/feynhiggs
@@ -223,7 +224,11 @@ set(SOURCES_LCONS
   src/constrain/model.cpp src/constrain/model_lookup.cpp
   src/constrain/special_lookups.cpp src/constrain/get_slha.cpp
   src/constrain/likeconfig.cpp src/constrain/likedatum.cpp
-  src/constrain/loglike.cpp
+  src/constrain/loglike.cpp src/constrain/gaussian.cpp
+  src/constrain/simple_datum.cpp src/constrain/interpolated_data.cpp
+  src/constrain/upper_gaussian.cpp src/constrain/smeared_limit.cpp
+  src/constrain/experimental_data.cpp src/constrain/smeared_upper_limit.cpp
+  src/constrain/smeared_lower_limit.cpp
 )
 
 set(SOURCES_LSKIT
@@ -236,6 +241,7 @@ set(SOURCES_LSKIT
 set(SOURCES_CONSTRAIN
   src/constrain-bin/constraint.cpp src/constrain-bin/constrain.cpp
   src/constrain-bin/constrain_opts.cpp
+  src/constrain-bin/datum_constraint.cpp src/constrain-bin/chi2_constraint.cpp
 )
 
 set(SOURCES_QPARSE src/qparse/qparse.cpp)
@@ -247,24 +253,29 @@ set(SOURCES_QPOINT src/qpoint/qpoint_softsusy_opts.cpp src/qpoint/qpoint.cpp)
 add_library(constrain STATIC ${SOURCES_LCONS})
 target_compile_features(constrain PRIVATE cxx_range_for)
 target_compile_features(constrain PRIVATE cxx_generalized_initializers)
+target_compile_features(constrain PRIVATE cxx_return_type_deduction)
 target_compile_definitions(constrain PRIVATE SOFTSUSY_VERSION=${SOFTSUSY_VERSION})
 
 add_library(susykit STATIC ${SOURCES_LSKIT})
 add_dependencies(susykit SoftSusy SuperIso_Relic DarkSUSY FeynHiggs)
 target_compile_features(susykit PRIVATE cxx_range_for)
 target_compile_features(susykit PRIVATE cxx_generalized_initializers)
+target_compile_features(susykit PRIVATE cxx_return_type_deduction)
 
 add_executable(qparse ${SOURCES_QPARSE})
 target_compile_features(qparse PRIVATE cxx_range_for)
+target_compile_features(qparse PRIVATE cxx_return_type_deduction)
 target_link_libraries(qparse constrain)
 
 add_executable(sdb2slha ${SOURCES_SDB2SLHA})
 target_compile_features(sdb2slha PRIVATE cxx_range_for)
+target_compile_features(sdb2slha PRIVATE cxx_return_type_deduction)
 target_link_libraries(sdb2slha constrain)
 
 add_executable(constrain-bin ${SOURCES_CONSTRAIN})
 set_target_properties(constrain-bin PROPERTIES OUTPUT_NAME constrain)
 target_compile_features(constrain-bin PRIVATE cxx_range_for)
+target_compile_features(constrain-bin PRIVATE cxx_return_type_deduction)
 target_link_libraries(constrain-bin constrain)
 
 set(SOURCES_SOFTEST
@@ -274,9 +285,11 @@ set(SOURCES_SOFTEST
 add_executable(softest ${SOURCES_SOFTEST})
 add_dependencies(softest constrain SoftSusy FeynHiggs)
 target_compile_features(softest PRIVATE cxx_range_for)
+target_compile_features(softest PRIVATE cxx_return_type_deduction)
 target_link_libraries(softest constrain soft)
 
 add_executable(qpoint ${SOURCES_QPOINT})
 target_compile_features(qpoint PRIVATE cxx_range_for)
+target_compile_features(qpoint PRIVATE cxx_return_type_deduction)
 target_link_libraries(qpoint constrain susykit soft darksusy FH isajet HB isospin relic)
 

@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - likeconfig.hpp:                                                          -
+    - smeared_limit.cpp:                                                       -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -26,27 +26,36 @@
 
 */
 
+#include <cmath>
+#include <stdexcept>
+#include "smeared_limit.hpp"
 
-#pragma once
-#ifndef LIKECONFIG_HPP
-#define LIKECONFIG_HPP
+using namespace std;
 
-#include <string>
-#include <istream>
+double hepstats::smeared_limit::calculate_pull(double pred, double limit,
+                                               double tau, double sigma,
+                                               bool *unlikely) const {
+    // this is based on SmearedBound() in SuperBayes, source/calclike.f90
+    // which in turn is based on hep-ph/0602028, with a minor fix
+    if (sigma <= 0.0)
+        sigma = 1e-2 * tau;
+    double delta = get_delta(pred, limit);
+    double error = std::hypot(sigma, tau);
 
-#include "model.hpp"
+    double expterm = exp(-0.5 * pow(-delta / error, 2.0));
+    double zterm2 = erfc((delta / tau) / sqrt(2.0)) / 2.0;
 
-class hepstats::likeconfig {
-public:
-    likeconfig(std::string _comment_chars = "#")
-            : comment_chars(_comment_chars) {}
+    double tlim = (sigma / tau) * delta / error;
 
-    loglike operator()(std::istream *is) const;
-
-private:
-    const std::string comment_chars;
-};
-
-#endif
+    if (expterm > 0.0) {
+        double zterm1 = (1 + erf((sigma*delta)/(tau*error*sqrt(2.0))))/ 2.0;
+        return -log((sigma/error)*expterm*zterm1 + zterm2);
+    } else {
+        if (zterm2 < 0.5)
+            return logZero; // zterm2 == 0
+        else
+            return 0.0;     // zterm2 == 1
+    }
+}
 
 

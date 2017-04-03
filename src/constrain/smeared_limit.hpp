@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - likeconfig.hpp:                                                          -
+    - smeared_limit.hpp:                                                       -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -28,25 +28,27 @@
 
 
 #pragma once
-#ifndef LIKECONFIG_HPP
-#define LIKECONFIG_HPP
+#ifndef SUSYKIT_SMEARED_LIMIT_HPP
+#define SUSYKIT_SMEARED_LIMIT_HPP
 
-#include <string>
-#include <istream>
+#include "constrain/hepstats.hpp"
+#include "constrain/experimental_data.hpp"
 
-#include "model.hpp"
+namespace hepstats {
+    class smeared_limit : public likedatum {
+    public:
+        smeared_limit(model_lookup lookup,
+                      double pred_error, bool pred_percent_error,
+                      std::unique_ptr<experimental_data> data)
+                : likedatum(lookup, pred_error, pred_percent_error,
+                            std::move(data)) {}
 
-class hepstats::likeconfig {
-public:
-    likeconfig(std::string _comment_chars = "#")
-            : comment_chars(_comment_chars) {}
+        virtual double get_delta(double pred, double limit) const = 0;
 
-    loglike operator()(std::istream *is) const;
+        double calculate_pull(double pred, double limit,
+                              double tau, double sigma,
+                              bool *unlikely) const override;
+    };
+}
 
-private:
-    const std::string comment_chars;
-};
-
-#endif
-
-
+#endif //SUSYKIT_SMEARED_LIMIT_HPP

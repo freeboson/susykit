@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - likeconfig.hpp:                                                          -
+    - simple_datum.cpp:                                                        -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -27,26 +27,6 @@
 */
 
 
-#pragma once
-#ifndef LIKECONFIG_HPP
-#define LIKECONFIG_HPP
-
-#include <string>
-#include <istream>
-
-#include "model.hpp"
-
-class hepstats::likeconfig {
-public:
-    likeconfig(std::string _comment_chars = "#")
-            : comment_chars(_comment_chars) {}
-
-    loglike operator()(std::istream *is) const;
-
-private:
-    const std::string comment_chars;
-};
-
-#endif
+#include "simple_datum.hpp"
 
 

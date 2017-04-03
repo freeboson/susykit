@@ -38,20 +38,20 @@ namespace hepstats {
 
     class likeconfig;
 
-    namespace likedist {
-        enum distribution {
-            Gaussian,
-            Poisson,
-            Upper,
-            Lower,
-            Upper_Gaussian
-        };
-    }
+    enum class likedist {
+        gaussian,
+//        poisson,
+        upper_gaussian,
+        lower,
+        upper,
+        lower_interpolated,
+        upper_interpolated
+    };
 
-    const double logZero = -1e90; // embarrassing
+    constexpr double logZero = -1e90; // embarrassing
 
-    const double br_btaunu_sm = 1.18e-4;
-    const double br_btaunu_sm_err = 0.16e-4;
+    constexpr double br_btaunu_sm = 1.18e-4;
+    constexpr double br_btaunu_sm_err = 0.16e-4;
 }
 
 #include "loglike.hpp"

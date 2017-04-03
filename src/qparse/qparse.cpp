@@ -39,9 +39,9 @@
 #include <list>
 
 #include "constrain/model.hpp"
-#include "../constrain/model_lookup.hpp"
+#include "constrain/model_lookup.hpp"
 #include "constrain/parse.hpp"
-#include "../constrain/parseutils.hpp"
+#include "constrain/parseutils.hpp"
 
 using namespace std;
 
@@ -81,7 +81,6 @@ int parse_reqs(int argc, const char **argv, int index, vector<model_lookup> *loo
     {
         string mode = string(argv[index++]);
         string code = string(argv[index++]);
-        model_lookup ml;
 
         bool codeopt = true;
 
@@ -92,17 +91,17 @@ int parse_reqs(int argc, const char **argv, int index, vector<model_lookup> *loo
 
         switch (mode[1]) {
             case 'd':
-                ml = model_lookup(model_lookup::slha, code);
+                lookups->push_back(model_lookup(model_lookup::slha, code));
                 break;
             case 's':
-                ml = model_lookup(model_lookup::special, code);
+                lookups->push_back(model_lookup(model_lookup::special, code));
                 break;
             case 'o':
                 if (!merged) {
                     cerr << "You can't do -o with -M!" << endl;
                     return 1;
                 }
-                ml = model_lookup(model_lookup::output, code);
+                lookups->push_back(model_lookup(model_lookup::output, code));
                 break;
             case 'i':
                 if (0 != infofile->length()) {
@@ -119,11 +118,6 @@ int parse_reqs(int argc, const char **argv, int index, vector<model_lookup> *loo
 
         if (codeopt) {
             ss << setw(DEFAULT_COL_WIDTH) << setiosflags(ios::left) << code << " ";
-
-            if (ml.good_mode())
-                lookups->push_back(ml);
-            else
-                return 1;
         }
     }
 

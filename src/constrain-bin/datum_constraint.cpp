@@ -5,7 +5,7 @@
     - Copyright 2011-2016 Sujeet Akula                                         -
     - sujeet@freeboson.org                                                     -
     -                                                                          -
-    - likeconfig.hpp:                                                          -
+    - datum_constraint.cpp:                                                               -
     -                                                                          -
     - This file is part of SusyKit, https://freeboson.org/susykit/.            -
     -                                                                          -
@@ -27,26 +27,40 @@
 */
 
 
-#pragma once
-#ifndef LIKECONFIG_HPP
-#define LIKECONFIG_HPP
+#include "datum_constraint.hpp"
 
-#include <string>
-#include <istream>
+using namespace std;
 
-#include "model.hpp"
+datum_constraint::datum_constraint(const model_lookup &_ml,
+                                   const std::string &cons_line)
+        : constraint(), ml(_ml) {
+    stringstream cline(cons_line);
+    cline >> param;
+    process_limit(cline);
+}
 
-class hepstats::likeconfig {
-public:
-    likeconfig(std::string _comment_chars = "#")
-            : comment_chars(_comment_chars) {}
+double datum_constraint::get_value(const model &m) const {
+    return ml(m);
+}
 
-    loglike operator()(std::istream *is) const;
+std::string datum_constraint::get_constraint_type() const {
+    stringstream ss;
+        switch (ml.get_mode()) {
+            case model_lookup::slha:
+                ss << "Basic";
+                break;
+            case model_lookup::output:
+                ss << "Output";
+                break;
+            case model_lookup::special:
+                ss << "Special";
+                break;
+        }
 
-private:
-    const std::string comment_chars;
-};
+    ss << " constraint ";
+    return ss.str();
+}
 
-#endif
-
-
+std::string datum_constraint::get_constraint_name() const {
+    return param;
+}
