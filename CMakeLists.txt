@@ -293,3 +293,4 @@ target_compile_features(qpoint PRIVATE cxx_range_for)
 target_compile_features(qpoint PRIVATE cxx_return_type_deduction)
 target_link_libraries(qpoint constrain susykit soft darksusy FH isajet HB isospin relic)
 
+add_subdirectory(test)
