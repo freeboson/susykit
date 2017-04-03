@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.1.3)
 enable_language(Fortran)
 
 project(SusyKit)
@@ -23,18 +23,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/ext/include)
 
-set(SOFTSUSY_VERSION "3.7.2")     #latest
-set(FEYNHIGGS_VERSION "2.11.3")   #latest
-set(HIGGSBOUNDS_VERSION "5.0.0beta")  #latest
-set(SUPERISO_RELIC_VERSION "3.4") #latest
-set(MICROMEGAS_VERSION "2.4.5")   #abandon
-set(DARKSUSY_VERSION "5.1.2")     #update
-set(FEYNHIGGS_MD5 "49f5ea1838cb233baffd85bbc1b0d87d")
+set(SOFTSUSY_VERSION "4.0")             #latest
+set(FEYNHIGGS_VERSION "2.13.0")         #latest
+set(HIGGSBOUNDS_VERSION "5.0.0beta")    #latest
+set(SUPERISO_RELIC_VERSION "3.4")       #latest
+set(MICROMEGAS_VERSION "2.4.5")         #abandon
+set(DARKSUSY_VERSION "5.1.3")           #latest
+set(FEYNHIGGS_MD5 "0125d3619a959ac57a2aa69513cf9683")
 set(HIGGSBOUNDS_MD5 "ec4903a77bc35e6ebc0a98278786c31e")
-set(SOFTSUSY_MD5 "5efdbf71e43cfdb9c3ef619fe5abff8a")
+set(SOFTSUSY_MD5 "330ac4938d4f73416b41842ba0f36a52")
 set(SUPERISO_RELIC_MD5 "97cf83c8bd90f2a9993c2209337f9e72")
 set(MICROMEGAS_MD5 "322856e02ddf06c76077b65f3a64de5d")
-set(DARKSUSY_MD5 "ee9d47aeb88980e2777a1c61b7d495d0")
+set(DARKSUSY_MD5 "ca95ffa083941a469469710fab2f3c97")
 
 ExternalProject_Add(
   SoftSusy
