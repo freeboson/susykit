@@ -9,7 +9,10 @@ build:
     - make
   artifacts:
     paths:
-      - build
+      - build/share/DarkSUSY
+      - build/bin
+      - build/lib
+      - build/test/bin
 test:
   type: test
   dependencies:
