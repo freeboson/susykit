@@ -50,4 +50,4 @@ bin/
 ext/
 share/
 .idea/
-build/
+build*/
