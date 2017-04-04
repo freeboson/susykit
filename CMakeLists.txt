@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.1.3)
 enable_language(Fortran)
 
 project(SusyKit)
@@ -19,9 +19,6 @@ enable_language(Fortran)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR}/ext/include)
 
 set(SOFTSUSY_VERSION "3.7.2")     #latest
 set(FEYNHIGGS_VERSION "2.11.3")   #latest
@@ -251,31 +248,24 @@ set(SOURCES_SDB2SLHA src/sdb2slha/sdb2slha.cpp)
 set(SOURCES_QPOINT src/qpoint/qpoint_softsusy_opts.cpp src/qpoint/qpoint.cpp)
 
 add_library(constrain STATIC ${SOURCES_LCONS})
-target_compile_features(constrain PRIVATE cxx_range_for)
-target_compile_features(constrain PRIVATE cxx_generalized_initializers)
-target_compile_features(constrain PRIVATE cxx_return_type_deduction)
 target_compile_definitions(constrain PRIVATE SOFTSUSY_VERSION=${SOFTSUSY_VERSION})
+target_include_directories(constrain PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 add_library(susykit STATIC ${SOURCES_LSKIT})
 add_dependencies(susykit SoftSusy SuperIso_Relic DarkSUSY FeynHiggs)
-target_compile_features(susykit PRIVATE cxx_range_for)
-target_compile_features(susykit PRIVATE cxx_generalized_initializers)
-target_compile_features(susykit PRIVATE cxx_return_type_deduction)
+target_include_directories(susykit PUBLIC
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/ext/include
+)
 
 add_executable(qparse ${SOURCES_QPARSE})
-target_compile_features(qparse PRIVATE cxx_range_for)
-target_compile_features(qparse PRIVATE cxx_return_type_deduction)
 target_link_libraries(qparse constrain)
 
 add_executable(sdb2slha ${SOURCES_SDB2SLHA})
-target_compile_features(sdb2slha PRIVATE cxx_range_for)
-target_compile_features(sdb2slha PRIVATE cxx_return_type_deduction)
 target_link_libraries(sdb2slha constrain)
 
 add_executable(constrain-bin ${SOURCES_CONSTRAIN})
 set_target_properties(constrain-bin PROPERTIES OUTPUT_NAME constrain)
-target_compile_features(constrain-bin PRIVATE cxx_range_for)
-target_compile_features(constrain-bin PRIVATE cxx_return_type_deduction)
 target_link_libraries(constrain-bin constrain)
 
 set(SOURCES_SOFTEST
@@ -284,12 +274,20 @@ set(SOURCES_SOFTEST
 )
 add_executable(softest ${SOURCES_SOFTEST})
 add_dependencies(softest constrain SoftSusy FeynHiggs)
-target_compile_features(softest PRIVATE cxx_range_for)
-target_compile_features(softest PRIVATE cxx_return_type_deduction)
 target_link_libraries(softest constrain soft)
 
 add_executable(qpoint ${SOURCES_QPOINT})
-target_compile_features(qpoint PRIVATE cxx_range_for)
-target_compile_features(qpoint PRIVATE cxx_return_type_deduction)
 target_link_libraries(qpoint constrain susykit soft darksusy FH isajet HB isospin relic)
 
+set_target_properties(
+  constrain
+  susykit
+  qparse
+  sdb2slha
+  constrain-bin
+  softest
+  qpoint
+  PROPERTIES
+  CXX_STANDARD 14
+  CXX_STANDRD_REQUIRED ON
+)
