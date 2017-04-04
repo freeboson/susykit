@@ -291,3 +291,5 @@ set_target_properties(
   CXX_STANDARD 14
   CXX_STANDRD_REQUIRED ON
 )
+
+add_subdirectory(test)

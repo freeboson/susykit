@@ -1,8 +1,18 @@
 image: freeboson/cmake-gcc:gcc-6
 build:
+  type: build
   script:
     - (mkdir build || echo "build dir cached")
     - cd build
     - /opt/cmake/bin/cmake ..
     - make SuperIso_Relic
     - make
+  artifacts:
+    paths:
+      - build
+test:
+  type: test
+  dependencies:
+    - build
+  script:
+    - ./build/test/bin/constrain_unit
