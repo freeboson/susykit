@@ -43,7 +43,7 @@ double chi2_constraint::get_value(const model &m) const {
 }
 
 std::string chi2_constraint::get_constraint_type() const {
-    return "Advanced Statistical ";
+    return "Statistical constraint ";
 }
 
 std::string chi2_constraint::get_constraint_name() const {
