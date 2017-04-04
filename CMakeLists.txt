@@ -197,7 +197,7 @@ ExternalProject_Add(
   BUILD_COMMAND make ${PARMAKE} darksusy libisajet
   INSTALL_COMMAND install -d ${PROJECT_SOURCE_DIR}/ext/include/darksusy
     COMMAND make install_tables
-    COMMAND sh -c "cp -prf ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/share/DarkSUSY ${PROJECT_SOURCE_DIR}/share/"
+    COMMAND sh -c "cp -prf ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/share/DarkSUSY ${CMAKE_CURRENT_BINARY_DIR}/share/"
     COMMAND sh -c "cp -pr ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/include/ds*.h ${PROJECT_SOURCE_DIR}/ext/include/darksusy"
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/lib/libdarksusy.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
     COMMAND install ${CMAKE_CURRENT_BINARY_DIR}/work/darksusy/extract/lib/libisajet.a ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
