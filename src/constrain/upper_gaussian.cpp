@@ -35,8 +35,7 @@ double hepstats::upper_gaussian::calculate_pull(double pred, double limit,
     if (pred > limit) {
         return gaussian::calculate_pull(pred, limit, tau, sigma, unlikely);
     } else {
-        *unlikely = false;
+        if (nullptr != unlikely) *unlikely = false;
         return 0.0;
     }
 }
-

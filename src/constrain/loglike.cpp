@@ -46,9 +46,9 @@ double hepstats::loglike::get_log_like(const model &m) const {
     bool bad_like = false;
     std::vector<double> likelihoods(like_terms.size());
     std::transform(
-            like_terms.begin(),
-            like_terms.end(),
-            likelihoods.begin(),
+            cbegin(like_terms),
+            cend(like_terms),
+            begin(likelihoods),
             [&m, &bad_like](const auto &datum) -> double {
                 bool bad_like_term;
                 double result = (*datum)(m, &bad_like_term);
@@ -63,5 +63,3 @@ double hepstats::loglike::get_log_like(const model &m) const {
 
     return std::accumulate(likelihoods.begin(), likelihoods.end(), 0.0);
 }
-
-

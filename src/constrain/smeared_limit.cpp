@@ -35,6 +35,7 @@ using namespace std;
 double hepstats::smeared_limit::calculate_pull(double pred, double limit,
                                                double tau, double sigma,
                                                bool *unlikely) const {
+    if (nullptr != unlikely) *unlikely = false;
     // this is based on SmearedBound() in SuperBayes, source/calclike.f90
     // which in turn is based on hep-ph/0602028, with a minor fix
     if (sigma <= 0.0)
@@ -45,17 +46,16 @@ double hepstats::smeared_limit::calculate_pull(double pred, double limit,
     double expterm = exp(-0.5 * pow(-delta / error, 2.0));
     double zterm2 = erfc((delta / tau) / sqrt(2.0)) / 2.0;
 
-    double tlim = (sigma / tau) * delta / error;
+    // double tlim = (sigma / tau) * delta / error;
 
-    if (expterm > 0.0) {
+    if (isnormal(expterm)) {
         double zterm1 = (1 + erf((sigma*delta)/(tau*error*sqrt(2.0))))/ 2.0;
-        return -log((sigma/error)*expterm*zterm1 + zterm2);
+        return log((sigma/error)*expterm*zterm1 + zterm2);
     } else {
         if (zterm2 < 0.5)
+            if (nullptr != unlikely) *unlikely = true;
             return logZero; // zterm2 == 0
         else
             return 0.0;     // zterm2 == 1
     }
 }
-
-

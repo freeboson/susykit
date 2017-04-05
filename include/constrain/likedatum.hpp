@@ -51,7 +51,7 @@ namespace hepstats {
             // all done!
         }
 
-        // NOTE: per sampler convention, this gives -ln(like) = chi^2/2
+        // returns ln(like) = -1/2 chi^2 <= 0
         double operator()(const model &m,
                           bool *unlikely = nullptr) const;
 

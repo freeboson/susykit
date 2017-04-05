@@ -46,6 +46,7 @@ public:
         like_terms.emplace_back(std::move(datum));
     }
 
+    // returns ln(like) = -1/2 chi^2 <= 0
     double get_log_like(const model &m) const;
 
     auto get_num_like_terms() const {
@@ -57,5 +58,3 @@ private:
 };
 
 #endif
-
-
