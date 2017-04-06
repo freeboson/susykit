@@ -28,8 +28,8 @@
 
 #include <cmath>
 #include <stdexcept>
+#include "constrain/hepstats.hpp"
 #include "smeared_limit.hpp"
-#include "hepstats.hpp"
 
 using namespace std;
 

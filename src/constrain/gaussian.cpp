@@ -28,8 +28,8 @@
 
 
 #include <cmath>
+#include "constrain/hepstats.hpp"
 #include "gaussian.hpp"
-#include "hepstats.hpp"
 
 double hepstats::gaussian::calculate_pull(double pred, double limit,
                                           double tau, double sigma,
