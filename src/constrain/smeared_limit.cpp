@@ -29,6 +29,7 @@
 #include <cmath>
 #include <stdexcept>
 #include "smeared_limit.hpp"
+#include "hepstats.hpp"
 
 using namespace std;
 
@@ -52,10 +53,11 @@ double hepstats::smeared_limit::calculate_pull(double pred, double limit,
         double zterm1 = (1 + erf((sigma*delta)/(tau*error*sqrt(2.0))))/ 2.0;
         return log((sigma/error)*expterm*zterm1 + zterm2);
     } else {
-        if (zterm2 < 0.5)
+        if (zterm2 < 0.5) {
             if (nullptr != unlikely) *unlikely = true;
             return logZero; // zterm2 == 0
-        else
+        } else {
             return 0.0;     // zterm2 == 1
+        }
     }
 }
