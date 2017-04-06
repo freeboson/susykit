@@ -51,7 +51,13 @@ double hepstats::smeared_limit::calculate_pull(double pred, double limit,
 
     if (isnormal(expterm)) {
         double zterm1 = (1 + erf((sigma*delta)/(tau*error*sqrt(2.0))))/ 2.0;
-        return log((sigma/error)*expterm*zterm1 + zterm2);
+        double lnlike = log((sigma/error)*expterm*zterm1 + zterm2);
+        if (isfinite(lnlike)) {
+            return lnlike;
+        } else {
+            if (nullptr != unlikely) *unlikely = true;
+            return logZero;
+        }
     } else {
         if (zterm2 < 0.5) {
             if (nullptr != unlikely) *unlikely = true;

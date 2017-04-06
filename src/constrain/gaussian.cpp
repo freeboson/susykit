@@ -36,7 +36,7 @@ double hepstats::gaussian::calculate_pull(double pred, double limit,
                                           bool *unlikely) const {
     double lnlike = -std::pow(pred - limit, 2.0) /
            (2.0 * (std::pow(tau, 2.0) + std::pow(sigma, 2.0)));
-    if (isfinite(lnlike)) {
+    if (std::isfinite(lnlike)) {
         if (nullptr != unlikely) *unlikely = false;
         return lnlike;
     } else {
