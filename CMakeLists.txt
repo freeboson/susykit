@@ -43,7 +43,7 @@ ExternalProject_Add(
   SOURCE_DIR "${CMAKE_BINARY_DIR}/work/softsusy/extract"
   # patch not needed after 3.6.2
   # PATCH_COMMAND patch src/softpars.h ${PROJECT_SOURCE_DIR}/patches/softsusy/softpars_h.patch
-  PATCH_COMMAND perl -i -pe "s/(tsil_funcs\\.h)\\s+(?:\\S+tsil\\.h)\s*\\\\/\\1 \\\\/" ${CMAKE_BINARY_DIR}/work/softsusy/extract/Makefile.in
+  PATCH_COMMAND perl -i -pe "s/(tsil_funcs\\.h)\\s+(?:\\S+tsil\\.h)\\s*\\\\/\\1 \\\\/" ${CMAKE_BINARY_DIR}/work/softsusy/extract/Makefile.in
   CONFIGURE_COMMAND ${CMAKE_BINARY_DIR}/work/softsusy/extract/configure
     CXX=${CMAKE_CXX_COMPILER} --enable-static --with-pic --enable-shared=no
     --prefix=${CMAKE_BINARY_DIR} --includedir=${PROJECT_SOURCE_DIR}/ext/include
