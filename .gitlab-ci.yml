@@ -1,4 +1,8 @@
 image: freeboson/cmake-gcc:gcc-6
+cache:
+  paths:
+    - ext/include
+    - build
 build:
   type: build
   script:
@@ -9,7 +13,10 @@ build:
     - make
   artifacts:
     paths:
-      - build
+      - build/share/DarkSUSY
+      - build/bin
+      - build/lib
+      - build/test/bin
 test:
   type: test
   dependencies:
